@@ -1,8 +1,0 @@
-[
-  {
-    "image_refs": ["pasta1.jpg", "pasta2.jpg", "pasta3.jpg", "apple.jpg"],
-    "category": "Types of pasta",
-    "outlier_index": 3,
-    "difficulty": "easy"
-  }
-]

@@ -1,16 +1,18 @@
 from functools import lru_cache
+
 from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    # Postgres
     POSTGRES_CONNECTION_STRING: str
 
-    # App
+    JWT_SECRET_KEY: str
+    JWT_EXPIRE_HOURS: int = 24
+    EVENT_CODE: str
+
     LOG_LEVEL: str = "INFO"
     ENVIRONMENT: str = "development"
 
-    # Server
     API_HOST: str = "0.0.0.0"
     API_PORT: int = 8000
     API_WORKERS: int = 4

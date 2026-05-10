@@ -1,10 +1,27 @@
-from fastapi import APIRouter
+"""Auth routes — login and logout."""
+
+from fastapi import APIRouter, Depends
+
+from leap.api.deps import get_container, get_current_player
+from leap.types.player import CurrentPlayer
+from leap.api.schema.auth import LoginRequest, LoginResponse
+from leap.service.container import ServiceContainer
 
 router = APIRouter()
 
 
-@router.post("/login", summary="Player login")
-async def login():
-    """Authenticate a player with corp_id and event_code. Returns JWT."""
-    # TODO: implement
-    raise NotImplementedError
+@router.post("/login", response_model=LoginResponse, summary="Player login")
+async def login(
+    body: LoginRequest,
+    container: ServiceContainer = Depends(get_container),
+) -> LoginResponse:
+    """Authenticate with corp_id + event_code. Returns a signed JWT."""
+    return await container.auth.login(body.corp_id, body.event_code)
+
+
+@router.post("/logout", status_code=204, summary="Player logout")
+async def logout(
+    _player: CurrentPlayer = Depends(get_current_player),
+) -> None:
+    """No-op server-side. Client is responsible for discarding the token."""
+    return None

@@ -42,7 +42,7 @@ def start() -> None:
 
         def load_config(self):  # type: ignore[override]
             for key, value in self.options.items():
-                self.cfg.set(key, value)  # type: ignore[arg-type]
+                self.cfg.set(key, value)  # type: ignore
 
         def load(self):
             return self.application

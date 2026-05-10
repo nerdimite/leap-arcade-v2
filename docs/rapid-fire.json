@@ -1,0 +1,122 @@
+[
+  {
+    "question": "In AI-assisted software development, what best describes an “agentic workflow”?",
+    "option1": "A CI/CD pipeline triggered by Git commits",
+    "option2": "A system where models autonomously plan and execute multi-step tasks",
+    "option3": "A distributed tracing mechanism for APIs",
+    "option4": "A runtime optimization layer for container orchestration",
+    "correct_ans": 2
+  },
+  {
+    "question": "In Spring Boot, what is the key purpose of the @ConditionalOnProperty annotation?",
+    "option1": "It validates configuration files during compilation",
+    "option2": "It conditionally enables beans based on application property values",
+    "option3": "It encrypts environment variables automatically",
+    "option4": "It restricts bean initialization to production environments only",
+    "correct_ans": 2
+  },
+  {
+    "question": "In a scalable full-stack architecture, why is API Gateway commonly introduced between clients and microservices?",
+    "option1": "It replaces authentication providers completely",
+    "option2": "It centralizes routing, security, throttling, and cross-cutting concerns",
+    "option3": "It tightly couples frontend applications with backend services",
+    "option4": "It removes the need for service discovery mechanisms",
+    "correct_ans": 2
+  },
+  {
+    "question": "In modern Java applications, why are virtual threads introduced in Project Loom considered significant?",
+    "option1": "They replace JVM garbage collection mechanisms",
+    "option2": "They improve performance by compiling Java directly to native binaries",
+    "option3": "They enable lightweight concurrent task handling with lower thread overhead",
+    "option4": "They eliminate the need for asynchronous programming models entirely",
+    "correct_ans": 3
+  },
+  {
+    "question": "Why is edge computing increasingly preferred in latency-sensitive applications?",
+    "option1": "It minimizes execution by reducing application logic",
+    "option2": "It processes workloads closer to the source of data generation",
+    "option3": "It avoids the need for distributed databases",
+    "option4": "It replaces cloud networking protocols with local execution",
+    "correct_ans": 2
+  },
+  {
+    "question": "In a GitOps model, what acts as the “source of truth”?",
+    "option1": "Running containers in production",
+    "option2": "The Kubernetes API server state",
+    "option3": "Declarative infrastructure definitions stored in Git repositories",
+    "option4": "The CI server configuration dashboard",
+    "correct_ans": 3
+  },
+  {
+    "question": "Which capability differentiates modern AI coding agents from traditional autocomplete systems?",
+    "option1": "Syntax highlighting and formatting",
+    "option2": "Autonomous reasoning across files, tools, and execution steps",
+    "option3": "Deterministic token generation",
+    "option4": "Static analysis of compiled binaries only",
+    "correct_ans": 2
+  },
+  {
+    "question": "What is a major architectural advantage of serverless computing?",
+    "option1": "Dedicated hardware affinity for each request",
+    "option2": "Tight coupling between services and infrastructure",
+    "option3": "Event-driven scaling with reduced operational management",
+    "option4": "Elimination of distributed system failures",
+    "correct_ans": 3
+  },
+  {
+    "question": "Why does PostgreSQL continue gaining popularity in cloud-native systems?",
+    "option1": "It only supports relational workloads",
+    "option2": "It combines extensibility, reliability, and strong ecosystem support",
+    "option3": "It removes the need for caching layers",
+    "option4": "It is optimized exclusively for analytical processing",
+    "correct_ans": 2
+  },
+  {
+    "question": "What is the focus of GreenOps in modern engineering organizations?",
+    "option1": "Reducing front-end bundle sizes only",
+    "option2": "Improving sustainability and energy efficiency of infrastructure operations",
+    "option3": "Eliminating cloud providers from deployment pipelines",
+    "option4": "Migrating applications exclusively to ARM processors",
+    "correct_ans": 2
+  },
+  {
+    "question": "Why do microservices remain dominant in cloud-native architectures?",
+    "option1": "They guarantee zero downtime inherently",
+    "option2": "They simplify independent scaling and deployment of services",
+    "option3": "They eliminate network-related failures",
+    "option4": "They remove the need for observability tooling",
+    "correct_ans": 2
+  },
+  {
+    "question": "What remains one of the largest concerns regarding AI-generated code?",
+    "option1": "Lack of syntax correctness",
+    "option2": "Inability to generate APIs",
+    "option3": "Reliability, maintainability, and hidden logical flaws",
+    "option4": "Excessive memory allocation during compilation",
+    "correct_ans": 3
+  },
+  {
+    "question": "Why are abstraction layers gaining traction in Kubernetes ecosystems?",
+    "option1": "They remove the need for containers entirely",
+    "option2": "They simplify developer interaction with complex infrastructure systems",
+    "option3": "They replace declarative configuration with imperative workflows",
+    "option4": "They eliminate cluster networking requirements",
+    "correct_ans": 2
+  },
+  {
+    "question": "What is a key reason observability platforms are integrating AI capabilities?",
+    "option1": "To replace incident management teams entirely",
+    "option2": "To automatically identify anomalies and correlate telemetry data",
+    "option3": "To eliminate the need for logging systems",
+    "option4": "To prevent all infrastructure outages proactively",
+    "correct_ans": 2
+  },
+  {
+    "question": "In an MLOps pipeline, what is the primary purpose of model drift detection?",
+    "option1": "To improve GPU utilization during training",
+    "option2": "To identify when a deployed model’s performance degrades due to changing data patterns",
+    "option3": "To automatically compress large datasets before inference",
+    "option4": "To synchronize feature engineering logic across development environments",
+    "correct_ans": 2
+  }
+]

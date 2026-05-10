@@ -47,9 +47,8 @@ async def run_migrations_online() -> None:
                 target_metadata=target_metadata,
             )
         )
-        await connection.run_sync(
-            lambda sync_conn: context.run_migrations()
-        )
+        await connection.run_sync(lambda sync_conn: context.run_migrations())
+        await connection.commit()
 
     await connectable.dispose()
 
