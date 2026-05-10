@@ -1,0 +1,16 @@
+[
+  {
+    "question_text": "What is the capital of France?",
+    "question_type": "typed",
+    "options": null,
+    "correct_answer": "Paris",
+    "difficulty": "easy"
+  },
+  {
+    "question_text": "Which planet is known as the Red Planet?",
+    "question_type": "mcq",
+    "options": ["Earth", "Mars", "Jupiter", "Venus"],
+    "correct_answer": "Mars",
+    "difficulty": "easy"
+  }
+]

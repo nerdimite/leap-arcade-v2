@@ -1,0 +1,20 @@
+# Python-generated files
+__pycache__
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Other folders
+.cursor
+data
+!leap/seeds/data/
+!leap/seeds/data/*.json
+internal
+
+# Virtual environments
+.venv
+
+# Environment variables
+.env
