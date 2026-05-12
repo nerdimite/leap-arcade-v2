@@ -1,8 +1,10 @@
-# Meridian
+# Meridian Skills
+
+Canonical home for the Meridian skill set. Per-project consumers symlink or snapshot this folder into their `.cursor/skills/meridian/`.
 
 A deliberate, top-down, LLD-in-code workflow for serious work. The collection has three sub-skills that chain together:
 
-1. **`deep-design`** — design jam that walks the call graph from intent to execution and produces stub code + minimal docstrings + failing acceptance tests + a Design Doc, all written inline as the jam progresses.
+1. **`deep-design`** — free-form design jam that walks the call graph from intent to execution through conversation, then compiles a YAML spec into an interactive HTML design map via [meridian-cli](../). No code is written during design.
 2. **`issue-planner`** — translates the design output into a parent issue + dependency-flagged sub-issues with an explicit batch execution plan. Linear MCP if available (asks first), markdown otherwise.
 3. **`builder`** — orchestrator that drives execution through the batch plan by spawning fast-model subagent executors per sub-issue, then writes per-batch implementation notes for the human to review before commit.
 
@@ -11,8 +13,9 @@ Use the sub-skills directly (e.g. "use meridian/deep-design") or invoke them in 
 ## Philosophy
 
 - **Human is the brain. AI is the hands.** The user stays in control of design decisions and final review. The AI types, drafts, traverses, and executes.
-- **Design lives in code.** Stubs + minimal docstrings + failing tests are the design artifact. The Design Doc is a thin running-notes index over them, not a prose tome to re-review.
-- **Failing tests as acceptance criteria, not coverage.** Tests are written during design to define exact expected behaviour, not after-the-fact for a coverage number.
+- **Design is conversation first, artifact second.** Free-form discussion without structural interruptions, then a YAML spec compiled to an interactive HTML map on demand. No stubs or tests during design — those happen during implementation.
+- **Spec is the source of truth.** The design map HTML is a build artifact. The YAML is what you edit, version, and review.
+- **Failing tests as acceptance criteria, not coverage.** Test plans are captured in the spec per node. Tests are written during implementation (stub → failing test → implement), not as separate design artifacts.
 - **Three control points, not constant oversight.** You're deep in the design jam, hands-off during execution, deliberate at the per-batch review and commit. No spec-reviewer / code-quality-reviewer ceremony — your eyes are the final gate.
 - **No auto-commits.** The builder stages, never commits. You commit when you've walked the reading order and approved.
 
@@ -28,7 +31,7 @@ It is not gatekept — if you want to use it on a small CRUD addition because yo
 intent
   │
   ▼
-[deep-design]    ──► stubs + tests + Design Doc (docs/design/<feature>.md)
+[deep-design]    ──► <feature>.meridian.yaml + compiled HTML map + transcript
   │
   ▼
 [issue-planner]  ──► parent issue + sub-issues + batch execution plan
@@ -40,17 +43,6 @@ intent
 ```
 
 Each sub-skill is documented standalone — read its `SKILL.md` when you invoke it. The three are tightly coupled by their input/output formats; do not mix-and-match with other planning/execution skills mid-flow without translating artifacts.
-
-## What This Replaces (and Why)
-
-This workflow exists because the existing `superpowers/{brainstorming → writing-plans → subagent-driven-development}` chain has real strengths but a few specific gaps for this user:
-
-- Design docs and plan docs become too verbose to humanly review.
-- Spec-compliance and code-quality reviewer subagents are redundant when the human is doing the PR review anyway — they add hours without buying much.
-- Auto-commits remove the human's natural review-and-commit checkpoint.
-- The user wanted to be more *involved* during design (jamming layer-by-layer at the function level), not less.
-
-Meridian keeps the good ideas — TDD iron law, dispatching parallel agents, severity-aware push-back, junior-dev-handoff framing — and reshapes the structure around the three control points described above.
 
 ## Cross-Cutting Constraints
 
@@ -69,5 +61,7 @@ These apply to all three sub-skills:
 
 ## References
 
-- [references/testing-guidelines.md](references/testing-guidelines.md) — test-writing principles, pytest patterns, mock-vs-fake guidance, and anti-patterns. Required reading for writing or modifying tests in any Meridian phase.
+- [deep-design/spec_authoring_guide.md](deep-design/spec_authoring_guide.md) — how to author the YAML spec consumed by `meridian compile`. Required reading for `deep-design` (colocated with that skill).
+- [deep-design/sample_spec.yaml](deep-design/sample_spec.yaml) — canonical, full-fidelity reference spec (Rapid Fire). Copy its shape when in doubt.
+- [references/testing-guidelines.md](references/testing-guidelines.md) — test-writing principles, pytest patterns, mock-vs-fake guidance, and anti-patterns. Required reading for writing or modifying tests in `builder`.
 - [references/glossary.md](references/glossary.md) — shared vocabulary (phases, roles, artifacts, modes, naming conventions).
