@@ -1,0 +1,640 @@
+
+<style>
+  h2.sr-only { position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0 }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); }
+
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 0 12px 0;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+    margin-bottom: 16px;
+  }
+  .toolbar-label {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    margin-right: 4px;
+  }
+  .filter-btn {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 0.5px solid var(--color-border-secondary);
+    background: transparent;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .filter-btn.active {
+    background: var(--color-background-secondary);
+    color: var(--color-text-primary);
+    border-color: var(--color-border-primary);
+  }
+  .filter-btn:hover { background: var(--color-background-secondary); }
+
+  .canvas-wrap {
+    position: relative;
+    overflow: auto;
+    min-height: 420px;
+  }
+  .canvas {
+    position: relative;
+    width: 900px;
+    min-height: 560px;
+  }
+
+  svg.edges {
+    position: absolute;
+    top: 0; left: 0;
+    width: 900px;
+    height: 560px;
+    pointer-events: none;
+    overflow: visible;
+  }
+
+  .node {
+    position: absolute;
+    background: var(--color-background-primary);
+    border: 0.5px solid var(--color-border-secondary);
+    border-radius: 10px;
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s;
+    width: 168px;
+    user-select: none;
+  }
+  .node:hover {
+    border-color: var(--color-border-primary);
+    transform: translateY(-1px);
+  }
+  .node.selected {
+    border-color: var(--color-text-info);
+    border-width: 1px;
+  }
+  .node.flagged {
+    border-color: var(--color-border-warning);
+  }
+
+  .node-layer {
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 4px;
+    opacity: 0.6;
+  }
+  .node-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    line-height: 1.3;
+    margin-bottom: 3px;
+  }
+  .node-sig {
+    font-size: 10px;
+    font-family: var(--font-mono);
+    color: var(--color-text-secondary);
+    line-height: 1.4;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .node-flag {
+    display: inline-block;
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    margin-top: 5px;
+    background: var(--color-background-warning);
+    color: var(--color-text-warning);
+  }
+
+  .layer-label {
+    position: absolute;
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-tertiary);
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    left: 0;
+  }
+
+  .detail-panel {
+    margin-top: 16px;
+    border-top: 0.5px solid var(--color-border-tertiary);
+    padding-top: 16px;
+    display: none;
+  }
+  .detail-panel.open { display: block; }
+
+  .detail-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .detail-fn {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+  }
+  .detail-file {
+    font-size: 11px;
+    font-family: var(--font-mono);
+    color: var(--color-text-secondary);
+    margin-top: 2px;
+  }
+  .close-btn {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    border: none;
+    background: none;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  .close-btn:hover { background: var(--color-background-secondary); }
+
+  .detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .detail-section {
+    background: var(--color-background-secondary);
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+  .detail-section-label {
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-tertiary);
+    margin-bottom: 6px;
+  }
+  .detail-section-body {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+  }
+  .detail-section-body code {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    background: var(--color-background-primary);
+    padding: 1px 4px;
+    border-radius: 3px;
+  }
+  .detail-section-body li { list-style: none; padding-left: 10px; position: relative; }
+  .detail-section-body li::before { content: "—"; position: absolute; left: 0; opacity: 0.4; }
+
+  .detail-tests {
+    background: var(--color-background-secondary);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+  }
+  .test-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    padding: 4px 0;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+    line-height: 1.4;
+  }
+  .test-row:last-child { border-bottom: none; }
+  .test-badge {
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 3px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .test-badge.acc { background: var(--color-background-success); color: var(--color-text-success); }
+  .test-badge.edge { background: var(--color-background-info); color: var(--color-text-info); }
+  .test-badge.todo { background: var(--color-background-secondary); color: var(--color-text-tertiary); border: 0.5px solid var(--color-border-secondary); }
+
+  .propose-btn {
+    font-size: 12px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 0.5px solid var(--color-border-secondary);
+    background: transparent;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .propose-btn:hover { background: var(--color-background-secondary); color: var(--color-text-primary); }
+
+  .edge-path { stroke: var(--color-border-secondary); stroke-width: 1; fill: none; }
+  .edge-path.highlight { stroke: var(--color-text-info); stroke-width: 1.5; opacity: 0.7; }
+</style>
+
+<h2 class="sr-only">Meridian design map — appointment booking call graph with expandable function contracts</h2>
+
+<div class="toolbar">
+  <span class="toolbar-label">show</span>
+  <button class="filter-btn active" onclick="setFilter('all',this)">all</button>
+  <button class="filter-btn" onclick="setFilter('controller',this)">controller</button>
+  <button class="filter-btn" onclick="setFilter('service',this)">service</button>
+  <button class="filter-btn" onclick="setFilter('repository',this)">repository</button>
+  <button class="filter-btn" onclick="setFilter('flagged',this)">⚑ flagged</button>
+  <span style="flex:1"></span>
+  <span style="font-size:11px;color:var(--color-text-tertiary)">click node to expand</span>
+</div>
+
+<div class="canvas-wrap">
+  <div class="canvas" id="canvas"></div>
+</div>
+
+<div class="detail-panel" id="detail">
+  <div class="detail-header">
+    <div>
+      <div class="detail-fn" id="d-fn"></div>
+      <div class="detail-file" id="d-file"></div>
+    </div>
+    <button class="close-btn" onclick="closeDetail()">✕ close</button>
+  </div>
+  <div class="detail-grid">
+    <div class="detail-section">
+      <div class="detail-section-label">behaviour</div>
+      <div class="detail-section-body" id="d-behaviour"></div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-section-label">failure modes</div>
+      <div class="detail-section-body" id="d-failures"></div>
+    </div>
+  </div>
+  <div class="detail-section" style="margin-bottom:12px">
+    <div class="detail-section-label">signature</div>
+    <div class="detail-section-body" id="d-sig" style="font-family:var(--font-mono);font-size:11px"></div>
+  </div>
+  <div class="detail-tests" id="d-tests-wrap">
+    <div class="detail-section-label" style="margin-bottom:6px">tests</div>
+    <div id="d-tests"></div>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <button class="propose-btn" id="propose-change-btn">✎ propose change ↗</button>
+    <button class="propose-btn" id="add-edge-btn">+ add edge ↗</button>
+    <button class="propose-btn" id="flag-btn">⚑ flag for review ↗</button>
+  </div>
+</div>
+
+<script>
+const NODES = [
+  {
+    id: 'book_endpoint',
+    layer: 'controller',
+    name: 'book()',
+    file: 'src/controllers/appointment_controller.py',
+    sig: 'book(request: BookingRequest) → Response',
+    behaviour: [
+      'Validates request shape (required fields, date format)',
+      'Extracts patient_id + slot_id from body',
+      'Delegates to AppointmentService.process_booking()',
+      'Returns 200 with BookingResult or error response'
+    ],
+    failures: [
+      'Returns 400 if request malformed',
+      'Returns 404 if patient/slot not found (from service)',
+      'Returns 409 if slot unavailable (from service)'
+    ],
+    tests: [
+      { type: 'acc', label: 'returns 200 with booking_id on success' },
+      { type: 'acc', label: 'returns 400 on malformed request body' },
+      { type: 'edge', label: 'returns 409 when service raises SlotUnavailableError' },
+      { type: 'todo', label: 'rate limiting per patient_id' }
+    ],
+    calls: ['process_booking'],
+    x: 366, y: 30
+  },
+  {
+    id: 'process_booking',
+    layer: 'service',
+    name: 'process_booking()',
+    file: 'src/services/appointment_service.py',
+    sig: 'process_booking(patient_id: str, slot_id: str) → BookingResult',
+    behaviour: [
+      'Calls validate_slot_availability() — pre-check, not a lock',
+      'Calls SlotRepository.hold_slot() — soft lock',
+      'Calls BookingRepository.create() — writes record',
+      'Fires notification event (fire-and-forget)',
+      'Returns BookingResult with status + booking_id'
+    ],
+    failures: [
+      'Raises SlotUnavailableError if hold fails (race condition)',
+      'Raises PatientNotFoundError if patient_id invalid',
+      'Notification failure does NOT fail the booking'
+    ],
+    tests: [
+      { type: 'acc', label: 'returns BookingResult with booking_id on success' },
+      { type: 'acc', label: 'raises SlotUnavailableError when hold fails' },
+      { type: 'acc', label: 'raises PatientNotFoundError for unknown patient' },
+      { type: 'edge', label: 'booking succeeds when notification service throws' },
+      { type: 'todo', label: 'concurrent booking on same slot (race)' },
+      { type: 'todo', label: 'slot hold timeout before record write' }
+    ],
+    calls: ['validate_slot', 'hold_slot', 'create_booking', 'send_confirmation'],
+    flag: 'review: fire-and-forget ok?',
+    x: 366, y: 170
+  },
+  {
+    id: 'validate_slot',
+    layer: 'service',
+    name: 'validate_slot_availability()',
+    file: 'src/services/appointment_service.py',
+    sig: 'validate_slot_availability(slot_id: str) → bool',
+    behaviour: [
+      'Reads current slot state from SlotRepository',
+      'Returns True if slot status is "available"',
+      'Pre-check only — slot can be taken after this returns'
+    ],
+    failures: [
+      'Raises SlotNotFoundError if slot_id unknown'
+    ],
+    tests: [
+      { type: 'acc', label: 'returns True for available slot' },
+      { type: 'acc', label: 'returns False for held/booked slot' },
+      { type: 'acc', label: 'raises SlotNotFoundError for unknown slot_id' }
+    ],
+    calls: ['get_slot'],
+    x: 80, y: 340
+  },
+  {
+    id: 'hold_slot',
+    layer: 'repository',
+    name: 'hold_slot()',
+    file: 'src/repositories/slot_repository.py',
+    sig: 'hold_slot(slot_id: str) → bool',
+    behaviour: [
+      'Atomically sets slot status to "held" if currently "available"',
+      'Uses DB-level compare-and-swap to prevent race conditions',
+      'Returns True if hold succeeded, False if slot already taken'
+    ],
+    failures: [
+      'Returns False (not raises) if slot unavailable — caller raises SlotUnavailableError'
+    ],
+    tests: [
+      { type: 'acc', label: 'returns True and sets status to held on success' },
+      { type: 'acc', label: 'returns False if slot already held/booked' },
+      { type: 'edge', label: 'atomic — concurrent calls only one succeeds' }
+    ],
+    calls: [],
+    x: 200, y: 460
+  },
+  {
+    id: 'get_slot',
+    layer: 'repository',
+    name: 'get_slot()',
+    file: 'src/repositories/slot_repository.py',
+    sig: 'get_slot(slot_id: str) → Slot | None',
+    behaviour: [
+      'Reads slot record by id',
+      'Returns Slot model or None if not found'
+    ],
+    failures: [
+      'Returns None for unknown slot_id (caller handles)'
+    ],
+    tests: [
+      { type: 'acc', label: 'returns Slot for known id' },
+      { type: 'acc', label: 'returns None for unknown id' }
+    ],
+    calls: [],
+    x: 40, y: 460
+  },
+  {
+    id: 'create_booking',
+    layer: 'repository',
+    name: 'create()',
+    file: 'src/repositories/booking_repository.py',
+    sig: 'create(patient_id: str, slot_id: str) → Booking',
+    behaviour: [
+      'Writes booking record to DB',
+      'Sets slot status to "booked" as part of same transaction',
+      'Returns Booking model with generated booking_id'
+    ],
+    failures: [
+      'Raises DB integrity error if slot already booked (should not happen after hold)'
+    ],
+    tests: [
+      { type: 'acc', label: 'returns Booking with booking_id' },
+      { type: 'acc', label: 'slot status is booked after create' },
+      { type: 'todo', label: 'behaviour if slot status not held at create time' }
+    ],
+    calls: [],
+    x: 366, y: 460
+  },
+  {
+    id: 'send_confirmation',
+    layer: 'service',
+    name: 'send_confirmation()',
+    file: 'src/services/notification_service.py',
+    sig: 'send_confirmation(booking: Booking) → None',
+    behaviour: [
+      'Fires async confirmation event to notification queue',
+      'Does not await delivery confirmation',
+      'Caller does not catch exceptions from this'
+    ],
+    failures: [
+      'Silently swallows errors — fire-and-forget',
+      'Logs failure to monitoring'
+    ],
+    tests: [
+      { type: 'acc', label: 'event emitted with correct booking_id' },
+      { type: 'edge', label: 'exception does not propagate to caller' }
+    ],
+    calls: [],
+    flag: 'review: log level on failure?',
+    x: 580, y: 460
+  },
+  {
+    id: 'get_patient',
+    layer: 'repository',
+    name: 'get_patient()',
+    file: 'src/repositories/patient_repository.py',
+    sig: 'get_patient(patient_id: str) → Patient | None',
+    behaviour: [
+      'Reads patient record by id',
+      'Returns Patient model or None'
+    ],
+    failures: [
+      'Returns None — caller raises PatientNotFoundError'
+    ],
+    tests: [
+      { type: 'acc', label: 'returns Patient for known id' },
+      { type: 'acc', label: 'returns None for unknown patient_id' }
+    ],
+    calls: [],
+    x: 720, y: 340
+  }
+];
+
+const EDGES = [
+  { from: 'book_endpoint', to: 'process_booking' },
+  { from: 'process_booking', to: 'validate_slot' },
+  { from: 'process_booking', to: 'hold_slot' },
+  { from: 'process_booking', to: 'create_booking' },
+  { from: 'process_booking', to: 'send_confirmation' },
+  { from: 'process_booking', to: 'get_patient' },
+  { from: 'validate_slot', to: 'get_slot' }
+];
+
+const NODE_H = 80;
+const NODE_W = 168;
+
+const layerColors = {
+  controller: '#185FA5',
+  service: '#0F6E56',
+  repository: '#3C3489'
+};
+
+let selectedId = null;
+let activeFilter = 'all';
+
+function getCenter(n) {
+  return { x: n.x + NODE_W / 2, y: n.y + NODE_H / 2 };
+}
+
+function render() {
+  const canvas = document.getElementById('canvas');
+  canvas.innerHTML = '';
+
+  const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.classList.add('edges');
+  svg.setAttribute('viewBox','0 0 900 560');
+
+  const defs = document.createElementNS('http://www.w3.org/2000/svg','defs');
+  defs.innerHTML = `<marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>`;
+  svg.appendChild(defs);
+
+  EDGES.forEach(e => {
+    const from = NODES.find(n => n.id === e.from);
+    const to = NODES.find(n => n.id === e.to);
+    if (!from || !to) return;
+
+    const visible = isVisible(from) && isVisible(to);
+    if (!visible) return;
+
+    const fc = getCenter(from);
+    const tc = getCenter(to);
+
+    const highlighted = selectedId === from.id || selectedId === to.id;
+
+    const dx = tc.x - fc.x;
+    const dy = tc.y - fc.y;
+
+    let d;
+    if (Math.abs(dx) < 10) {
+      const sy = fc.y + NODE_H / 2;
+      const ey = tc.y - NODE_H / 2;
+      d = `M${fc.x} ${sy} L${tc.x} ${ey}`;
+    } else {
+      const sy = from.y + NODE_H;
+      const ey = to.y;
+      const mx = (fc.x + tc.x) / 2;
+      const my = (sy + ey) / 2;
+      d = `M${fc.x} ${sy} C${fc.x} ${sy + 30} ${tc.x} ${ey - 30} ${tc.x} ${ey}`;
+    }
+
+    const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('d', d);
+    path.setAttribute('fill','none');
+    path.setAttribute('stroke', highlighted ? 'var(--color-text-info)' : 'var(--color-border-secondary)');
+    path.setAttribute('stroke-width', highlighted ? '1.5' : '1');
+    path.setAttribute('opacity', highlighted ? '0.8' : '0.5');
+    path.setAttribute('marker-end','url(#arr)');
+    svg.appendChild(path);
+  });
+
+  canvas.appendChild(svg);
+
+  NODES.forEach(n => {
+    if (!isVisible(n)) return;
+
+    const el = document.createElement('div');
+    el.className = 'node' + (n.id === selectedId ? ' selected' : '') + (n.flag ? ' flagged' : '');
+    el.style.left = n.x + 'px';
+    el.style.top = n.y + 'px';
+
+    const layerColor = layerColors[n.layer] || '#888';
+    el.innerHTML = `
+      <div class="node-layer" style="color:${layerColor}">${n.layer}</div>
+      <div class="node-name">${n.name}</div>
+      <div class="node-sig">${n.sig.split(' → ')[0].replace(n.name.replace('()',''), '').trim()}</div>
+      ${n.flag ? `<div class="node-flag">⚑ ${n.flag}</div>` : ''}
+    `;
+    el.onclick = () => selectNode(n.id);
+    canvas.appendChild(el);
+  });
+}
+
+function isVisible(n) {
+  if (activeFilter === 'all') return true;
+  if (activeFilter === 'flagged') return !!n.flag;
+  return n.layer === activeFilter;
+}
+
+function selectNode(id) {
+  if (selectedId === id) { closeDetail(); return; }
+  selectedId = id;
+  render();
+  openDetail(id);
+}
+
+function openDetail(id) {
+  const n = NODES.find(x => x.id === id);
+  if (!n) return;
+
+  document.getElementById('d-fn').textContent = n.sig;
+  document.getElementById('d-file').textContent = n.file;
+
+  const behEl = document.getElementById('d-behaviour');
+  behEl.innerHTML = '<ul>' + n.behaviour.map(b => `<li>${b}</li>`).join('') + '</ul>';
+
+  const failEl = document.getElementById('d-failures');
+  failEl.innerHTML = '<ul>' + n.failures.map(f => `<li>${f}</li>`).join('') + '</ul>';
+
+  document.getElementById('d-sig').textContent = n.sig;
+
+  const testsEl = document.getElementById('d-tests');
+  testsEl.innerHTML = n.tests.map(t => `
+    <div class="test-row">
+      <span class="test-badge ${t.type}">${t.type === 'acc' ? 'AC' : t.type === 'edge' ? 'edge' : 'TODO'}</span>
+      <span>${t.label}</span>
+    </div>
+  `).join('');
+
+  document.getElementById('propose-change-btn').onclick = () =>
+    sendPrompt(`I want to propose a change to ${n.name} in ${n.file}. Currently: ${n.behaviour[0]}. Let's discuss.`);
+  document.getElementById('add-edge-btn').onclick = () =>
+    sendPrompt(`I want to add a new call edge from ${n.name}. What should it call?`);
+  document.getElementById('flag-btn').onclick = () =>
+    sendPrompt(`Flag ${n.name} for design review. Here's my concern: `);
+
+  document.getElementById('detail').classList.add('open');
+}
+
+function closeDetail() {
+  selectedId = null;
+  document.getElementById('detail').classList.remove('open');
+  render();
+}
+
+function setFilter(f, btn) {
+  activeFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
+render();
+</script>

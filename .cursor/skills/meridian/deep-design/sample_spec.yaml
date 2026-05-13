@@ -1,0 +1,647 @@
+meta:
+  feature: "Rapid Fire"
+  intent: "Player plays a 15-question time-based quiz; service is the source of truth for state."
+  generated_at: "2026-05-12"
+
+groups:
+  - { id: g_routes,    label: "rapid_fire.py",       sub_label: "routes",  layer: route }
+  - { id: g_schema,    label: "rapid_fire.py",       sub_label: "schema",  layer: schema }
+  - { id: g_service,   label: "RapidFireService",    sub_label: "class",   layer: service }
+  - { id: g_gs_dao,    label: "GameSessionDAO",      sub_label: "class",   layer: dao }
+  - { id: g_rfa_dao,   label: "RapidFireAnswerDAO",  sub_label: "class",   layer: dao }
+  - { id: g_types_rf,  label: "rapid_fire.py",       sub_label: "types",   layer: types }
+
+nodes:
+  - id: lifespan_startup
+    label: "lifespan()"
+    layer: route
+    file: "leap/api/main.py"
+    sig: "lifespan(app: FastAPI) -> AsyncIterator"
+    behaviour:
+      - "Runs at app startup via FastAPI @asynccontextmanager lifespan"
+      - "Calls seed loader if SEED_ON_STARTUP=true to upsert players + questions"
+      - "Opens a one-time DB session and calls RapidFireService.initialize(session) to populate in-memory question cache"
+      - "Yields to serve requests; cleanup (db engine dispose) on shutdown"
+    failures:
+      - "If question cache fails to load (DB down or table empty), app starts but /play returns 503 — should alert on empty cache"
+      - "Seed errors are logged but do not block startup"
+    tests:
+      - { type: acc,  label: "question cache populated with all 15 questions after lifespan start" }
+      - { type: todo, label: "behaviour when DB unavailable at startup" }
+
+  - id: route_play
+    label: "play()"
+    parent: g_routes
+    layer: route
+    file: "leap/api/routes/games/rapid_fire.py"
+    sig: "play(player, container) -> PlayResponse"
+    behaviour:
+      - "POST /games/rapid-fire/play — no request body; player identity from JWT"
+      - "Delegates entirely to container.rapid_fire.play(player.id)"
+      - "Returns PlayResponse: status='active' with question, or status='completed'/'abandoned' with result"
+      - "Single entry point for both new game start and resume — service decides the branch"
+    failures:
+      - "401 when JWT missing or expired — handled by get_current_player dep"
+      - "Service exceptions converted to JSON by global error handler"
+    tests:
+      - { type: acc,  label: "200 active + first question for brand-new player" }
+      - { type: acc,  label: "200 active + next unanswered question for mid-game player" }
+      - { type: acc,  label: "200 completed + result for player whose session is done" }
+      - { type: edge, label: "401 when Authorization header missing" }
+
+  - id: route_answer
+    label: "answer()"
+    parent: g_routes
+    layer: route
+    file: "leap/api/routes/games/rapid_fire.py"
+    sig: "answer(body, player, container) -> AnswerResponse"
+    behaviour:
+      - "POST /games/rapid-fire/answer"
+      - "Parses AnswerRequest body: question_id, selected_option, time_ms"
+      - "Delegates to container.rapid_fire.submit_answer(...)"
+      - "Returns AnswerResponse with evaluation, running score, next question (or null + result on game over)"
+    failures:
+      - "422 on invalid/missing body fields (FastAPI validation)"
+      - "404 if no active session (SessionNotFoundException)"
+      - "409 if session already completed or question already answered"
+    tests:
+      - { type: acc,  label: "correct=true and next_question returned for right answer" }
+      - { type: acc,  label: "correct=false with correct_option returned for wrong answer" }
+      - { type: acc,  label: "next_question=null and result block inline on last question" }
+      - { type: acc,  label: "409 on replay of same question_id" }
+      - { type: edge, label: "selected_option=null treated as skipped, correct=false" }
+
+  - id: route_abandon
+    label: "abandon()"
+    parent: g_routes
+    layer: route
+    file: "leap/api/routes/games/rapid_fire.py"
+    sig: "abandon(player, container) -> AbandonResponse"
+    behaviour:
+      - "POST /games/rapid-fire/abandon"
+      - "Delegates to container.rapid_fire.abandon(player.id)"
+      - "Returns 200 with AbandonResponse (partial score + breakdown) — not 204, player deserves to see their score"
+    failures:
+      - "404 if no session exists for this player"
+      - "409 if session already completed or already abandoned"
+    tests:
+      - { type: acc,  label: "200 with partial score on mid-game abandon" }
+      - { type: acc,  label: "score=0 and all counts=0 when abandoned after 0 answers" }
+      - { type: acc,  label: "404 when no session exists for player" }
+      - { type: edge, label: "409 when session already completed before abandon" }
+
+  - id: schema_play_response
+    label: "PlayResponse"
+    parent: g_schema
+    layer: schema
+    file: "leap/api/schema/rapid_fire.py"
+    sig: "PlayResponse: status, game_session_id?, questions_answered?, questions_total?, question?, result?"
+    behaviour:
+      - "Discriminated API response for POST /play"
+      - "status='active': includes game_session_id + questions_answered + questions_total + question"
+      - "status='completed' or 'abandoned': includes result (ResultSchema) only"
+      - "Frontend checks status field to decide which view to render"
+    failures: ["N/A — pure data shape"]
+    tests:
+      - { type: acc, label: "active branch serializes question without correct_option_index" }
+      - { type: acc, label: "completed branch serializes result with score and breakdown" }
+
+  - id: schema_question_schema
+    label: "QuestionSchema"
+    parent: g_schema
+    layer: schema
+    file: "leap/api/schema/rapid_fire.py"
+    sig: "QuestionSchema: id, question, options: List[str], time_limit_ms"
+    behaviour:
+      - "API-safe question shape — correct_option_index deliberately excluded (server-side only)"
+      - "Field named 'question' (not 'text') for clarity"
+      - "options is a 4-element list; frontend renders as answer buttons"
+      - "Frontend sends back the 1-indexed option number in AnswerRequest.selected_option"
+    failures: ["N/A — pure data shape"]
+    tests:
+      - { type: acc, label: "correct_option_index absent from serialized JSON" }
+
+  - id: schema_answer_request
+    label: "AnswerRequest"
+    parent: g_schema
+    layer: schema
+    file: "leap/api/schema/rapid_fire.py"
+    sig: "AnswerRequest: question_id: str, selected_option: Optional[int], time_ms: int"
+    behaviour:
+      - "selected_option is 1-indexed (1–4); null means timer expired — server derives skipped=true"
+      - "time_ms is client-measured ms; server clamps to max(500, min(time_ms, time_limit_ms))"
+      - "No skipped field — redundant; server derives it from selected_option being null"
+    failures:
+      - "422 if question_id missing or empty"
+      - "422 if time_ms missing or negative"
+    tests:
+      - { type: acc,  label: "selected_option=null parses and is treated as skipped" }
+      - { type: edge, label: "selected_option outside 1–4 should 422" }
+
+  - id: schema_answer_response
+    label: "AnswerResponse"
+    parent: g_schema
+    layer: schema
+    file: "leap/api/schema/rapid_fire.py"
+    sig: "AnswerResponse: correct, correct_option, correct_answer_text, current_score, questions_answered, questions_remaining, next_question?, result?"
+    behaviour:
+      - "correct: bool — was selected_option == correct_option_index"
+      - "correct_option: 1-indexed int — always returned so player sees the right answer"
+      - "correct_answer_text: options[correct_option_index - 1]"
+      - "next_question: QuestionSchema | null — null signals game over"
+      - "result: ResultSchema — inline only when next_question is null"
+    failures: ["N/A — pure data shape"]
+    tests:
+      - { type: acc, label: "result block present when questions_remaining=0" }
+      - { type: acc, label: "result block absent when next_question is non-null" }
+
+  - id: schema_result_schema
+    label: "ResultSchema"
+    parent: g_schema
+    layer: schema
+    file: "leap/api/schema/rapid_fire.py"
+    sig: "ResultSchema: score, correct_count, wrong_count, skipped_count, time_taken_seconds"
+    behaviour:
+      - "score: final computed score"
+      - "correct_count + wrong_count + skipped_count = total questions answered"
+      - "time_taken_seconds: (completed_at - started_at).total_seconds()"
+      - "Reused in PlayResponse, AnswerResponse (last question), AbandonResponse"
+    failures: ["N/A — pure data shape"]
+    tests:
+      - { type: acc, label: "correct_count + wrong_count + skipped_count == questions_answered" }
+
+  - id: schema_abandon_response
+    label: "AbandonResponse"
+    parent: g_schema
+    layer: schema
+    file: "leap/api/schema/rapid_fire.py"
+    sig: "AbandonResponse: result: ResultSchema"
+    behaviour:
+      - "Thin wrapper around ResultSchema"
+      - "Returns partial score + breakdown from all answers submitted before abandon"
+      - "Always 200 — gives player visibility into their partial score"
+    failures: ["N/A — pure data shape"]
+
+  - id: rf_service_initialize
+    label: "initialize()"
+    parent: g_service
+    layer: service
+    file: "leap/games/rapid_fire/service.py"
+    sig: "initialize(session: AsyncSession) -> None"
+    behaviour:
+      - "Called once from lifespan — not a request handler"
+      - "Calls RapidFireQuestionDAO.get_all(session) to fetch all questions"
+      - "Stores result as self._questions: Dict[str, RapidFireQuestionDTO] keyed by id"
+      - "All subsequent question lookups use this cache — zero further DB calls at runtime"
+    failures:
+      - "If DB unreachable or table empty, self._questions is empty; /play returns 503"
+    tests:
+      - { type: acc,  label: "self._questions has all 15 entries after successful call" }
+      - { type: edge, label: "empty table stores empty dict, not an error at init time" }
+
+  - id: rf_service_play
+    label: "play()"
+    parent: g_service
+    layer: service
+    file: "leap/games/rapid_fire/service.py"
+    sig: "play(player_id: str) -> PlayResponse"
+    behaviour:
+      - "Opens session via self.ctx.session()"
+      - "Calls game_session_dao.get_by_player_and_game(session, player_id, 'rapid_fire')"
+      - "Branch — None (new): create session, _pick_next_question([]), return active PlayResponse"
+      - "Branch — active: get_asked_question_ids, _pick_next_question(asked_ids), return active PlayResponse"
+      - "Branch — completed/abandoned: get_all_for_session, build ResultSchema, return completed PlayResponse"
+      - "questions_total always len(self._questions)"
+    failures:
+      - "NoQuestionsAvailableException(503) if _pick_next_question returns None"
+    tests:
+      - { type: acc,  label: "active + first question for first-time player" }
+      - { type: acc,  label: "active + next unanswered question for mid-game player" }
+      - { type: acc,  label: "completed + result for player with finished session" }
+      - { type: acc,  label: "abandoned + partial result for player who abandoned" }
+      - { type: edge, label: "503 when question cache empty at startup" }
+
+  - id: rf_service_submit_answer
+    label: "submit_answer()"
+    parent: g_service
+    layer: service
+    file: "leap/games/rapid_fire/service.py"
+    sig: "submit_answer(player_id, question_id, selected_option: Optional[int], time_ms) -> AnswerResponse"
+    flag: "Concurrent submit race: a UNIQUE(game_session_id, question_id) constraint on rapid_fire_answers would be a safety net beyond the application-level replay check — consider adding."
+    behaviour:
+      - "Opens session via self.ctx.session()"
+      - "Fetches session — SessionNotFoundException(404) / SessionAlreadyCompletedException(409)"
+      - "Validates question_id in self._questions — 422 if unrecognised"
+      - "Calls get_all_for_session — derives asked_ids and answer records for scoring in one query"
+      - "QuestionAlreadyAnsweredException(409) if question_id already in asked_ids"
+      - "Derives skipped/correct; clamps time_ms; inserts answer row"
+      - "Game over check: len(asked_ids)+1 == len(self._questions)"
+      - "Game over: compute_rapid_fire_score → update_status(COMPLETED) → return with inline result"
+      - "Not game over: _pick_next_question(new_asked_ids) → return next question"
+    failures:
+      - "SessionNotFoundException(404) — no session for player"
+      - "SessionAlreadyCompletedException(409) — session is completed/abandoned"
+      - "QuestionAlreadyAnsweredException(409) — replay attempt"
+      - "422 — question_id not found in cache"
+    tests:
+      - { type: acc,  label: "correct=true, score increases by 50-100 on right answer" }
+      - { type: acc,  label: "correct=false, score unchanged on wrong answer" }
+      - { type: acc,  label: "skipped=true when selected_option=null, score unchanged" }
+      - { type: acc,  label: "session completed and result inline on last question" }
+      - { type: acc,  label: "409 on replay of already-answered question_id" }
+      - { type: edge, label: "time_ms=0 clamped to 500ms effective" }
+      - { type: edge, label: "concurrent submits for same question — second gets 409" }
+      - { type: todo, label: "selected_option range validation: must be 1–4 or null" }
+
+  - id: rf_service_abandon
+    label: "abandon()"
+    parent: g_service
+    layer: service
+    file: "leap/games/rapid_fire/service.py"
+    sig: "abandon(player_id: str) -> AbandonResponse"
+    behaviour:
+      - "Opens session via self.ctx.session()"
+      - "Fetches session — 404/409 guards"
+      - "Calls get_all_for_session for all submitted answers"
+      - "Computes partial score via compute_rapid_fire_score"
+      - "Builds counts and time_taken_seconds from session timestamps"
+      - "Calls update_status(ABANDONED, score=partial_score)"
+      - "Returns AbandonResponse with full partial result breakdown"
+    failures:
+      - "SessionNotFoundException(404) — no session for player"
+      - "SessionAlreadyCompletedException(409) — session already completed/abandoned"
+    tests:
+      - { type: acc, label: "score=0 and all counts=0 when no answers submitted before abandon" }
+      - { type: acc, label: "partial score correctly computed from submitted answers" }
+      - { type: acc, label: "session status updated to 'abandoned'" }
+      - { type: acc, label: "409 when session already completed before abandon call" }
+
+  - id: pick_next_question
+    label: "_pick_next_question()"
+    parent: g_service
+    layer: utility
+    file: "leap/games/rapid_fire/service.py"
+    sig: "_pick_next_question(asked_ids: List[str]) -> Optional[RapidFireQuestionDTO]"
+    behaviour:
+      - "Private helper on RapidFireService; accesses self._questions in-memory cache"
+      - "Filters: remaining = {id: q for id, q in self._questions.items() if id not in set(asked_ids)}"
+      - "Returns random.choice(list(remaining.values())) if non-empty"
+      - "Returns None if remaining empty — pool exhausted (game over)"
+    failures: ["Returns None (not raises) when pool exhausted"]
+    tests:
+      - { type: acc,  label: "never returns a question whose id is in asked_ids" }
+      - { type: acc,  label: "returns None when asked_ids covers full 15-question pool" }
+      - { type: edge, label: "empty asked_ids returns any question from full pool" }
+
+  - id: compute_rapid_fire_score
+    label: "compute_rapid_fire_score()"
+    layer: utility
+    file: "leap/games/rapid_fire/scoring.py"
+    sig: "compute_rapid_fire_score(answers, questions: Dict) -> int"
+    behaviour:
+      - "Pure function — no DB access, fully deterministic"
+      - "For each answer: skipped or wrong → 0 points"
+      - "For each correct: effective_time_ms = max(500, min(answer.time_ms, question.time_limit_ms))"
+      - "Points = 50 + round((time_limit_ms - effective_time_ms) / time_limit_ms * 50) — range 50–100"
+      - "Returns sum of all answer points; minimum 0"
+      - "No negative marking — wrong and skipped both contribute 0"
+    failures: ["KeyError if answer.question_id not in questions dict"]
+    tests:
+      - { type: acc,  label: "correct answer at effective_time_ms=500 → 100 points" }
+      - { type: acc,  label: "correct answer at effective_time_ms=time_limit_ms → 50 points" }
+      - { type: acc,  label: "wrong answer → 0 points" }
+      - { type: acc,  label: "skipped answer → 0 points" }
+      - { type: acc,  label: "all 15 correct answers instant → 1500 total" }
+      - { type: edge, label: "empty answers list → returns 0" }
+
+  - id: game_session_dao_get
+    label: "get_by_player_and_game()"
+    parent: g_gs_dao
+    layer: dao
+    file: "leap/dao/game_session_dao.py"
+    sig: "get_by_player_and_game(session, player_id, game_id) -> Optional[GameSessionDTO]"
+    behaviour:
+      - "SELECT * FROM game_sessions WHERE player_id=$1 AND game_id=$2"
+      - "Returns GameSessionDTO regardless of status — caller inspects status"
+      - "Returns None if no row exists"
+    failures: ["Returns None (not raises) for unknown player+game combo"]
+    tests:
+      - { type: acc, label: "returns GameSessionDTO for known player+game" }
+      - { type: acc, label: "returns None when no session exists" }
+
+  - id: game_session_dao_create
+    label: "create()"
+    parent: g_gs_dao
+    layer: dao
+    file: "leap/dao/game_session_dao.py"
+    sig: "create(session, player_id, game_id) -> GameSessionDTO"
+    behaviour:
+      - "Inserts new row with status='active', started_at=now(), score=null"
+      - "id is server-generated via gen_random_uuid()"
+      - "flush + refresh, returns fully populated GameSessionDTO"
+    failures: ["IntegrityError on UNIQUE(player_id, game_id) — safety net"]
+    tests:
+      - { type: acc,  label: "returns GameSessionDTO with status=active and valid id" }
+      - { type: edge, label: "IntegrityError on duplicate (player_id, game_id)" }
+
+  - id: game_session_dao_update
+    label: "update_status()"
+    parent: g_gs_dao
+    layer: dao
+    file: "leap/dao/game_session_dao.py"
+    sig: "update_status(session, game_session_id, status, score: Optional[int]) -> GameSessionDTO"
+    behaviour:
+      - "Fetches row by PK, updates status + score (when provided) + completed_at"
+      - "completed_at = utc_now() when status is COMPLETED or ABANDONED"
+      - "flush + refresh, returns updated GameSessionDTO"
+    failures: ["KeyError if game_session_id not found"]
+    tests:
+      - { type: acc, label: "completed_at set when status=COMPLETED" }
+      - { type: acc, label: "score updated when score arg provided" }
+
+  - id: rf_answer_dao_get_asked_ids
+    label: "get_asked_question_ids()"
+    parent: g_rfa_dao
+    layer: dao
+    file: "leap/dao/rapid_fire_answer_dao.py"
+    sig: "get_asked_question_ids(session, game_session_id) -> List[str]"
+    behaviour:
+      - "SELECT question_id FROM rapid_fire_answers WHERE game_session_id=$1"
+      - "Lightweight query — used in /play resume branch where only asked IDs needed"
+      - "Returns empty list for new sessions"
+    failures: ["Returns empty list if no answers — not an error"]
+    tests:
+      - { type: acc, label: "returns empty list for brand-new session" }
+      - { type: acc, label: "returns all previously answered question IDs" }
+
+  - id: rf_answer_dao_get_all
+    label: "get_all_for_session()"
+    parent: g_rfa_dao
+    layer: dao
+    file: "leap/dao/rapid_fire_answer_dao.py"
+    sig: "get_all_for_session(session, game_session_id) -> List[RapidFireAnswerDTO]"
+    behaviour:
+      - "SELECT * FROM rapid_fire_answers WHERE game_session_id=$1 ORDER BY answered_at ASC"
+      - "Returns full answer records including correct, skipped, selected_option, time_ms"
+      - "Used in submit_answer (single query: asked_ids derivation + scoring) and abandon path"
+    failures: ["Returns empty list for new session"]
+    tests:
+      - { type: acc, label: "returns full answer records ordered by answered_at" }
+      - { type: acc, label: "returns empty list for session with no answers" }
+
+  - id: rf_answer_dao_create
+    label: "create()"
+    parent: g_rfa_dao
+    layer: dao
+    file: "leap/dao/rapid_fire_answer_dao.py"
+    sig: "create(session, game_session_id, question_id, correct, skipped, selected_option, time_ms) -> RapidFireAnswerDTO"
+    behaviour:
+      - "Inserts row into rapid_fire_answers; answered_at=now() server-generated"
+      - "id is server-generated via gen_random_uuid()"
+      - "skipped=true and selected_option=null when player did not choose"
+      - "flush + refresh, returns RapidFireAnswerDTO"
+    failures: ["IntegrityError if game_session_id or question_id FK invalid"]
+    tests:
+      - { type: acc,  label: "returns RapidFireAnswerDTO with all fields populated" }
+      - { type: edge, label: "skipped=true with selected_option=null stored correctly" }
+
+  - id: rf_question_dao_get_all
+    label: "RapidFireQuestionDAO.get_all()"
+    layer: dao
+    file: "leap/dao/rapid_fire_question_dao.py"
+    sig: "get_all(session) -> List[RapidFireQuestionDTO]"
+    behaviour:
+      - "SELECT * FROM rapid_fire_questions ORDER BY id"
+      - "Called exactly once at startup — not at request time"
+      - "Returns all questions including correct_option_index (internal; never serialized)"
+    failures: ["Returns empty list if table empty — initialize() stores empty cache"]
+    tests:
+      - { type: acc, label: "returns all 15 seeded questions with correct_option_index" }
+      - { type: acc, label: "returns empty list when table is empty" }
+
+  - id: dto_game_session
+    label: "GameSessionDTO"
+    layer: types
+    file: "leap/types/game.py"
+    sig: "GameSessionDTO: id, player_id, game_id, status: GameSessionStatus, score?, started_at, completed_at?"
+    behaviour:
+      - "Internal DTO mapping ORM GameSession row"
+      - "status enum: ACTIVE | COMPLETED | ABANDONED"
+      - "score is null while session is active; set on completion or abandonment"
+      - "completed_at is null while active"
+    failures: ["N/A — pure data shape"]
+    tests:
+      - { type: acc, label: "model_validate from ORM populates all fields" }
+
+  - id: dto_rapid_fire_question
+    label: "RapidFireQuestionDTO"
+    parent: g_types_rf
+    layer: types
+    file: "leap/types/rapid_fire.py"
+    sig: "RapidFireQuestionDTO: id, question, options, correct_option_index, category, time_limit_ms"
+    behaviour:
+      - "Internal DTO — includes correct_option_index (1-indexed, never exposed to client)"
+      - "options is a 4-element list"
+      - "Stored in RapidFireService._questions dict keyed by id at startup"
+      - "correct_answer_text derived at response time as options[correct_option_index - 1]"
+    failures: ["N/A — pure data shape"]
+    tests:
+      - { type: acc, label: "correct_option_index is 1-indexed matching raw seed data" }
+
+  - id: dto_rapid_fire_answer
+    label: "RapidFireAnswerDTO"
+    parent: g_types_rf
+    layer: types
+    file: "leap/types/rapid_fire.py"
+    sig: "RapidFireAnswerDTO: id, game_session_id, question_id, correct, skipped, selected_option?, time_ms, answered_at"
+    behaviour:
+      - "Internal DTO mapping ORM RapidFireAnswer"
+      - "selected_option is null when skipped=true"
+      - "Used as input to compute_rapid_fire_score and asked_ids derivation"
+    failures: ["N/A — pure data shape"]
+    tests:
+      - { type: acc, label: "model_validate from ORM populates all fields" }
+
+  - id: orm_game_session
+    label: "GameSession"
+    layer: model
+    file: "leap/dao/models/game_session.py"
+    sig: "game_sessions: id PK, player_id FK, game_id, status, score?, started_at, completed_at? | UNIQUE(player_id, game_id)"
+    behaviour:
+      - "id: TEXT PK, gen_random_uuid()"
+      - "player_id: TEXT FK -> players.id"
+      - "game_id: TEXT CHECK IN ('wiki', 'rapid_fire', ...)"
+      - "status: TEXT DEFAULT 'active' CHECK IN ('active', 'completed', 'abandoned')"
+      - "score: INTEGER nullable"
+      - "started_at: TIMESTAMPTZ DEFAULT now()"
+      - "completed_at: TIMESTAMPTZ nullable"
+      - "UNIQUE(player_id, game_id) enforced at DB level"
+    failures: ["IntegrityError on UNIQUE violation"]
+    tests:
+      - { type: acc, label: "UNIQUE constraint prevents second row for same player+game" }
+
+  - id: orm_rapid_fire_question
+    label: "RapidFireQuestion"
+    layer: model
+    file: "leap/dao/models/rapid_fire_question.py"
+    sig: "rapid_fire_questions: id, question, options ARRAY, correct_option_index, category, time_limit_ms, created_at"
+    behaviour:
+      - "id: TEXT PK, gen_random_uuid()"
+      - "question: TEXT NOT NULL"
+      - "options: TEXT[] NOT NULL — 4-element array"
+      - "correct_option_index: INTEGER NOT NULL — 1-indexed (1–4)"
+      - "category: TEXT NOT NULL"
+      - "time_limit_ms: INTEGER NOT NULL"
+      - "created_at: TIMESTAMPTZ DEFAULT now()"
+
+  - id: orm_rapid_fire_answer
+    label: "RapidFireAnswer"
+    layer: model
+    file: "leap/dao/models/rapid_fire_answer.py"
+    sig: "rapid_fire_answers: id, game_session_id FK, question_id FK, correct, skipped, selected_option?, time_ms, answered_at | INDEX(game_session_id)"
+    behaviour:
+      - "id: TEXT PK, gen_random_uuid()"
+      - "game_session_id: TEXT FK -> game_sessions.id"
+      - "question_id: TEXT FK -> rapid_fire_questions.id"
+      - "correct: BOOLEAN NOT NULL"
+      - "skipped: BOOLEAN NOT NULL DEFAULT false"
+      - "selected_option: INTEGER nullable — null when skipped=true"
+      - "time_ms: INTEGER NOT NULL — clamped server-side before insert"
+      - "answered_at: TIMESTAMPTZ DEFAULT now()"
+      - "INDEX on game_session_id"
+
+edges:
+  - { from: lifespan_startup,        to: rf_service_initialize,     label: "calls at boot" }
+
+  - { from: route_play,              to: rf_service_play,           label: "delegates" }
+  - { from: route_answer,            to: rf_service_submit_answer,  label: "delegates" }
+  - { from: route_abandon,           to: rf_service_abandon,        label: "delegates" }
+
+  - { from: route_play,              to: schema_play_response,      label: "returns" }
+  - { from: route_answer,            to: schema_answer_request,     label: "parses" }
+  - { from: route_answer,            to: schema_answer_response,    label: "returns" }
+  - { from: route_abandon,           to: schema_abandon_response,   label: "returns" }
+
+  - { from: schema_play_response,    to: schema_question_schema,    label: "embeds" }
+  - { from: schema_play_response,    to: schema_result_schema,      label: "embeds" }
+  - { from: schema_answer_response,  to: schema_question_schema,    label: "embeds" }
+  - { from: schema_answer_response,  to: schema_result_schema,      label: "embeds" }
+  - { from: schema_abandon_response, to: schema_result_schema,      label: "wraps" }
+
+  - { from: rf_service_initialize,   to: rf_question_dao_get_all,   label: "load cache" }
+
+  - { from: rf_service_play,         to: game_session_dao_get,      label: "lookup" }
+  - { from: rf_service_play,         to: game_session_dao_create,   label: "if new" }
+  - { from: rf_service_play,         to: rf_answer_dao_get_asked_ids, label: "if active" }
+  - { from: rf_service_play,         to: rf_answer_dao_get_all,     label: "if completed" }
+  - { from: rf_service_play,         to: pick_next_question,        label: "select question" }
+
+  - { from: rf_service_submit_answer, to: game_session_dao_get,     label: "validate active" }
+  - { from: rf_service_submit_answer, to: rf_answer_dao_get_all,    label: "fetch + asked_ids" }
+  - { from: rf_service_submit_answer, to: rf_answer_dao_create,     label: "insert answer" }
+  - { from: rf_service_submit_answer, to: compute_rapid_fire_score, label: "on game over" }
+  - { from: rf_service_submit_answer, to: game_session_dao_update,  label: "on game over" }
+  - { from: rf_service_submit_answer, to: pick_next_question,       label: "if continuing" }
+
+  - { from: rf_service_abandon,      to: game_session_dao_get,      label: "validate active" }
+  - { from: rf_service_abandon,      to: rf_answer_dao_get_all,     label: "fetch answers" }
+  - { from: rf_service_abandon,      to: compute_rapid_fire_score,  label: "partial score" }
+  - { from: rf_service_abandon,      to: game_session_dao_update,   label: "set ABANDONED" }
+
+  - { from: game_session_dao_get,    to: dto_game_session,          label: "returns" }
+  - { from: game_session_dao_create, to: dto_game_session,          label: "returns" }
+  - { from: game_session_dao_update, to: dto_game_session,          label: "returns" }
+  - { from: rf_answer_dao_get_all,   to: dto_rapid_fire_answer,     label: "returns" }
+  - { from: rf_answer_dao_create,    to: dto_rapid_fire_answer,     label: "returns" }
+  - { from: rf_question_dao_get_all, to: dto_rapid_fire_question,   label: "returns" }
+
+  - { from: dto_game_session,        to: orm_game_session,          label: "maps from" }
+  - { from: dto_rapid_fire_question, to: orm_rapid_fire_question,   label: "maps from" }
+  - { from: dto_rapid_fire_answer,   to: orm_rapid_fire_answer,     label: "maps from" }
+
+journeys:
+  - id: startup
+    label: "App startup"
+    description: "Question cache loads at boot"
+    color: "#0ea5e9"
+    steps:
+      - { node: lifespan_startup,        note: "FastAPI lifespan begins" }
+      - { node: rf_service_initialize,   note: "initialize(session) called once" }
+      - { node: rf_question_dao_get_all, note: "SELECT * FROM rapid_fire_questions" }
+      - { node: dto_rapid_fire_question, note: "Mapped to DTOs, stored in self._questions" }
+
+  - id: first_play
+    label: "First play (new game)"
+    description: "Player clicks Play with no existing session"
+    color: "#10b981"
+    steps:
+      - { node: route_play,              note: "POST /play with JWT" }
+      - { node: rf_service_play,         note: "Service.play(player_id)" }
+      - { node: game_session_dao_get,    note: "returns None — no existing session" }
+      - { node: game_session_dao_create, note: "insert new active session" }
+      - { node: pick_next_question,      note: "random.choice from full cache" }
+      - { node: schema_play_response,    note: 'status="active" + first question' }
+
+  - id: resume_play
+    label: "Resume mid-game"
+    description: "Player returns mid-session (e.g. page refresh)"
+    color: "#6366f1"
+    steps:
+      - { node: route_play,                  note: "POST /play with JWT" }
+      - { node: rf_service_play,             note: "Service.play(player_id)" }
+      - { node: game_session_dao_get,        note: "returns active session" }
+      - { node: rf_answer_dao_get_asked_ids, note: "asked_ids list" }
+      - { node: pick_next_question,          note: "random.choice from cache - asked" }
+      - { node: schema_play_response,        note: 'status="active" + next question' }
+
+  - id: view_result
+    label: "View completed result"
+    description: "Player checks back on a finished/abandoned game"
+    color: "#a855f7"
+    steps:
+      - { node: route_play,           note: "POST /play" }
+      - { node: rf_service_play,      note: "Service.play(player_id)" }
+      - { node: game_session_dao_get, note: "returns completed/abandoned session" }
+      - { node: rf_answer_dao_get_all, note: "fetch all answers" }
+      - { node: compute_rapid_fire_score, note: "(if needed for re-display)" }
+      - { node: schema_play_response, note: 'status="completed" + result block' }
+
+  - id: submit_continue
+    label: "Submit answer (continue)"
+    description: "Player submits an answer with more questions to come"
+    color: "#0ea5e9"
+    steps:
+      - { node: route_answer,             note: "POST /answer body validated" }
+      - { node: rf_service_submit_answer, note: "Service.submit_answer(...)" }
+      - { node: game_session_dao_get,     note: "fetch session — must be active" }
+      - { node: rf_answer_dao_get_all,    note: "asked_ids + records (single query)" }
+      - { node: rf_answer_dao_create,     note: "insert new answer row" }
+      - { node: pick_next_question,       note: "next random unanswered" }
+      - { node: schema_answer_response,   note: "correct + score + next_question" }
+
+  - id: submit_final
+    label: "Submit answer (game over)"
+    description: "Player submits the last question — game ends"
+    color: "#f59e0b"
+    steps:
+      - { node: route_answer,             note: "POST /answer body validated" }
+      - { node: rf_service_submit_answer, note: "Service.submit_answer(...)" }
+      - { node: game_session_dao_get,     note: "fetch session — must be active" }
+      - { node: rf_answer_dao_get_all,    note: "asked_ids + records" }
+      - { node: rf_answer_dao_create,     note: "insert final answer" }
+      - { node: compute_rapid_fire_score, note: "final score from all answers" }
+      - { node: game_session_dao_update,  note: "status=COMPLETED, score=final" }
+      - { node: schema_answer_response,   note: "next_question=null + result inline" }
+
+  - id: abandon
+    label: "Abandon game"
+    description: "Player forfeits mid-session"
+    color: "#ef4444"
+    steps:
+      - { node: route_abandon,            note: "POST /abandon" }
+      - { node: rf_service_abandon,       note: "Service.abandon(player_id)" }
+      - { node: game_session_dao_get,     note: "fetch session — must be active" }
+      - { node: rf_answer_dao_get_all,    note: "fetch any submitted answers" }
+      - { node: compute_rapid_fire_score, note: "partial score" }
+      - { node: game_session_dao_update,  note: "status=ABANDONED, score=partial" }
+      - { node: schema_abandon_response,  note: "partial result returned to client" }

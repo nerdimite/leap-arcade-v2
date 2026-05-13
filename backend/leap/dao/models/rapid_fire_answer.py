@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Index, Integer, String, text
+from sqlalchemy import Boolean, DateTime, ForeignKey, Index, Integer, String, UniqueConstraint, text
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
 
@@ -10,6 +10,11 @@ from leap.dao.models.base import Base
 class RapidFireAnswer(Base):
     __tablename__ = "rapid_fire_answers"
     __table_args__ = (
+        UniqueConstraint(
+            "game_session_id",
+            "question_id",
+            name="uq_rfa_session_question",
+        ),
         Index("ix_rapid_fire_answers_game_session_id", "game_session_id"),
     )
 
@@ -26,6 +31,7 @@ class RapidFireAnswer(Base):
     )
     correct: Mapped[bool] = mapped_column(Boolean, nullable=False)
     skipped: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default=text("false"))
+    selected_option: Mapped[int | None] = mapped_column(Integer, nullable=True)
     time_ms: Mapped[int] = mapped_column(Integer, nullable=False)
     answered_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False

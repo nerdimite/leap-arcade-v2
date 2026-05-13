@@ -64,6 +64,6 @@ All commands run from `backend/`:
 - `backend/.env` holds all local credentials; `backend/docker-compose.yml` spins up postgres using that file
 - `alembic/env.py` requires explicit `await connection.commit()` after `context.run_migrations()` — without it, DDL is silently rolled back
 - `alembic.ini` `sqlalchemy.url` must be set to the leap DB (`postgresql+asyncpg://leap:leap@localhost:5432/leap`) — the default scaffold pointed to a stale billing DB
-- Design doc: `docs/design/rapid-fire-vertical-slice.md`
+- Rapid Fire design: spec `docs/design/rapid-fire.meridian.yaml`; compile to `docs/design/rapid-fire-design-map.html` via `meridian compile` (YAML is source of truth; do not edit the HTML by hand)
 - Backend technical design: `docs/plans/2026-05-10-backend-technical-design.md`
 - `leap/api/routes/games/rapid_fire.py` and `leap/api/routes/leaderboard.py` are the remaining stubs to implement
