@@ -1,8 +1,9 @@
 "use client"
 
+import { useState } from "react"
+
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -10,11 +11,22 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
 import { useNavigationGuard } from "@/hooks/use-navigation-guard"
 
 export function GameNavigationGuardDialog() {
   const { cancelNavigation, confirmNavigation, dialogOpen } =
     useNavigationGuard()
+  const [leaveBusy, setLeaveBusy] = useState(false)
+
+  const handleLeave = async () => {
+    setLeaveBusy(true)
+    try {
+      await confirmNavigation()
+    } finally {
+      setLeaveBusy(false)
+    }
+  }
 
   return (
     <AlertDialog
@@ -32,10 +44,17 @@ export function GameNavigationGuardDialog() {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Stay in game</AlertDialogCancel>
-          <AlertDialogAction onClick={confirmNavigation}>
-            Leave anyway
-          </AlertDialogAction>
+          <AlertDialogCancel disabled={leaveBusy}>Stay in game</AlertDialogCancel>
+          <Button
+            type="button"
+            variant="default"
+            disabled={leaveBusy}
+            onClick={() => {
+              void handleLeave()
+            }}
+          >
+            {leaveBusy ? "Leaving…" : "Leave anyway"}
+          </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

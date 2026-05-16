@@ -82,6 +82,17 @@ All `/api/*` requests are proxied from Next.js to FastAPI via `next.config.mjs` 
 - Navigation guard (`src/hooks/use-navigation-guard.tsx`) is adapted from the cap-web-app project — it traps both browser back (via `pushState` + `popstate`) and page unload (`beforeunload`); `isDirty` maps to "game in progress" in this context
 - The `(games)` route group layout mounts `NavigationGuardProvider` and `GameNavigationGuardDialog` — individual game pages only need to call `setIsDirty`
 - `@/*` alias resolves to `src/*` — set in `tsconfig.json`
+- Next.js 16 renames `middleware.ts` → `proxy.ts`; export function renamed from `middleware` to `proxy`; edge runtime NOT supported in `proxy` (nodejs only) — see Next.js 16 upgrade guide
+- Auth is httpOnly cookie — set by `app/api/auth/login/route.ts` (Next.js Route Handler), not FastAPI. See ADR-0001.
+- All `/api/*` calls go through catch-all Route Handler `app/api/[...path]/route.ts` which injects `Authorization: Bearer <token>` from the cookie. FastAPI unchanged. See ADR-0002.
+- Lobby fetches player session statuses server-side via `GET /players/me/sessions` (new backend endpoint to be added)
+- Leaderboard: `refetchInterval: 5000` — top 10 + current player pinned if outside top 10 in lobby sidebar; all players on full leaderboard page
+- Rapid Fire per-question timer resets to full `time_limit_ms` on page refresh — no sessionStorage tracking. See ADR-0003.
+- Rapid Fire feedback phase: 1.5s auto-advance after answer, 0.5s get-ready delay before next question timer starts — both configurable in `src/lib/constants.ts`
+- Abandon is navigation-guard-only — no explicit abandon button on game screens
+- Game result is shown inline on the game page (reducer transitions to `result` state); no separate result route
+- TypeScript types come from `z.infer<>` on Zod schemas in `src/services/<domain>/schema.ts` — no separate `types/` duplication
+- Test stack: Vitest + React Testing Library + msw. Test targets: reducer state transitions, Zod schema parsing, API client fetch wrappers, login form mutation.
 
 ## Reference Docs
 

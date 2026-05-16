@@ -1,6 +1,7 @@
-import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google"
+import { Geist_Mono, Space_Grotesk } from "next/font/google"
 
 import "./globals.css"
+import { QueryClientProviderWrapper } from "@/components/query-client-provider"
 import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils";
 
@@ -23,7 +24,9 @@ export default function RootLayout({
       className={cn("antialiased", fontMono.variable, "font-sans", spaceGrotesk.variable)}
     >
       <body>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <QueryClientProviderWrapper>{children}</QueryClientProviderWrapper>
+        </ThemeProvider>
       </body>
     </html>
   )

@@ -26,8 +26,9 @@ export interface NavigationGuardContextValue {
   setIsDirty: (dirty: boolean) => void
   navigateSafe: (href: string, options?: { replace?: boolean }) => void
   requestAction: (action: NavigationAction) => void
+  registerBeforeNavigateConfirm: (fn: () => Promise<void>) => () => void
   dialogOpen: boolean
-  confirmNavigation: () => void
+  confirmNavigation: () => Promise<void>
   cancelNavigation: () => void
 }
 
@@ -40,13 +41,14 @@ function createGuardStateId(): string {
 
 export function NavigationGuardProvider({ children }: { children: ReactNode }) {
   const router = useRouter()
-  const [isDirty, setIsDirty] = useState(false)
+  const [isDirty, setDirtyState] = useState(false)
   const [pendingRequest, setPendingRequest] = useState<PendingRequest | null>(
     null,
   )
   const [dialogOpen, setDialogOpen] = useState(false)
 
-  const isDirtyRef = useRef(isDirty)
+  const isDirtyRef = useRef(false)
+  const beforeNavigateConfirmRef = useRef<(() => Promise<void>) | null>(null)
   const historyTrapArmedRef = useRef(false)
   const suppressNextPopRef = useRef(false)
   const skipAutoCollapseRef = useRef(false)
@@ -54,9 +56,22 @@ export function NavigationGuardProvider({ children }: { children: ReactNode }) {
 
   useUnsavedChanges(isDirty)
 
-  useEffect(() => {
-    isDirtyRef.current = isDirty
-  }, [isDirty])
+  const setIsDirty = useCallback((dirty: boolean) => {
+    isDirtyRef.current = dirty
+    setDirtyState(dirty)
+  }, [])
+
+  const registerBeforeNavigateConfirm = useCallback(
+    (fn: () => Promise<void>) => {
+      beforeNavigateConfirmRef.current = fn
+      return () => {
+        if (beforeNavigateConfirmRef.current === fn) {
+          beforeNavigateConfirmRef.current = null
+        }
+      }
+    },
+    [],
+  )
 
   const armHistoryTrap = useCallback(() => {
     if (
@@ -161,9 +176,17 @@ export function NavigationGuardProvider({ children }: { children: ReactNode }) {
     }
   }, [armHistoryTrap, pendingRequest])
 
-  const confirmNavigation = useCallback(() => {
+  const confirmNavigation = useCallback(async () => {
     const request = pendingRequest
     if (!request) return
+
+    try {
+      if (beforeNavigateConfirmRef.current) {
+        await beforeNavigateConfirmRef.current()
+      }
+    } catch {
+      return
+    }
 
     setPendingRequest(null)
     setDialogOpen(false)
@@ -177,7 +200,7 @@ export function NavigationGuardProvider({ children }: { children: ReactNode }) {
     skipAutoCollapseRef.current = true
     setIsDirty(false)
     collapseHistoryTrap(() => executeRequest(request))
-  }, [collapseHistoryTrap, executeRequest, pendingRequest])
+  }, [collapseHistoryTrap, executeRequest, pendingRequest, setIsDirty])
 
   useEffect(() => {
     if (isDirty) {
@@ -219,17 +242,19 @@ export function NavigationGuardProvider({ children }: { children: ReactNode }) {
       setIsDirty,
       navigateSafe,
       requestAction,
+      registerBeforeNavigateConfirm,
       dialogOpen,
       confirmNavigation,
       cancelNavigation,
     }),
     [
-      cancelNavigation,
-      confirmNavigation,
-      dialogOpen,
-      isDirty,
-      navigateSafe,
-      requestAction,
+      cancelNavigation, 
+      confirmNavigation, 
+      dialogOpen, 
+      isDirty, 
+      navigateSafe, 
+      registerBeforeNavigateConfirm, 
+      requestAction, setIsDirty
     ],
   )
 
