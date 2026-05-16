@@ -32,7 +32,7 @@ All commands run from `backend/`:
 - **Tests:** `uv run pytest tests/ -v`
 - **Migrations:** `uv run alembic upgrade head`
 - **Generate migration:** `uv run alembic revision --autogenerate -m "<description>"`
-- **Local DB:** `docker compose up -d postgres` (reads `backend/.env` for credentials)
+- **Local DB:** from repo root, `docker compose --env-file backend/.env up -d postgres` or `make dev` (postgres + api; reads `backend/.env`)
 - **Type check:** `uv run pyright` (if configured)
 
 ## Dos and Don'ts
@@ -53,6 +53,7 @@ All commands run from `backend/`:
 
 ### Learned User Preferences
 
+- Always use fast subagents (e.g., `composer-2-fast`) for codebase exploration — whether during planning, general conversation, or implementation. Never explore inline when a subagent can be dispatched instead.
 - No `_` prefix on injected dependencies in services (`self.ctx`, `self.player_dao`, `self.game_session_dao`). Reserve `_` only for genuinely private helpers and lazy-init internals (e.g., `_engine`, `_sessionmaker` in infrastructure classes, private helper methods on the base DAO)
 - The `/deep-design` jam walks the call graph top-down (route → service → DAO → model); do not pre-write models and build up
 - Prefer hand-written fakes over `MagicMock` in tests — fakes express the contract honestly
@@ -61,9 +62,10 @@ All commands run from `backend/`:
 
 ### Learned Workspace Facts
 
-- `backend/.env` holds all local credentials; `backend/docker-compose.yml` spins up postgres using that file
+- `backend/.env` holds all local credentials; repo-root `docker-compose.yml` spins up postgres — pass `--env-file backend/.env` (or use `make dev`)
 - `alembic/env.py` requires explicit `await connection.commit()` after `context.run_migrations()` — without it, DDL is silently rolled back
 - `alembic.ini` `sqlalchemy.url` must be set to the leap DB (`postgresql+asyncpg://leap:leap@localhost:5432/leap`) — the default scaffold pointed to a stale billing DB
 - Rapid Fire design: spec `docs/design/rapid-fire.meridian.yaml`; compile to `docs/design/rapid-fire-design-map.html` via `meridian compile` (YAML is source of truth; do not edit the HTML by hand)
 - Backend technical design: `docs/plans/2026-05-10-backend-technical-design.md`
 - `leap/api/routes/games/rapid_fire.py` and `leap/api/routes/leaderboard.py` are the remaining stubs to implement
+- `GET /players/me/sessions` — new endpoint needed to support lobby tile status; returns `[{ game_id, status, score }]` for the authenticated player
