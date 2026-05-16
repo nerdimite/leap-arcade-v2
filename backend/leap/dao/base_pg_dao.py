@@ -11,41 +11,23 @@ T = TypeVar("T", bound=DeclarativeBase)
 
 
 class BasePgDAO(ABC, Generic[T]):
-    """Base DAO for PostgreSQL operations using SQLAlchemy async sessions.
-
-    Subclasses must implement _to_orm, _to_dto, and _apply_filters.
-    All public methods return plain dicts or lists of dicts — never ORM instances.
-
-    Callers pass an ``AsyncSession`` for every operation so a service can run
-    multiple DAO calls inside one ``ContextManager.session()`` block (single transaction).
-    """
+    """Shared PostgreSQL DAO state and DTO conversion."""
 
     def __init__(self, model_class: type[T]) -> None:
         self.model_class = model_class
 
     @abstractmethod
-    def _to_orm(self, data: dict) -> T:
-        """Build an ORM instance from a plain dict."""
+    def _to_dto(self, orm: T) -> Any:
+        """Convert an ORM instance to a domain DTO."""
         ...
 
-    @abstractmethod
-    def _to_dto(self, orm: T) -> dict:
-        """Convert an ORM instance to a plain dict."""
-        ...
 
-    @abstractmethod
+class BaseReadPgDAO(BasePgDAO[T], ABC):
+    """Read helpers shared by DAOs that project ORM rows into DTOs."""
+
     def _apply_filters(self, query: Any, filters: dict) -> Any:
-        """Apply domain-specific filters to a query. Always return the query."""
-        ...
-
-    async def _create(self, session: AsyncSession, item: T) -> T:
-        """Insert a new row. Sets updated_at if present. Returns the refreshed ORM instance."""
-        if hasattr(item, "updated_at"):
-            setattr(item, "updated_at", utc_now())
-        session.add(item)
-        await session.flush()
-        await session.refresh(item)
-        return item
+        """Apply domain-specific filters to a query. Override when needed."""
+        return query
 
     async def _get_by_id(self, session: AsyncSession, item_id: str) -> Optional[T]:
         """Return an ORM instance by primary key, or None if not found."""
@@ -78,6 +60,19 @@ class BasePgDAO(ABC, Generic[T]):
             query = self._apply_filters(query, filters)
         result = await session.execute(query)
         return result.scalar() or 0
+
+
+class BaseWritePgDAO(BasePgDAO[T], ABC):
+    """Write helpers shared by DAOs that manage ORM lifecycle."""
+
+    async def _create(self, session: AsyncSession, item: T) -> T:
+        """Insert a new row. Sets updated_at if present. Returns the refreshed ORM instance."""
+        if hasattr(item, "updated_at"):
+            setattr(item, "updated_at", utc_now())
+        session.add(item)
+        await session.flush()
+        await session.refresh(item)
+        return item
 
     async def _update(self, session: AsyncSession, item: T) -> T:
         """Merge and flush an ORM instance. Sets updated_at if present."""

@@ -45,6 +45,9 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     app.state.context_manager = context_manager
     app.state.container = ServiceContainer(context_manager)
 
+    async with context_manager.session() as session:
+        await app.state.container.rapid_fire.initialize(session)
+
     logger.info("LEAP backend ready")
 
     yield

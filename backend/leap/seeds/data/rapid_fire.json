@@ -1,72 +1,182 @@
 [
   {
-    "question": "What is the capital of France?",
-    "options": ["Berlin", "Madrid", "Paris", "Rome"],
+    "question": "In AI-assisted software development, what best describes an \"agentic workflow\"?",
+    "options": [
+      "A CI/CD pipeline triggered by Git commits",
+      "A system where models autonomously plan and execute multi-step tasks",
+      "A distributed tracing mechanism for APIs",
+      "A runtime optimization layer for container orchestration"
+    ],
     "correct_option_index": 2,
-    "category": "Geography",
+    "category": "Technology",
     "time_limit_ms": 15000
   },
   {
-    "question": "Which planet is known as the Red Planet?",
-    "options": ["Earth", "Mars", "Jupiter", "Venus"],
-    "correct_option_index": 1,
-    "category": "Science",
-    "time_limit_ms": 15000
-  },
-  {
-    "question": "Who wrote the play 'Romeo and Juliet'?",
-    "options": ["Charles Dickens", "William Shakespeare", "Jane Austen", "Mark Twain"],
-    "correct_option_index": 1,
-    "category": "Literature",
-    "time_limit_ms": 15000
-  },
-  {
-    "question": "What is the chemical symbol for gold?",
-    "options": ["Go", "Gd", "Au", "Ag"],
+    "question": "In Spring Boot, what is the key purpose of the @ConditionalOnProperty annotation?",
+    "options": [
+      "It validates configuration files during compilation",
+      "It conditionally enables beans based on application property values",
+      "It encrypts environment variables automatically",
+      "It restricts bean initialization to production environments only"
+    ],
     "correct_option_index": 2,
-    "category": "Science",
+    "category": "Technology",
     "time_limit_ms": 15000
   },
   {
-    "question": "Which country is the largest by land area?",
-    "options": ["China", "Canada", "USA", "Russia"],
+    "question": "In a scalable full-stack architecture, why is API Gateway commonly introduced between clients and microservices?",
+    "options": [
+      "It replaces authentication providers completely",
+      "It centralizes routing, security, throttling, and cross-cutting concerns",
+      "It tightly couples frontend applications with backend services",
+      "It removes the need for service discovery mechanisms"
+    ],
+    "correct_option_index": 2,
+    "category": "Technology",
+    "time_limit_ms": 15000
+  },
+  {
+    "question": "In modern Java applications, why are virtual threads introduced in Project Loom considered significant?",
+    "options": [
+      "They replace JVM garbage collection mechanisms",
+      "They improve performance by compiling Java directly to native binaries",
+      "They enable lightweight concurrent task handling with lower thread overhead",
+      "They eliminate the need for asynchronous programming models entirely"
+    ],
     "correct_option_index": 3,
-    "category": "Geography",
+    "category": "Technology",
     "time_limit_ms": 15000
   },
   {
-    "question": "In which year did the first moon landing occur?",
-    "options": ["1965", "1967", "1969", "1972"],
+    "question": "Why is edge computing increasingly preferred in latency-sensitive applications?",
+    "options": [
+      "It minimizes execution by reducing application logic",
+      "It processes workloads closer to the source of data generation",
+      "It avoids the need for distributed databases",
+      "It replaces cloud networking protocols with local execution"
+    ],
     "correct_option_index": 2,
-    "category": "History",
+    "category": "Technology",
     "time_limit_ms": 15000
   },
   {
-    "question": "What is the powerhouse of the cell?",
-    "options": ["Nucleus", "Ribosome", "Mitochondria", "Golgi body"],
-    "correct_option_index": 2,
-    "category": "Science",
-    "time_limit_ms": 15000
-  },
-  {
-    "question": "How many sides does a hexagon have?",
-    "options": ["5", "6", "7", "8"],
-    "correct_option_index": 1,
-    "category": "Mathematics",
-    "time_limit_ms": 15000
-  },
-  {
-    "question": "Which element has the atomic number 1?",
-    "options": ["Helium", "Oxygen", "Hydrogen", "Carbon"],
-    "correct_option_index": 2,
-    "category": "Science",
-    "time_limit_ms": 15000
-  },
-  {
-    "question": "What is the longest river in the world?",
-    "options": ["Amazon", "Yangtze", "Mississippi", "Nile"],
+    "question": "In a GitOps model, what acts as the \"source of truth\"?",
+    "options": [
+      "Running containers in production",
+      "The Kubernetes API server state",
+      "Declarative infrastructure definitions stored in Git repositories",
+      "The CI server configuration dashboard"
+    ],
     "correct_option_index": 3,
-    "category": "Geography",
+    "category": "Technology",
+    "time_limit_ms": 15000
+  },
+  {
+    "question": "Which capability differentiates modern AI coding agents from traditional autocomplete systems?",
+    "options": [
+      "Syntax highlighting and formatting",
+      "Autonomous reasoning across files, tools, and execution steps",
+      "Deterministic token generation",
+      "Static analysis of compiled binaries only"
+    ],
+    "correct_option_index": 2,
+    "category": "Technology",
+    "time_limit_ms": 15000
+  },
+  {
+    "question": "What is a major architectural advantage of serverless computing?",
+    "options": [
+      "Dedicated hardware affinity for each request",
+      "Tight coupling between services and infrastructure",
+      "Event-driven scaling with reduced operational management",
+      "Elimination of distributed system failures"
+    ],
+    "correct_option_index": 3,
+    "category": "Technology",
+    "time_limit_ms": 15000
+  },
+  {
+    "question": "Why does PostgreSQL continue gaining popularity in cloud-native systems?",
+    "options": [
+      "It only supports relational workloads",
+      "It combines extensibility, reliability, and strong ecosystem support",
+      "It removes the need for caching layers",
+      "It is optimized exclusively for analytical processing"
+    ],
+    "correct_option_index": 2,
+    "category": "Technology",
+    "time_limit_ms": 15000
+  },
+  {
+    "question": "What is the focus of GreenOps in modern engineering organizations?",
+    "options": [
+      "Reducing front-end bundle sizes only",
+      "Improving sustainability and energy efficiency of infrastructure operations",
+      "Eliminating cloud providers from deployment pipelines",
+      "Migrating applications exclusively to ARM processors"
+    ],
+    "correct_option_index": 2,
+    "category": "Technology",
+    "time_limit_ms": 15000
+  },
+  {
+    "question": "Why do microservices remain dominant in cloud-native architectures?",
+    "options": [
+      "They guarantee zero downtime inherently",
+      "They simplify independent scaling and deployment of services",
+      "They eliminate network-related failures",
+      "They remove the need for observability tooling"
+    ],
+    "correct_option_index": 2,
+    "category": "Technology",
+    "time_limit_ms": 15000
+  },
+  {
+    "question": "What remains one of the largest concerns regarding AI-generated code?",
+    "options": [
+      "Lack of syntax correctness",
+      "Inability to generate APIs",
+      "Reliability, maintainability, and hidden logical flaws",
+      "Excessive memory allocation during compilation"
+    ],
+    "correct_option_index": 3,
+    "category": "Technology",
+    "time_limit_ms": 15000
+  },
+  {
+    "question": "Why are abstraction layers gaining traction in Kubernetes ecosystems?",
+    "options": [
+      "They remove the need for containers entirely",
+      "They simplify developer interaction with complex infrastructure systems",
+      "They replace declarative configuration with imperative workflows",
+      "They eliminate cluster networking requirements"
+    ],
+    "correct_option_index": 2,
+    "category": "Technology",
+    "time_limit_ms": 15000
+  },
+  {
+    "question": "What is a key reason observability platforms are integrating AI capabilities?",
+    "options": [
+      "To replace incident management teams entirely",
+      "To automatically identify anomalies and correlate telemetry data",
+      "To eliminate the need for logging systems",
+      "To prevent all infrastructure outages proactively"
+    ],
+    "correct_option_index": 2,
+    "category": "Technology",
+    "time_limit_ms": 15000
+  },
+  {
+    "question": "In an MLOps pipeline, what is the primary purpose of model drift detection?",
+    "options": [
+      "To improve GPU utilization during training",
+      "To identify when a deployed model's performance degrades due to changing data patterns",
+      "To automatically compress large datasets before inference",
+      "To synchronize feature engineering logic across development environments"
+    ],
+    "correct_option_index": 2,
+    "category": "Technology",
     "time_limit_ms": 15000
   }
 ]

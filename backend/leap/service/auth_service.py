@@ -2,10 +2,10 @@
 
 from typing import TYPE_CHECKING
 
-from leap.api.schema.auth import LoginResponse
 from leap.core.auth import encode_token, verify_event_code
 from leap.core.context_manager import ContextManager
 from leap.service.exceptions import InvalidEventCodeException, PlayerNotFoundException
+from leap.types.auth import LoginDTO
 from leap.types.player import PlayerDTO
 
 if TYPE_CHECKING:
@@ -19,7 +19,7 @@ class AuthService:
         self.ctx = context_manager
         self.player_dao = player_dao
 
-    async def login(self, corp_id: str, event_code: str) -> LoginResponse:
+    async def login(self, corp_id: str, event_code: str) -> LoginDTO:
         """Normalise corp_id, verify player exists and event code matches, issue JWT.
 
         Raises:
@@ -38,4 +38,4 @@ class AuthService:
             raise InvalidEventCodeException()
 
         token = encode_token(player.id, player.display_name)
-        return LoginResponse(access_token=token, player=player)
+        return LoginDTO(access_token=token, player=player)

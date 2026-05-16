@@ -2,11 +2,11 @@
 
 from typing import TYPE_CHECKING, List
 
-from leap.api.schema.lobby import LobbyResponse
-from leap.types.player import CurrentPlayer
 from leap.config.constants import GAMES
 from leap.core.context_manager import ContextManager
 from leap.types.game import GameSessionStatus, GameStatusDTO
+from leap.types.lobby import LobbyDTO
+from leap.types.player import CurrentPlayer
 
 if TYPE_CHECKING:
     from leap.dao.game_session_dao import GameSessionDAO
@@ -25,7 +25,7 @@ class LobbyService:
         self.ctx = context_manager
         self.game_session_dao = game_session_dao
 
-    async def get_lobby(self, player: CurrentPlayer) -> LobbyResponse:
+    async def get_lobby(self, player: CurrentPlayer) -> LobbyDTO:
         """Return per-game status for the authenticated player."""
         async with self.ctx.session() as session:
             sessions = await self.game_session_dao.get_all_for_player(session, player.id)
@@ -46,4 +46,4 @@ class LobbyService:
             for game in GAMES
         ]
 
-        return LobbyResponse(player_display_name=player.display_name, games=games)
+        return LobbyDTO(player_display_name=player.display_name, games=games)

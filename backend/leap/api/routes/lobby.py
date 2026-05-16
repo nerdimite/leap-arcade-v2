@@ -15,4 +15,8 @@ async def get_lobby(
     container: ServiceContainer = Depends(get_container),
 ) -> LobbyResponse:
     """Return the player profile and per-game play status."""
-    return await container.lobby.get_lobby(player)
+    result = await container.lobby.get_lobby(player)
+    return LobbyResponse(
+        player_display_name=result.player_display_name,
+        games=result.games,
+    )

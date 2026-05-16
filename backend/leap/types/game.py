@@ -25,6 +25,19 @@ class GameSessionDTO(BaseLeapModel):
     completed_at: Optional[datetime] = None
 
 
+class LeaderboardEntryDTO(BaseLeapModel):
+    """Aggregated leaderboard row from GameSessionDAO.get_leaderboard (DAO layer).
+
+    ``first_completion`` is used for server-side ordering only; API schemas omit it.
+    """
+
+    player_id: str
+    display_name: str
+    total_score: int
+    games_completed: int
+    first_completion: Optional[datetime] = None
+
+
 class GameStatusDTO(BaseLeapModel):
     """Per-game status for the lobby view — one row per game in the response."""
 

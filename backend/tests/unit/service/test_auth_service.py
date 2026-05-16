@@ -24,7 +24,7 @@ def _make_service(players: Optional[Dict[str, PlayerDTO]] = None) -> AuthService
 class TestAuthServiceLogin:
     @pytest.mark.asyncio
     async def test_returns_jwt_and_player_for_valid_credentials(self, monkeypatch):
-        """Happy path: known corp_id + correct event code → LoginResponse with token."""
+        """Happy path: known corp_id + correct event code → LoginDTO with token."""
         monkeypatch.setenv("JWT_SECRET_KEY", "test-secret-key-long-enough-for-hs256-32b")
         monkeypatch.setenv("JWT_EXPIRE_HOURS", "24")
         monkeypatch.setenv("EVENT_CODE", _EVENT_CODE)

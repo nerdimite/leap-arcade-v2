@@ -7,7 +7,7 @@ from leap.types import BaseLeapModel
 
 
 class RapidFireQuestionDTO(BaseLeapModel):
-    """A single rapid fire question as returned by RapidFireQuestionDAO."""
+    """Cached rapid fire question (includes server-only correct index)."""
 
     id: str
     question: str
@@ -18,22 +18,47 @@ class RapidFireQuestionDTO(BaseLeapModel):
 
 
 class RapidFireAnswerDTO(BaseLeapModel):
-    """A recorded answer as returned by RapidFireAnswerDAO."""
+    """A recorded answer row as returned by RapidFireAnswerDAO."""
 
     id: str
     game_session_id: str
     question_id: str
     correct: bool
     skipped: bool
+    selected_option: Optional[int] = None
     time_ms: int
     answered_at: datetime
 
 
 class RapidFireResultDTO(BaseLeapModel):
-    """Final result summary emitted when a rapid fire session ends."""
+    """Result summary when a rapid fire session ends or is summarized."""
 
-    total_questions: int
-    correct: int
-    skipped: int
     score: int
-    time_taken_ms: int
+    correct_count: int
+    wrong_count: int
+    skipped_count: int
+    time_taken_seconds: float
+
+
+class RapidFirePlayPayload(BaseLeapModel):
+    """Service output for POST /play (maps to API PlayResponse)."""
+
+    status: str
+    game_session_id: Optional[str] = None
+    questions_answered: Optional[int] = None
+    questions_total: Optional[int] = None
+    question: Optional[RapidFireQuestionDTO] = None
+    result: Optional[RapidFireResultDTO] = None
+
+
+class RapidFireAnswerPayload(BaseLeapModel):
+    """Service output for POST /answer (maps to API AnswerResponse)."""
+
+    correct: bool
+    correct_option: int
+    correct_answer_text: str
+    current_score: int
+    questions_answered: int
+    questions_remaining: int
+    next_question: Optional[RapidFireQuestionDTO] = None
+    result: Optional[RapidFireResultDTO] = None

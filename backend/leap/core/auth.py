@@ -15,6 +15,7 @@ import jwt
 
 from leap.config.settings import get_settings
 from leap.core.common.time import utc_now
+from leap.core.exceptions import InvalidTokenException
 
 
 _JWT_ALGORITHM = "HS256"
@@ -40,8 +41,6 @@ def decode_token(token: str) -> Dict[str, Any]:
         InvalidTokenException: token is missing required claims, malformed,
             has an invalid signature, or has expired.
     """
-    from leap.service.exceptions import InvalidTokenException
-
     settings = get_settings()
     try:
         payload: Dict[str, Any] = jwt.decode(

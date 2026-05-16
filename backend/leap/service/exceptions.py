@@ -1,115 +1,93 @@
 """Domain exceptions raised by the service layer.
 
-All extend ``BaseServiceException``. The global handler in ``leap/api/main.py`` converts
-them to JSON responses. Routes never raise ``HTTPException`` — services raise these instead.
-
-Add new codes to ``leap/config/errors.py`` first, then add the subclass here.
+Routes never raise ``HTTPException`` — services raise these instead.
 """
 
-from http import HTTPStatus
-from typing import Any, Dict, Optional
-
-from leap.config.errors import ErrorCodes, ErrorHttpStatus, ErrorMessages
-
-
-class BaseServiceException(Exception):
-    """Base for all service-layer exceptions."""
-
-    def __init__(
-        self,
-        error_code: int,
-        message: str,
-        http_status: HTTPStatus = HTTPStatus.INTERNAL_SERVER_ERROR,
-        details: Optional[Dict[str, Any]] = None,
-    ) -> None:
-        self.error_code = error_code
-        self.message = message
-        self.http_status = http_status
-        self.details = details or {}
-        super().__init__(message)
-
-    def to_dict(self) -> Dict[str, Any]:
-        return {
-            "success": False,
-            "message": self.message,
-            "code": self.error_code,
-            "http_status": self.http_status.value,
-            "error": self.details,
-        }
+from leap.config.errors import ERRORS
+from leap.core.exceptions import BaseServiceException, InvalidTokenException
 
 
 class PlayerNotFoundException(BaseServiceException):
     def __init__(self, corp_id: str) -> None:
+        error = ERRORS["PLAYER_NOT_FOUND"]
         super().__init__(
-            error_code=ErrorCodes.PLAYER_NOT_FOUND,
-            message=f"{ErrorMessages.PLAYER_NOT_FOUND}: {corp_id}",
-            http_status=ErrorHttpStatus.PLAYER_NOT_FOUND,
+            error_code=error.code,
+            message=f"{error.message}: {corp_id}",
+            http_status=error.http_status,
             details={"corp_id": corp_id},
         )
 
 
 class InvalidEventCodeException(BaseServiceException):
     def __init__(self) -> None:
+        error = ERRORS["INVALID_EVENT_CODE"]
         super().__init__(
-            error_code=ErrorCodes.INVALID_EVENT_CODE,
-            message=ErrorMessages.INVALID_EVENT_CODE,
-            http_status=ErrorHttpStatus.INVALID_EVENT_CODE,
-        )
-
-
-class InvalidTokenException(BaseServiceException):
-    def __init__(self, reason: Optional[str] = None) -> None:
-        super().__init__(
-            error_code=ErrorCodes.INVALID_TOKEN,
-            message=reason or ErrorMessages.INVALID_TOKEN,
-            http_status=ErrorHttpStatus.INVALID_TOKEN,
+            error_code=error.code,
+            message=error.message,
+            http_status=error.http_status,
         )
 
 
 class SessionAlreadyExistsException(BaseServiceException):
     def __init__(self, player_id: str, game_id: str) -> None:
+        error = ERRORS["SESSION_ALREADY_EXISTS"]
         super().__init__(
-            error_code=ErrorCodes.SESSION_ALREADY_EXISTS,
-            message=ErrorMessages.SESSION_ALREADY_EXISTS,
-            http_status=ErrorHttpStatus.SESSION_ALREADY_EXISTS,
+            error_code=error.code,
+            message=error.message,
+            http_status=error.http_status,
             details={"player_id": player_id, "game_id": game_id},
         )
 
 
 class SessionNotFoundException(BaseServiceException):
     def __init__(self, player_id: str, game_id: str) -> None:
+        error = ERRORS["SESSION_NOT_FOUND"]
         super().__init__(
-            error_code=ErrorCodes.SESSION_NOT_FOUND,
-            message=ErrorMessages.SESSION_NOT_FOUND,
-            http_status=ErrorHttpStatus.SESSION_NOT_FOUND,
+            error_code=error.code,
+            message=error.message,
+            http_status=error.http_status,
             details={"player_id": player_id, "game_id": game_id},
         )
 
 
 class SessionAlreadyCompletedException(BaseServiceException):
     def __init__(self, game_session_id: str, status: str) -> None:
+        error = ERRORS["SESSION_ALREADY_COMPLETED"]
         super().__init__(
-            error_code=ErrorCodes.SESSION_ALREADY_COMPLETED,
-            message=ErrorMessages.SESSION_ALREADY_COMPLETED,
-            http_status=ErrorHttpStatus.SESSION_ALREADY_COMPLETED,
+            error_code=error.code,
+            message=error.message,
+            http_status=error.http_status,
             details={"game_session_id": game_session_id, "status": status},
         )
 
 
 class QuestionAlreadyAnsweredException(BaseServiceException):
     def __init__(self, question_id: str) -> None:
+        error = ERRORS["QUESTION_ALREADY_ANSWERED"]
         super().__init__(
-            error_code=ErrorCodes.QUESTION_ALREADY_ANSWERED,
-            message=ErrorMessages.QUESTION_ALREADY_ANSWERED,
-            http_status=ErrorHttpStatus.QUESTION_ALREADY_ANSWERED,
+            error_code=error.code,
+            message=error.message,
+            http_status=error.http_status,
             details={"question_id": question_id},
         )
 
 
 class NoQuestionsAvailableException(BaseServiceException):
     def __init__(self) -> None:
+        error = ERRORS["NO_QUESTIONS_AVAILABLE"]
         super().__init__(
-            error_code=ErrorCodes.NO_QUESTIONS_AVAILABLE,
-            message=ErrorMessages.NO_QUESTIONS_AVAILABLE,
-            http_status=ErrorHttpStatus.NO_QUESTIONS_AVAILABLE,
+            error_code=error.code,
+            message=error.message,
+            http_status=error.http_status,
+        )
+
+
+class InvalidQuestionIdException(BaseServiceException):
+    def __init__(self, question_id: str) -> None:
+        error = ERRORS["INVALID_QUESTION_ID"]
+        super().__init__(
+            error_code=error.code,
+            message=error.message,
+            http_status=error.http_status,
+            details={"question_id": question_id},
         )

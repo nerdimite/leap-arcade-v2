@@ -16,7 +16,12 @@ async def login(
     container: ServiceContainer = Depends(get_container),
 ) -> LoginResponse:
     """Authenticate with corp_id + event_code. Returns a signed JWT."""
-    return await container.auth.login(body.corp_id, body.event_code)
+    result = await container.auth.login(body.corp_id, body.event_code)
+    return LoginResponse(
+        access_token=result.access_token,
+        token_type=result.token_type,
+        player=result.player,
+    )
 
 
 @router.post("/logout", status_code=204, summary="Player logout")
