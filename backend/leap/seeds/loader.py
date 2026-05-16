@@ -55,13 +55,14 @@ async def _seed_rapid_fire(session: AsyncSession) -> None:
             text(
                 """
                 INSERT INTO rapid_fire_questions
-                    (question, options, correct_option_index, category, time_limit_ms)
+                    (id, question, options, correct_option_index, category, time_limit_ms)
                 VALUES
-                    (:question, :options, :correct_option_index, :category, :time_limit_ms)
-                ON CONFLICT DO NOTHING
+                    (:id, :question, :options, :correct_option_index, :category, :time_limit_ms)
+                ON CONFLICT (id) DO NOTHING
                 """
             ),
             {
+                "id": q["id"],
                 "question": q["question"],
                 "options": q["options"],
                 "correct_option_index": q["correct_option_index"],
