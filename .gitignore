@@ -1,2 +1,5 @@
 # Cursor hook machine state (local)
 .cursor/hooks/state/
+
+# Playwright CLI / MCP browser profile (machine-local)
+.playwright/
