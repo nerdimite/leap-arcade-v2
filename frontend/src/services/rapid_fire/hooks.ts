@@ -8,11 +8,9 @@ import {
   postAnswer,
   postPlay,
 } from "@/lib/api/rapid_fire";
+import { rapidFireQueryKeys } from "./keys";
 
-export const rapidFireQueryKeys = {
-  all: ["rapid-fire"] as const,
-  play: () => [...rapidFireQueryKeys.all, "play"] as const,
-};
+export { rapidFireQueryKeys };
 
 export function usePlay() {
   return useMutation({

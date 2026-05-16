@@ -2,7 +2,7 @@ import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query
 import { cookies, headers } from "next/headers";
 
 import { postPlay } from "@/lib/api/rapid_fire";
-import { rapidFireQueryKeys } from "@/services/rapid_fire/hooks";
+import { rapidFireQueryKeys } from "@/services/rapid_fire/keys";
 
 import { RapidFireClient } from "./_components/RapidFireClient";
 

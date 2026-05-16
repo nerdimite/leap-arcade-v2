@@ -8,7 +8,7 @@ const UpstreamLoginSuccessSchema = z.object({
 });
 
 function defaultBackendOrigin(): string {
-  return process.env.BACKEND_INTERNAL_ORIGIN ?? "http://fastapi:8000";
+  return process.env.BACKEND_INTERNAL_ORIGIN ?? "http://localhost:8000";
 }
 
 export async function POST(request: NextRequest) {

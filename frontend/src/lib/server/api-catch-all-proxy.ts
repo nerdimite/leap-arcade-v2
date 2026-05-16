@@ -26,7 +26,7 @@ export type ForwardApiOptions = {
 };
 
 function defaultBackendOrigin(): string {
-  return process.env.BACKEND_INTERNAL_ORIGIN ?? "http://fastapi:8000";
+  return process.env.BACKEND_INTERNAL_ORIGIN ?? "http://localhost:8000";
 }
 
 function buildUpstreamUrl(backendOrigin: string, pathSegments: string[]): URL {

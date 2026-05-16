@@ -23,6 +23,9 @@ services:
       postgres:
         condition: service_healthy
     env_file: ./backend/.env
+    # backend/.env often uses localhost for local `uv run`; in Compose the DB hostname is `postgres`.
+    environment:
+      POSTGRES_CONNECTION_STRING: postgresql+asyncpg://${POSTGRES_USER:-leap}:${POSTGRES_PASSWORD:-leap}@postgres:5432/${POSTGRES_DB:-leap}
     volumes:
       - ./backend/scripts:/app/scripts
     ports:
@@ -34,6 +37,19 @@ services:
       timeout: 5s
       retries: 5
       start_period: 15s
+
+  frontend:
+    build:
+      context: ./frontend
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      BACKEND_INTERNAL_ORIGIN: http://api:8000
+      NEXT_TELEMETRY_DISABLED: "1"
+    ports:
+      - "3000:3000"
+    restart: on-failure
 
 volumes:
   postgres_data:

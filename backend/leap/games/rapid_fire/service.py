@@ -19,7 +19,6 @@ from leap.service.exceptions import (
     NoQuestionsAvailableException,
     QuestionAlreadyAnsweredException,
     SessionAlreadyCompletedException,
-    SessionAlreadyExistsException,
     SessionNotFoundException,
 )
 from leap.types.game import GameSessionDTO, GameSessionStatus
@@ -108,9 +107,6 @@ class RapidFireService:
                 return RapidFirePlayPayload(status=game_session.status.value, result=result)
 
             asked_ids = await self.rapid_fire_answer_dao.get_asked_question_ids(session, game_session.id)
-            if len(asked_ids) == 0:
-                raise SessionAlreadyExistsException(player_id, "rapid_fire")
-
             question = self._pick_next_question(asked_ids)
             if question is None:
                 raise NoQuestionsAvailableException()
