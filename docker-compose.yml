@@ -2,13 +2,13 @@ services:
   postgres:
     image: postgres:16-alpine
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER:-leap}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-leap}
+      POSTGRES_DB: ${POSTGRES_DB:-leap}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -16,14 +16,15 @@ services:
       - "5432:5432"
 
   api:
-    build: .
+    build:
+      context: ./backend
     command: ["scripts/migrate.sh", "start"]
     depends_on:
       postgres:
         condition: service_healthy
-    env_file: .env
+    env_file: ./backend/.env
     volumes:
-      - ./scripts:/app/scripts
+      - ./backend/scripts:/app/scripts
     ports:
       - "8000:8000"
     restart: on-failure
