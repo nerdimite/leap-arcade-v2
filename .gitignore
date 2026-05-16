@@ -3,3 +3,4 @@
 
 # Playwright CLI / MCP browser profile (machine-local)
 .playwright/
+.playwright-cli
