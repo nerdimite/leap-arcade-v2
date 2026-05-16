@@ -7,6 +7,7 @@ from leap.games.rapid_fire.service import RapidFireService
 from leap.service.auth_service import AuthService
 from leap.service.leaderboard_service import LeaderboardService
 from leap.service.lobby_service import LobbyService
+from leap.service.player_session_service import PlayerSessionService
 
 
 class ServiceContainer:
@@ -25,6 +26,7 @@ class ServiceContainer:
 
         self.auth = AuthService(context_manager, player_dao)
         self.lobby = LobbyService(context_manager, game_session_dao)
+        self.player_sessions = PlayerSessionService(context_manager, game_session_dao)
         self.rapid_fire = RapidFireService(
             context_manager,
             game_session_dao,

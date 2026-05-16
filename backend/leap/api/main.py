@@ -1,7 +1,7 @@
 """FastAPI application factory + lifespan + global exception handlers.
 
 Route registration is intentionally narrow: only the slice that's implemented
-(auth, lobby, leaderboard, rapid_fire, health). Other game routes will be wired
+(auth, lobby, players, leaderboard, rapid_fire, health). Other game routes will be wired
 up as their respective vertical slices land.
 """
 
@@ -16,7 +16,7 @@ from fastapi.exceptions import HTTPException, RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from leap.api.routes import auth, health, leaderboard, lobby
+from leap.api.routes import auth, health, leaderboard, lobby, players
 from leap.api.routes.games import rapid_fire
 from leap.config.settings import get_settings
 from leap.core.common.logger import configure_json_logging, get_logger
@@ -160,5 +160,6 @@ async def unhandled_exception_handler(request: Request, exc: Exception):
 app.include_router(health.router, tags=["Health"])
 app.include_router(auth.router, prefix="/auth", tags=["Auth"])
 app.include_router(lobby.router, prefix="/lobby", tags=["Lobby"])
+app.include_router(players.router, prefix="/players", tags=["Players"])
 app.include_router(leaderboard.router, prefix="/leaderboard", tags=["Leaderboard"])
 app.include_router(rapid_fire.router, prefix="/games/rapid-fire", tags=["Rapid Fire"])

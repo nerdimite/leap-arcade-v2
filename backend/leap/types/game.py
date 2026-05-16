@@ -45,3 +45,11 @@ class GameStatusDTO(BaseLeapModel):
     display_name: str
     has_played: bool
     score: Optional[int] = None
+
+
+class PlayerSessionSummaryDTO(BaseLeapModel):
+    """One row in ``GET /players/me/sessions`` — current session state per game."""
+
+    game_id: str
+    status: GameSessionStatus
+    score: Optional[int] = None
