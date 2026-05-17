@@ -1,0 +1,77 @@
+[
+  {
+    "id": "00000000-0000-4000-8000-000000000001",
+    "sequenceIndex": 1,
+    "start": "Biology",
+    "startLink": "https://en.wikipedia.org/wiki/Biology",
+    "clue": "I let the model peek around, to find which words truly count — what am I?",
+    "end": "Attention (machine learning)",
+    "endLink": "https://en.wikipedia.org/wiki/Attention_(machine_learning)",
+    "optimalClickCount": 3,
+    "timeLimitMs": 180000,
+    "solutionPath": [
+      "Biology",
+      "Biology in fiction",
+      "Intelligent machine (redirects to Artificial intelligence)",
+      "Attention (machine learning)"
+    ]
+  },
+  {
+    "id": "00000000-0000-4000-8000-000000000002",
+    "sequenceIndex": 2,
+    "start": "Biology",
+    "startLink": "https://en.wikipedia.org/wiki/Biology",
+    "clue": "(👑 KING – 👨 MAN) + 👩 WOMAN = ❓. This AI math might feel strange, but it's how AI understands language. What's the technique behind this?",
+    "end": "Word Embedding",
+    "endLink": "https://en.wikipedia.org/wiki/Word_embedding",
+    "optimalClickCount": 3,
+    "timeLimitMs": 180000,
+    "solutionPath": [
+      "Biology",
+      "Biology in fiction",
+      "Intelligent machine (redirects to Artificial intelligence)",
+      "Word Embedding"
+    ]
+  },
+  {
+    "id": "00000000-0000-4000-8000-000000000003",
+    "sequenceIndex": 3,
+    "start": "Biology",
+    "startLink": "https://en.wikipedia.org/wiki/Biology",
+    "clue": "I compress, I decode, I learn without a guide. I see the input, hide its pride, then try to bring it back, side by side. What am I?",
+    "end": "Autoencoder",
+    "endLink": "https://en.wikipedia.org/wiki/Autoencoder",
+    "optimalClickCount": 3,
+    "timeLimitMs": 180000,
+    "solutionPath": ["Biology", "DNA", "Machine learning", "Autoencoder"]
+  },
+  {
+    "id": "00000000-0000-4000-8000-000000000004",
+    "sequenceIndex": 4,
+    "start": "Computer",
+    "startLink": "https://en.wikipedia.org/wiki/Computer",
+    "clue": "I'm one of Amazon's Web Service, that allows users to rent virtual computers on which to run their own computer applications.",
+    "end": "Amazon Elastic Compute Cloud",
+    "endLink": "https://en.wikipedia.org/wiki/Amazon_Elastic_Compute_Cloud",
+    "optimalClickCount": 3,
+    "timeLimitMs": 180000,
+    "solutionPath": [
+      "Computer",
+      "ARM architecture (redirects to ARM architecture family)",
+      "FreeBSD",
+      "Amazon EC2 (redirects to Amazon Elastic Compute Cloud)"
+    ]
+  },
+  {
+    "id": "00000000-0000-4000-8000-000000000005",
+    "sequenceIndex": 5,
+    "start": "Computer",
+    "startLink": "https://en.wikipedia.org/wiki/Computer",
+    "clue": "This architectural style allows different services run independently, communicating through APIs. It's like building with LEGO blocks, where each block can be developed and scaled separately.",
+    "end": "Microservices",
+    "endLink": "https://en.wikipedia.org/wiki/Microservices",
+    "optimalClickCount": 3,
+    "timeLimitMs": 180000,
+    "solutionPath": ["Computer", "BIOS", "API", "Microservices"]
+  }
+]

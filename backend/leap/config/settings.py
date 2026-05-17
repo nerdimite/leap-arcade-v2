@@ -20,6 +20,8 @@ class Settings(BaseSettings):
 
     SEED_ON_STARTUP: bool = True
 
+    WIKI_BACK_BUTTON_ENABLED: bool = False
+
     model_config = {
         "env_file": ".env",
         "case_sensitive": True,

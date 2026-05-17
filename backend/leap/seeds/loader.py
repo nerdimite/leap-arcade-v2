@@ -19,6 +19,7 @@ async def seed_all(session: AsyncSession) -> None:
     """Upsert players and rapid fire questions from JSON seed files."""
     await _seed_players(session)
     await _seed_rapid_fire(session)
+    await _seed_wiki(session)
 
 
 async def _seed_players(session: AsyncSession) -> None:
@@ -72,3 +73,66 @@ async def _seed_rapid_fire(session: AsyncSession) -> None:
         )
     await session.commit()
     logger.info("seed.rapid_fire.done", count=len(questions))
+
+
+async def _seed_wiki(session: AsyncSession) -> None:
+    path = DATA_DIR / "wiki.json"
+    if not path.exists():
+        logger.warning("seed.wiki.missing", path=str(path))
+        return
+
+    rounds = json.loads(path.read_text())
+    for r in rounds:
+        await session.execute(
+            text(
+                """
+                INSERT INTO wiki_rounds (
+                    id,
+                    sequence_index,
+                    start_title,
+                    start_url,
+                    target_title,
+                    target_url,
+                    clue,
+                    optimal_click_count,
+                    solution_path,
+                    time_limit_ms
+                )
+                VALUES (
+                    :id,
+                    :sequence_index,
+                    :start_title,
+                    :start_url,
+                    :target_title,
+                    :target_url,
+                    :clue,
+                    :optimal_click_count,
+                    :solution_path,
+                    :time_limit_ms
+                )
+                ON CONFLICT (sequence_index) DO UPDATE SET
+                    start_title = EXCLUDED.start_title,
+                    start_url = EXCLUDED.start_url,
+                    target_title = EXCLUDED.target_title,
+                    target_url = EXCLUDED.target_url,
+                    clue = EXCLUDED.clue,
+                    optimal_click_count = EXCLUDED.optimal_click_count,
+                    solution_path = EXCLUDED.solution_path,
+                    time_limit_ms = EXCLUDED.time_limit_ms
+                """
+            ),
+            {
+                "id": r["id"],
+                "sequence_index": r["sequenceIndex"],
+                "start_title": r["start"],
+                "start_url": r["startLink"],
+                "target_title": r["end"],
+                "target_url": r["endLink"],
+                "clue": r["clue"],
+                "optimal_click_count": r["optimalClickCount"],
+                "solution_path": r["solutionPath"],
+                "time_limit_ms": r.get("timeLimitMs", 180000),
+            },
+        )
+    await session.commit()
+    logger.info("seed.wiki.done", count=len(rounds))
