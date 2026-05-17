@@ -78,6 +78,17 @@ class GameSessionDAO(BaseReadPgDAO[GameSession], BaseWritePgDAO[GameSession]):
         await session.refresh(orm)
         return self._to_dto(orm)
 
+    async def add_to_score(
+        self, session: AsyncSession, game_session_id: str, delta: int
+    ) -> GameSessionDTO:
+        orm = await session.get(GameSession, game_session_id)
+        if orm is None:
+            raise KeyError(f"GameSession not found: {game_session_id}")
+        orm.score = (orm.score or 0) + delta
+        await session.flush()
+        await session.refresh(orm)
+        return self._to_dto(orm)
+
     async def get_leaderboard(self, session: AsyncSession) -> List[LeaderboardEntryDTO]:
         """Aggregate scores per player; order matches ``LeaderboardService`` tie-break rules."""
         sql = text(
