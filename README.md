@@ -1,36 +1,52 @@
-# LEAP (leap-5m-26)
+# LEAP Arcade — 2026 5-month Intern Batch
 
-Internal corporate event game platform: players sign in with a corp employee ID and shared event code, play mini-games from a lobby, and appear on a leaderboard. **Rapid Fire Quiz** is the primary implemented backend game; other games may exist as stubs in the codebase.
+**LEAP Arcade** is an internal corporate event game platform built for the 2026 5-month intern batch. Players compete across a set of live mini-games — Rapid Fire Quiz, Wikipedia Speed Run, Picture Illustration, Four Pics One Lie, and Crossword — from a shared lobby, with scores flowing into a real-time leaderboard.
 
-This repo contains:
+Players sign in using their corporate employee ID and a shared event code. No per-player secrets, no user management overhead — just play.
 
-| Path | Role |
-|------|------|
-| `backend/` | FastAPI + SQLAlchemy (async) + PostgreSQL — API, migrations, seeds |
-| `frontend/` | Next.js app (login, lobby, game shells, API rewrites to the backend) |
-| `docs/` | Plans, design specs, and issue write-ups |
+---
 
-Conventions and agent-oriented detail live in **`AGENTS.md`** (repo root) and **`frontend/AGENTS.md`**.
+## Repo layout
+
+| Path | What lives here |
+|------|----------------|
+| `backend/` | FastAPI · SQLAlchemy (async) · PostgreSQL — API, migrations, seeds |
+| `frontend/` | Next.js — login, lobby, game shells, leaderboard |
+| `docs/` | Technical plans, design specs, and ADRs |
+
+> Agent-oriented conventions and architecture detail are in **`AGENTS.md`** (repo root) and **`frontend/AGENTS.md`**.
+
+---
 
 ## Prerequisites
 
-- **Docker** and Docker Compose (for Postgres and optional API container)
-- **[uv](https://docs.astral.sh/uv/)** (Python 3.12+; the backend pins dependencies via `backend/pyproject.toml`)
-- **Bun** (for the frontend — see `frontend/AGENTS.md`)
+- **Docker & Docker Compose** — for Postgres (and optional containerised API)
+- **[uv](https://docs.astral.sh/uv/)** — Python 3.12+ package manager (`backend/pyproject.toml`)
+- **Bun** — frontend package manager (see `frontend/AGENTS.md`)
+- **GNU Make** *(optional)* — short commands at the repo root; raw shell equivalents are shown below each `make` call
 
-Optional: **GNU Make** at the repo root for short commands (`make dev`, `make e2e`, …). If `make` is missing, use the shell equivalents below.
+---
 
 ## First-time setup
 
-1. **Backend env** — copy `backend/.env.example` to `backend/.env` and adjust values as needed. Compose and local commands load this file.
-2. **Backend deps** — from `backend/`: `uv sync`
-3. **Frontend deps** — from `frontend/`: `bun install`
+```bash
+# 1. Backend environment
+cp backend/.env.example backend/.env   # then adjust values as needed
 
-## Local development
+# 2. Backend dependencies (from backend/)
+uv sync
 
-### Full stack (Postgres + API in Docker)
+# 3. Frontend dependencies (from frontend/)
+bun install
+```
 
-From the **repo root** (uses `backend/.env`):
+---
+
+## Running locally
+
+### Option A — Full stack in Docker
+
+Spin up Postgres, the API, and the frontend all at once:
 
 ```bash
 make dev
@@ -38,9 +54,11 @@ make dev
 docker compose --env-file backend/.env up -d
 ```
 
-API: `http://localhost:8000` · Postgres (dev): `localhost:5432`
-
-Stop:
+| Service | URL |
+|---------|-----|
+| Frontend | http://localhost:3000 |
+| API | http://localhost:8000 |
+| Postgres | localhost:5432 |
 
 ```bash
 make dev-down
@@ -48,89 +66,98 @@ make dev-down
 docker compose --env-file backend/.env down
 ```
 
-### Backend only (against existing Postgres)
+---
 
-From `backend/`:
+### Option B — Postgres in Docker, API + frontend on host
+
+Best for active development — hot reload works for both backend and frontend.
+
+**1. Start Postgres only:**
 
 ```bash
-uv run uvicorn leap.api.main:app --port 8000
+docker compose --env-file backend/.env up -d postgres
 ```
 
-See **`AGENTS.md`** for migrations, seeding, and project layout (`leap/api`, `leap/service`, `leap/dao`, …).
-
-### Frontend
-
-From `frontend/`:
+**2. Run the API** (from `backend/`):
 
 ```bash
-bun dev
+uv run alembic upgrade head   # apply migrations + seed data
+uv run dev                    # hot-reload on http://localhost:8000
+```
+
+**3. Run the frontend** (from `frontend/`):
+
+```bash
+bun dev   # http://localhost:3000
+```
+
+Start order: Postgres → API → frontend.
+
+```bash
+# Stop Postgres when done (omit -v to keep the postgres_data volume)
+docker compose --env-file backend/.env down
 ```
 
 ---
 
 ## Tests
 
-### Unit tests (in-memory fakes, no Docker DB)
+### Unit tests
 
-From the **repo root**:
+No Docker required — runs against in-memory fakes.
 
 ```bash
 make unit
-```
-
-From `backend/`:
-
-```bash
+# or (from backend/)
 uv run pytest tests/unit/ -v
 ```
 
-### E2E API tests (real PostgreSQL, migrations, seeds)
+### E2E API tests
 
-These run **httpx + ASGITransport** against the app while using a **dedicated test database** on port **5433** (`leap_test`), so dev data on `5432` is untouched. Compose uses project name **`leap-e2e`** so tearing down test stacks does not remove the dev `postgres_data` volume.
-
-**One-shot (recommended):**
+Spins up a **dedicated test database** on port `5433` (`leap_test`) so dev data on `5432` is never touched. Uses Compose project name `leap-e2e` to keep volumes isolated.
 
 ```bash
 make e2e
 ```
 
-**If `make` is not installed**, run this from the **repo root**:
+<details>
+<summary>Without <code>make</code></summary>
 
 ```bash
+# Start test Postgres
 docker compose -p leap-e2e --env-file backend/.env \
   -f docker-compose.yml -f docker-compose.test.yml \
   up -d postgres_test --wait
 
-( cd backend && POSTGRES_CONNECTION_STRING="postgresql+asyncpg://leap:leap@localhost:5433/leap_test" \
-  uv run alembic upgrade head )
+# Migrate test DB
+(cd backend && POSTGRES_CONNECTION_STRING="postgresql+asyncpg://leap:leap@localhost:5433/leap_test" \
+  uv run alembic upgrade head)
 
-( cd backend && uv run pytest tests/e2e/ -v )
+# Run tests
+(cd backend && uv run pytest tests/e2e/ -v)
 
+# Tear down
 docker compose -p leap-e2e --env-file backend/.env \
   -f docker-compose.yml -f docker-compose.test.yml down
 ```
 
-**Reset test DB volume** (bad migration state, corrupted volume, etc.):
+</details>
+
+**Reset a broken test DB:**
 
 ```bash
 make e2e-reset
-```
-
-Without `make`: destroy the `leap-e2e` project volumes, then run the full manual e2e sequence above.
-
-```bash
+# or
 docker compose -p leap-e2e --env-file backend/.env \
   -f docker-compose.yml -f docker-compose.test.yml down -v
 ```
 
-Design and journey list: **`docs/plans/2026-05-16-e2e-api-tests-prd.md`**.
-
 ---
 
-## Key documentation
+## Key docs
 
-| Document | Contents |
-|----------|----------|
+| Document | What it covers |
+|----------|---------------|
 | `docs/plans/2026-05-10-backend-technical-design.md` | Backend architecture |
-| `docs/plans/2026-05-16-e2e-api-tests-prd.md` | E2E API test infrastructure |
+| `docs/plans/2026-05-16-e2e-api-tests-prd.md` | E2E test infrastructure |
 | `docs/design/rapid-fire.meridian.yaml` | Rapid Fire domain spec (source of truth) |
