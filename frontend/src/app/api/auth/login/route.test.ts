@@ -43,7 +43,7 @@ describe("POST /api/auth/login route", () => {
     expect(res.status).toBe(200);
     expect(fetchMock).toHaveBeenCalledTimes(1);
     const [calledUrl] = fetchMock.mock.calls[0] as unknown as [string | URL, RequestInit?];
-    expect(String(calledUrl)).toBe("http://fastapi:8000/auth/login");
+    expect(String(calledUrl)).toBe("http://localhost:8000/auth/login");
 
     const json = await res.json();
     expect(json).toEqual({ ok: true });

@@ -10,5 +10,6 @@ export function usePlayerSessions() {
     queryKey: PLAYER_SESSIONS_QUERY_KEY,
     queryFn: () => getPlayerSessions(),
     staleTime: PLAYER_SESSIONS_STALE_TIME_MS,
+    refetchOnMount: "always",
   });
 }
