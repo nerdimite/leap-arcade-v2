@@ -70,6 +70,8 @@ All `/api/*` requests are proxied from Next.js to FastAPI via `next.config.mjs` 
 - Use `refetchInterval` on the leaderboard query (lobby mini-view + full page) — do not hand-roll `setInterval` + fetch for polling
 - Use `useMutation` for answer submissions — it handles `isPending` guards and prevents double-submits
 - Every game sets `setIsDirty(true)` via `useNavigationGuard` on session start and `setIsDirty(false)` on completion — this arms the history trap and `beforeunload` handler automatically
+- Split non-trivial route UIs into `*Client.tsx` (smart: hooks, mutations, effects, navigation guard, reducer) and `*View.tsx` (dumb: `viewState` + callback props, switches on `viewState.status`, renders leaf components). Leaf components have no hooks; the only sanctioned exception is `WikiArticlePane`'s DOM click delegation `useEffect` (see ADR-0005).
+- Stories are co-located as `*.stories.tsx`; meta omits `title` (path-derived sidebar); default to one `Default` story per leaf unless variants warrant more; add one story per status for every `*View`.
 
 ## Agent Memory
 
@@ -100,3 +102,4 @@ All `/api/*` requests are proxied from Next.js to FastAPI via `next.config.mjs` 
 |-----|-------------|
 | `docs/patterns/index.md` | Entry point — what pattern docs exist and when to use them |
 | `docs/project_brief.md` | Game rules, scoring logic, and architecture decisions |
+| `docs/adr/0005-frontend-dumb-smart-split-and-storybook.md` | Dumb/smart split, Storybook conventions, and WikiArticlePane hook exception |

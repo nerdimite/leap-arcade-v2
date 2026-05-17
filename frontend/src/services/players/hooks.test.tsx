@@ -3,13 +3,14 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
 import { HttpResponse, http } from "msw";
-import { describe, expect, it } from "vitest";
 import type { ReactNode } from "react";
+import { describe, expect, it } from "vitest";
 
 import { QueryClientProviderWrapper } from "@/components/query-client-provider";
 import { server } from "@/test/msw-server";
 
 import { usePlayerSessions } from "./hooks";
+import type { PlayerSessionsResponse } from "./schema";
 
 describe("usePlayerSessions", () => {
   it("returns session data from the API", async () => {
@@ -38,7 +39,9 @@ describe("usePlayerSessions", () => {
   });
 
   it("refetches on remount even while cached data is fresh", async () => {
-    let responseBody = [{ game_id: "rapid_fire", status: "active", score: null }];
+    let responseBody: PlayerSessionsResponse = [
+      { game_id: "rapid_fire", status: "active", score: null },
+    ];
 
     server.use(
       http.get(

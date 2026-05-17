@@ -1,0 +1,26 @@
+[
+    {
+        "answer": "Cloud Computing",
+        "clue1": "virtualization",
+        "clue2": "redundancy",
+        "clue3": "scalability",
+        "clue4": "load balancing",
+        "clue5": "instances"
+    },
+    {
+        "answer": "Machine Learning",
+        "clue1": "algorithms",
+        "clue2": "training data",
+        "clue3": "model",
+        "clue4": "prediction",
+        "clue5": "artificial intelligence"
+    },
+    {
+        "answer": "Blockchain",
+        "clue1": "decentralization",
+        "clue2": "cryptography",
+        "clue3": "ledger",
+        "clue4": "consensus",
+        "clue5": "smart contracts"
+    }
+]

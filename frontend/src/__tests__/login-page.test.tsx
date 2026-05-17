@@ -5,7 +5,7 @@ import userEvent from "@testing-library/user-event";
 import { HttpResponse, http } from "msw";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import LoginPage from "@/app/(auth)/login/page";
+import { LoginClient } from "@/app/(auth)/login/_components/LoginClient";
 import { QueryClientProviderWrapper } from "@/components/query-client-provider";
 import { server } from "@/test/msw-server";
 
@@ -22,7 +22,7 @@ vi.mock("next/navigation", () => ({
 function renderLogin() {
   return render(
     <QueryClientProviderWrapper>
-      <LoginPage />
+      <LoginClient />
     </QueryClientProviderWrapper>,
   );
 }
