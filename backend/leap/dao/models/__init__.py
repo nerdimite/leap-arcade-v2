@@ -3,6 +3,8 @@ from leap.dao.models.game_session import GameSession
 from leap.dao.models.player import Player
 from leap.dao.models.rapid_fire_answer import RapidFireAnswer
 from leap.dao.models.rapid_fire_question import RapidFireQuestion
+from leap.dao.models.wiki_puzzle_attempt import WikiPuzzleAttempt
+from leap.dao.models.wiki_round import WikiRound
 
 __all__ = [
     "Base",
@@ -10,4 +12,6 @@ __all__ = [
     "GameSession",
     "RapidFireQuestion",
     "RapidFireAnswer",
+    "WikiRound",
+    "WikiPuzzleAttempt",
 ]
