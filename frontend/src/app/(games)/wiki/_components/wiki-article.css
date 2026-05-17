@@ -1,0 +1,126 @@
+/* Scoped Wikipedia-like article chrome — only affects `.leap-wiki-skin` subtree.
+   The root resets the font stack and all colour inheritance so that no app-level
+   CSS custom properties or Tailwind base styles bleed into the injected article HTML. */
+.leap-wiki-skin {
+  --wiki-paper: oklch(0.988 0.003 95.2);
+  --wiki-ink: oklch(0.23 0.01 286);
+  --wiki-muted: oklch(0.47 0.018 295);
+  --wiki-line: oklch(0.87 0.01 95);
+  --wiki-link: oklch(0.42 0.17 258);
+  --wiki-link-visited: oklch(0.4 0.11 315);
+
+  /* Re-anchor inherited properties so the app cascade stops here. */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 400;
+  line-height: 1.7;
+  letter-spacing: 0.01em;
+  color: var(--wiki-ink);
+  background: var(--wiki-paper);
+  -webkit-font-smoothing: auto;
+}
+
+.dark .leap-wiki-skin {
+  --wiki-paper: oklch(0.985 0.004 92);
+  --wiki-ink: oklch(0.24 0.012 286);
+  --wiki-muted: oklch(0.5 0.02 295);
+  --wiki-line: oklch(0.84 0.012 92);
+  --wiki-link: oklch(0.44 0.17 258);
+  --wiki-link-visited: oklch(0.42 0.12 315);
+}
+
+.leap-wiki-skin::after {
+  content: "";
+  display: block;
+  clear: both;
+}
+
+.leap-wiki-skin :where(p) {
+  margin-top: 0.5rem;
+  margin-bottom: 0.6rem;
+}
+
+.leap-wiki-skin :where(h1, h2, h3, h4) {
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.leap-wiki-skin :where(ul, ol) {
+  margin: 0.4rem 0 0.75rem 1.25rem;
+  padding: 0;
+}
+
+.leap-wiki-skin :where(table) {
+  display: table;
+  width: auto;
+  max-width: 100%;
+  border-collapse: collapse;
+  margin: 0.75rem 0;
+  font-size: 0.875rem;
+  background: color-mix(in oklch, var(--wiki-paper) 94%, white);
+}
+
+.leap-wiki-skin :where(table td, table th) {
+  border: 1px solid var(--wiki-line);
+  padding: 0.35rem 0.5rem;
+  vertical-align: top;
+}
+
+.leap-wiki-skin :where(table.infobox, table.sidebar, table.vertical-navbox) {
+  float: right;
+  clear: right;
+  width: min(22rem, 38%);
+  margin: 0.1rem 0 1rem 1.5rem;
+  background: color-mix(in oklch, var(--wiki-paper) 96%, white);
+}
+
+.leap-wiki-skin :where(#toc, .toc, .vector-toc) {
+  float: left;
+  clear: left;
+  width: min(18rem, 34%);
+  margin: 0.35rem 1.4rem 1rem 0;
+  border: 1px solid var(--wiki-line);
+  background: color-mix(in oklch, var(--wiki-paper) 97%, white);
+  padding: 0.75rem 0.9rem;
+}
+
+.leap-wiki-skin :where(#toc ul, .toc ul, .vector-toc ul) {
+  margin: 0.35rem 0 0 1rem;
+}
+
+.leap-wiki-skin :where(img) {
+  max-width: 100%;
+  height: auto;
+}
+
+.leap-wiki-skin :where(a[data-wiki-title]) {
+  color: var(--wiki-link);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.leap-wiki-skin :where(a[data-wiki-title]:visited) {
+  color: var(--wiki-link-visited);
+}
+
+.leap-wiki-skin :where(.shortdescription, .hatnote, .thumbcaption, figcaption) {
+  color: var(--wiki-muted);
+}
+
+.leap-wiki-skin :where(blockquote) {
+  margin: 0.5rem 0 0.75rem 0.75rem;
+  padding-left: 0.75rem;
+  border-left: 3px solid color-mix(in oklch, var(--wiki-muted) 35%, transparent);
+}
+
+@media (max-width: 960px) {
+  .leap-wiki-skin :where(table.infobox, table.sidebar, table.vertical-navbox, #toc, .toc, .vector-toc) {
+    float: none;
+    width: 100%;
+    margin: 0.75rem 0;
+  }
+}
