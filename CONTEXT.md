@@ -26,7 +26,28 @@ A card on the Lobby representing one mini-game. Shows the game name, description
 A server-side record created when a player starts a game. Keyed on `(player_id, game_id)` — one session per player per game. Statuses: `active`, `completed`, `abandoned`. The `started_at` timestamp is the server-side source of truth for elapsed time.
 
 ### Rapid Fire
-The only fully in-scope game for this build. A 15-question MCQ quiz. Questions are served one at a time; each has its own `time_limit_ms`. The player selects one of four options or their timer expires (treated as a skip). Scoring: 50–100 pts per correct answer based on speed; 0 pts for wrong or skipped.
+A 15-question MCQ quiz. Questions are served one at a time; each has its own `time_limit_ms`. The player selects one of four options or their timer expires (treated as a skip). Scoring: 50–100 pts per correct answer based on speed; 0 pts for wrong or skipped.
+
+### Wikipedia Speed Run
+A navigation game where the player works through all 5 Wiki Puzzles in a fixed order. Max score: 1000 pts (200 per puzzle).
+
+### Wiki Puzzle
+One start-to-target Wikipedia navigation challenge. The player is shown a Puzzle Clue (a riddle describing the target page) and the start page. They navigate by clicking internal Wikipedia links to reach the target. Each puzzle has a configurable `time_limit_ms`; the timer starts immediately when the clue is shown. Scoring: steps score (max 125) + time bonus (max 75) = max 200 per puzzle. Timeout scores 0.
+
+### Puzzle Clue
+The riddle shown to the player at the start of each Wiki Puzzle. Describes the target page without revealing its title. The player must deduce the target and navigate to it. Stored as the `clue` field on a Wiki Round.
+
+### Wiki Round
+A seed-data record defining one Wiki Puzzle: start page, target page, clue text, `optimal_click_count`, and `time_limit_ms`. All 5 rounds are played by every player in a fixed seed order.
+
+### Wiki Puzzle Attempt
+A server-side record of one player's attempt at one Wiki Round within their Wikipedia Speed Run Game Session. Tracks the full `click_path` (all page titles visited, including the start page and any backtracking), `steps_taken` (total clicks, where back counts as a step), `started_at`, `time_ms` on completion, and per-puzzle `score`. Statuses: `active`, `completed`, `timed_out`.
+
+### Navigation Step
+A single deliberate page visit within a Wiki Puzzle Attempt. Recorded server-side. Includes forward link clicks and back-button presses (when the back button is enabled). Redirect pages count as 1 step. The step count equals `len(click_path) − 1` (start page is not a step).
+
+### Wiki Back Button
+An optional in-game "← Back" button that navigates the player to the previous page in their click path. Counts as one Navigation Step. Controlled by a configurable feature flag; browser back is intercepted by the Navigation Guard regardless.
 
 ### Question Timer
 A per-question countdown rendered by the client, starting from the question's `time_limit_ms`. Starts after a configurable get-ready delay. Resets to full `time_limit_ms` on page refresh (server has no per-question start timestamp). When it reaches zero, the client auto-submits with `selected_option: null`.
