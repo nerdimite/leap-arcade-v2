@@ -37,3 +37,6 @@ next-env.d.ts
 
 # playwright
 .playwright-cli
+
+# storybook
+storybook-static
