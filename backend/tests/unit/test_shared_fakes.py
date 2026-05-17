@@ -160,7 +160,7 @@ class TestDependencyOverrideInfrastructure:
         container = make_fake_container()
         assert isinstance(container, FakeServiceContainer)
         assert container.lobby is not None
-        assert container.rapid_fire is not None
+        assert container.wiki_speed_run is not None
         assert container.leaderboard is not None
 
     def test_auth_override_fixture_wires_lobby_without_real_jwt(

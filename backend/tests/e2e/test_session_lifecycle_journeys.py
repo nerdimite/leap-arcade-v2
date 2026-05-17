@@ -1,4 +1,4 @@
-"""Session lifecycle e2e journeys: abandon, resume, duplicate /play."""
+"""Session lifecycle e2e journeys: abandon, resume, repeat /play idempotency."""
 
 from __future__ import annotations
 
@@ -95,7 +95,7 @@ async def test_resume_mid_game_reflects_prior_answers(client: httpx.AsyncClient)
     assert str(q_resume["id"]) not in {qid1}
 
 
-async def test_duplicate_play_while_session_active_returns_409(
+async def test_second_play_while_session_active_resumes_same_session(
     client: httpx.AsyncClient,
 ) -> None:
     token = await _login(client, "emp003")
@@ -103,6 +103,12 @@ async def test_duplicate_play_while_session_active_returns_409(
 
     r1 = await client.post("/games/rapid-fire/play", headers=h)
     assert r1.status_code == 200
+    b1 = r1.json()
+    assert b1["status"] == "active"
 
     r2 = await client.post("/games/rapid-fire/play", headers=h)
-    assert r2.status_code == 409
+    assert r2.status_code == 200
+    b2 = r2.json()
+    assert b2["game_session_id"] == b1["game_session_id"]
+    assert b2["status"] == "active"
+    assert b2["questions_answered"] == 0

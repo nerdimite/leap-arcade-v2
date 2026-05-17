@@ -13,13 +13,15 @@ from tests.unit.api.rapid_fire.assertions import assert_no_correct_option_index_
 
 
 class TestRapidFirePlay:
-    def test_second_play_before_any_answer_returns_409(
+    def test_second_play_before_any_answer_resumes_same_session(
         self, rapid_fire_client: TestClient, auth_player: CurrentPlayer
     ) -> None:
         r1 = rapid_fire_client.post("/games/rapid-fire/play")
         assert r1.status_code == 200
         r2 = rapid_fire_client.post("/games/rapid-fire/play")
-        assert r2.status_code == 409
+        assert r2.status_code == 200
+        assert r2.json()["game_session_id"] == r1.json()["game_session_id"]
+        assert r2.json()["questions_answered"] == 0
 
     def test_new_player_active_with_first_question(
         self, rapid_fire_client: TestClient

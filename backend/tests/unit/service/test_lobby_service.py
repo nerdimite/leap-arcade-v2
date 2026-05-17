@@ -75,7 +75,7 @@ class TestLobbyServiceGetLobby:
 
     @pytest.mark.asyncio
     async def test_active_session_does_not_count_as_played(self):
-        """An abandoned or active session (no score) is not counted as a completed play."""
+        """An in-progress session is not locked in the lobby yet."""
         active = GameSessionDTO(
             id="session-rf",
             player_id="emp001",
@@ -90,6 +90,25 @@ class TestLobbyServiceGetLobby:
 
         rapid_fire = next(g for g in result.games if g.game_id == "rapid_fire")
         assert rapid_fire.has_played is False
+
+    @pytest.mark.asyncio
+    async def test_abandoned_session_counts_as_played_with_score(self):
+        """Abandoned sessions lock the tile like completed ones (partial score shown)."""
+        abandoned = GameSessionDTO(
+            id="session-wiki",
+            player_id="emp001",
+            game_id="wiki",
+            status=GameSessionStatus.ABANDONED,
+            score=120,
+            started_at=utc_now(),
+            completed_at=utc_now(),
+        )
+        svc = _make_service(sessions=[abandoned])
+        result = await svc.get_lobby(_make_player())
+
+        wiki = next(g for g in result.games if g.game_id == "wiki")
+        assert wiki.has_played is True
+        assert wiki.score == 120
 
     @pytest.mark.asyncio
     async def test_player_display_name_in_response(self):
