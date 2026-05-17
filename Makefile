@@ -9,10 +9,10 @@ COMPOSE_E2E := docker compose -p leap-e2e --env-file $(BACKEND_DIR)/.env -f dock
 # Must match postgres_test credentials (see backend/.env.example)
 E2E_DB_URL := postgresql+asyncpg://leap:leap@localhost:5433/leap_test
 
-dev:
+start:
 	$(COMPOSE_DEV) up -d
 
-dev-down:
+stop:
 	$(COMPOSE_DEV) down
 
 unit:
