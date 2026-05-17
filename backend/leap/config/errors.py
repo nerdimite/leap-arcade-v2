@@ -65,4 +65,29 @@ ERRORS: Dict[str, ErrorDefinition] = {
         http_status=HTTPStatus.UNPROCESSABLE_ENTITY,
         message="Unknown question_id for this game",
     ),
+    "NO_WIKI_ROUNDS_AVAILABLE": ErrorDefinition(
+        code=3003,
+        http_status=HTTPStatus.SERVICE_UNAVAILABLE,
+        message="No wiki rounds are configured for this event",
+    ),
+    "WIKI_PUZZLE_NOT_ACTIVE": ErrorDefinition(
+        code=2005,
+        http_status=HTTPStatus.CONFLICT,
+        message="No active wiki puzzle attempt for navigation",
+    ),
+    "WIKI_PUZZLE_TIMER_EXPIRED": ErrorDefinition(
+        code=2006,
+        http_status=HTTPStatus.CONFLICT,
+        message="Wiki puzzle time limit has elapsed",
+    ),
+    "WIKI_BACK_BUTTON_DISABLED": ErrorDefinition(
+        code=2007,
+        http_status=HTTPStatus.FORBIDDEN,
+        message="Wiki in-game back navigation is disabled",
+    ),
+    "WIKI_NO_PREVIOUS_PAGE": ErrorDefinition(
+        code=2008,
+        http_status=HTTPStatus.CONFLICT,
+        message="There is no previous wiki page to return to",
+    ),
 }

@@ -1,9 +1,15 @@
+from leap.config.settings import get_settings
 from leap.core.context_manager import ContextManager
 from leap.dao.game_session_dao import GameSessionDAO
 from leap.dao.player_dao import PlayerDAO
 from leap.dao.rapid_fire_answer_dao import RapidFireAnswerDAO
 from leap.dao.rapid_fire_question_dao import RapidFireQuestionDAO
+from leap.dao.wiki_puzzle_attempt_dao import WikiPuzzleAttemptDAO
+from leap.dao.wiki_round_dao import WikiRoundDAO
 from leap.games.rapid_fire.service import RapidFireService
+from leap.games.wiki.html_rewriter import WikiHtmlRewriter
+from leap.games.wiki.service import WikiSpeedRunService
+from leap.games.wiki.wikipedia_client import WikipediaClient
 from leap.service.auth_service import AuthService
 from leap.service.leaderboard_service import LeaderboardService
 from leap.service.lobby_service import LobbyService
@@ -23,6 +29,11 @@ class ServiceContainer:
         game_session_dao = GameSessionDAO()
         rapid_fire_answer_dao = RapidFireAnswerDAO()
         rapid_fire_question_dao = RapidFireQuestionDAO()
+        wiki_round_dao = WikiRoundDAO()
+        wiki_puzzle_attempt_dao = WikiPuzzleAttemptDAO()
+
+        self.wikipedia_client = WikipediaClient()
+        self.wiki_html_rewriter = WikiHtmlRewriter()
 
         self.auth = AuthService(context_manager, player_dao)
         self.lobby = LobbyService(context_manager, game_session_dao)
@@ -32,5 +43,14 @@ class ServiceContainer:
             game_session_dao,
             rapid_fire_answer_dao,
             rapid_fire_question_dao,
+        )
+        self.wiki_speed_run = WikiSpeedRunService(
+            context_manager,
+            game_session_dao,
+            wiki_round_dao,
+            wiki_puzzle_attempt_dao,
+            self.wikipedia_client,
+            self.wiki_html_rewriter,
+            back_button_enabled=get_settings().WIKI_BACK_BUTTON_ENABLED,
         )
         self.leaderboard = LeaderboardService(context_manager, game_session_dao)

@@ -15,8 +15,9 @@ if TYPE_CHECKING:
 class LobbyService:
     """Returns the player's play status across all registered games.
 
-    Merges the static GAMES registry with any completed sessions from the DB.
-    Only COMPLETED sessions count as 'played' — active or abandoned do not.
+    Merges the static GAMES registry with session rows from the DB.
+    Completed or abandoned sessions lock the tile (``has_played``) and expose
+    the persisted score; active sessions do not count as played yet.
     """
 
     def __init__(
@@ -30,18 +31,18 @@ class LobbyService:
         async with self.ctx.session() as session:
             sessions = await self.game_session_dao.get_all_for_player(session, player.id)
 
-        completed = {
+        locked = {
             s.game_id: s
             for s in sessions
-            if s.status == GameSessionStatus.COMPLETED
+            if s.status in (GameSessionStatus.COMPLETED, GameSessionStatus.ABANDONED)
         }
 
         games: List[GameStatusDTO] = [
             GameStatusDTO(
                 game_id=game["id"],
                 display_name=game["display_name"],
-                has_played=game["id"] in completed,
-                score=completed[game["id"]].score if game["id"] in completed else None,
+                has_played=game["id"] in locked,
+                score=locked[game["id"]].score if game["id"] in locked else None,
             )
             for game in GAMES
         ]

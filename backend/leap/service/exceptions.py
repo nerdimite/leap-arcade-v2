@@ -4,7 +4,7 @@ Routes never raise ``HTTPException`` — services raise these instead.
 """
 
 from leap.config.errors import ERRORS
-from leap.core.exceptions import BaseServiceException, InvalidTokenException
+from leap.core.exceptions import BaseServiceException
 
 
 class PlayerNotFoundException(BaseServiceException):
@@ -75,6 +75,56 @@ class QuestionAlreadyAnsweredException(BaseServiceException):
 class NoQuestionsAvailableException(BaseServiceException):
     def __init__(self) -> None:
         error = ERRORS["NO_QUESTIONS_AVAILABLE"]
+        super().__init__(
+            error_code=error.code,
+            message=error.message,
+            http_status=error.http_status,
+        )
+
+
+class NoWikiRoundsAvailableException(BaseServiceException):
+    def __init__(self) -> None:
+        error = ERRORS["NO_WIKI_ROUNDS_AVAILABLE"]
+        super().__init__(
+            error_code=error.code,
+            message=error.message,
+            http_status=error.http_status,
+        )
+
+
+class WikiPuzzleNotActiveException(BaseServiceException):
+    def __init__(self) -> None:
+        error = ERRORS["WIKI_PUZZLE_NOT_ACTIVE"]
+        super().__init__(
+            error_code=error.code,
+            message=error.message,
+            http_status=error.http_status,
+        )
+
+
+class WikiPuzzleTimerExpiredException(BaseServiceException):
+    def __init__(self) -> None:
+        error = ERRORS["WIKI_PUZZLE_TIMER_EXPIRED"]
+        super().__init__(
+            error_code=error.code,
+            message=error.message,
+            http_status=error.http_status,
+        )
+
+
+class WikiBackButtonDisabledException(BaseServiceException):
+    def __init__(self) -> None:
+        error = ERRORS["WIKI_BACK_BUTTON_DISABLED"]
+        super().__init__(
+            error_code=error.code,
+            message=error.message,
+            http_status=error.http_status,
+        )
+
+
+class WikiNoPreviousPageException(BaseServiceException):
+    def __init__(self) -> None:
+        error = ERRORS["WIKI_NO_PREVIOUS_PAGE"]
         super().__init__(
             error_code=error.code,
             message=error.message,
