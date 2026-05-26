@@ -34,7 +34,9 @@ export default function LobbyClient({ currentCorpId }: { currentCorpId: string |
 
   const tiles: GameTileProps[] = GAME_TILES.map((game) => {
     const session = byGame.get(game.id);
-    const locked = session?.status === "completed" || session?.status === "abandoned";
+    const terminal = session?.status === "completed" || session?.status === "abandoned";
+    /** Picture sessions stay tappable after completion so players can re-open the result summary. */
+    const locked = terminal && game.id !== "picture";
     const badge = statusLabel(session);
 
     return {

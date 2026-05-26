@@ -4,8 +4,11 @@ from leap.dao.game_session_dao import GameSessionDAO
 from leap.dao.player_dao import PlayerDAO
 from leap.dao.rapid_fire_answer_dao import RapidFireAnswerDAO
 from leap.dao.rapid_fire_question_dao import RapidFireQuestionDAO
+from leap.dao.picture_puzzle_attempt_dao import PicturePuzzleAttemptDAO
+from leap.dao.picture_puzzle_dao import PicturePuzzleDAO
 from leap.dao.wiki_puzzle_attempt_dao import WikiPuzzleAttemptDAO
 from leap.dao.wiki_round_dao import WikiRoundDAO
+from leap.games.picture.service import PictureService
 from leap.games.rapid_fire.service import RapidFireService
 from leap.games.wiki.html_rewriter import WikiHtmlRewriter
 from leap.games.wiki.service import WikiSpeedRunService
@@ -31,6 +34,8 @@ class ServiceContainer:
         rapid_fire_question_dao = RapidFireQuestionDAO()
         wiki_round_dao = WikiRoundDAO()
         wiki_puzzle_attempt_dao = WikiPuzzleAttemptDAO()
+        picture_puzzle_dao = PicturePuzzleDAO()
+        picture_attempt_dao = PicturePuzzleAttemptDAO()
 
         self.wikipedia_client = WikipediaClient()
         self.wiki_html_rewriter = WikiHtmlRewriter()
@@ -52,5 +57,11 @@ class ServiceContainer:
             self.wikipedia_client,
             self.wiki_html_rewriter,
             back_button_enabled=get_settings().WIKI_BACK_BUTTON_ENABLED,
+        )
+        self.picture = PictureService(
+            context_manager,
+            game_session_dao,
+            picture_puzzle_dao,
+            picture_attempt_dao,
         )
         self.leaderboard = LeaderboardService(context_manager, game_session_dao)

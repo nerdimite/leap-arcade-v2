@@ -24,6 +24,7 @@ from leap.types.game import (
     LeaderboardEntryDTO,
 )
 from leap.types.player import PlayerDTO
+from leap.types.picture import PicturePuzzleAttemptDTO, PicturePuzzleDTO
 from leap.types.rapid_fire import RapidFireAnswerDTO, RapidFireQuestionDTO
 from leap.types.wiki import WikiArticleDTO, WikiPuzzleAttemptDTO, WikiRoundDTO
 
@@ -394,6 +395,70 @@ class FakeRapidFireQuestionDAO:
 
     async def get_all(self, session: Any) -> List[RapidFireQuestionDTO]:
         return list(self._questions)
+
+
+class FakePicturePuzzleDAO:
+    """In-memory picture puzzle store — mirrors ``PicturePuzzleDAO`` read surface."""
+
+    def __init__(self, puzzles: Optional[List[PicturePuzzleDTO]] = None) -> None:
+        self._puzzles: List[PicturePuzzleDTO] = list(puzzles or [])
+
+    async def get_all(self, session: Any) -> List[PicturePuzzleDTO]:
+        _ = session
+        return sorted(self._puzzles, key=lambda p: p.id)
+
+
+class FakePicturePuzzleAttemptDAO:
+    """In-memory picture puzzle attempt store."""
+
+    def __init__(self) -> None:
+        self._attempts: List[PicturePuzzleAttemptDTO] = []
+
+    async def create(
+        self,
+        session: Any,
+        game_session_id: str,
+        puzzle_id: str,
+        submitted_answer: Optional[str],
+        correct: bool,
+        skipped: bool,
+    ) -> PicturePuzzleAttemptDTO:
+        _ = session
+        dto = PicturePuzzleAttemptDTO(
+            id=str(uuid.uuid4()),
+            game_session_id=game_session_id,
+            puzzle_id=puzzle_id,
+            submitted_answer=submitted_answer,
+            correct=correct,
+            skipped=skipped,
+            created_at=leap_time.utc_now(),
+        )
+        self._attempts.append(dto)
+        return dto
+
+    async def get_all_for_session(self, session: Any, game_session_id: str) -> List[PicturePuzzleAttemptDTO]:
+        _ = session
+        return sorted(
+            [a for a in self._attempts if a.game_session_id == game_session_id],
+            key=lambda a: a.created_at,
+        )
+
+    async def get_resolved_puzzle_ids(self, session: Any, game_session_id: str) -> List[str]:
+        _ = session
+        ordered = sorted(
+            [a for a in self._attempts if a.game_session_id == game_session_id],
+            key=lambda a: a.created_at,
+        )
+        out: List[str] = []
+        seen: set[str] = set()
+        for attempt in ordered:
+            if not (attempt.correct or attempt.skipped):
+                continue
+            if attempt.puzzle_id in seen:
+                continue
+            seen.add(attempt.puzzle_id)
+            out.append(attempt.puzzle_id)
+        return out
 
 
 class FakeRapidFireAnswerDAO:

@@ -38,6 +38,7 @@ describe("proxy", () => {
     const m = config.matcher[0] as string;
     expect(m).toContain("_next/static");
     expect(m).toContain("_next/image");
+    expect(m).toContain("games");
     expect(m).not.toContain("login");
   });
 });

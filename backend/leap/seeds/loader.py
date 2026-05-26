@@ -16,10 +16,11 @@ DATA_DIR = Path(__file__).parent / "data"
 
 
 async def seed_all(session: AsyncSession) -> None:
-    """Upsert players and rapid fire questions from JSON seed files."""
+    """Upsert players, game seeds, and content tables from JSON."""
     await _seed_players(session)
     await _seed_rapid_fire(session)
     await _seed_wiki(session)
+    await _seed_picture(session)
 
 
 async def _seed_players(session: AsyncSession) -> None:
@@ -136,3 +137,43 @@ async def _seed_wiki(session: AsyncSession) -> None:
         )
     await session.commit()
     logger.info("seed.wiki.done", count=len(rounds))
+
+
+async def _seed_picture(session: AsyncSession) -> None:
+    path = Path(__file__).parent / "picture.json"
+    if not path.exists():
+        logger.warning("seed.picture.missing", path=str(path))
+        return
+
+    puzzles = json.loads(path.read_text())
+    for p in puzzles:
+        await session.execute(
+            text(
+                """
+                INSERT INTO picture_puzzles (
+                    id,
+                    image_filename,
+                    canonical_answer,
+                    accepted_answers
+                )
+                VALUES (
+                    :id,
+                    :image_filename,
+                    :canonical_answer,
+                    CAST(:accepted_answers AS jsonb)
+                )
+                ON CONFLICT (id) DO UPDATE SET
+                    image_filename = EXCLUDED.image_filename,
+                    canonical_answer = EXCLUDED.canonical_answer,
+                    accepted_answers = EXCLUDED.accepted_answers
+                """
+            ),
+            {
+                "id": p["id"],
+                "image_filename": p["image_filename"],
+                "canonical_answer": p["canonical_answer"],
+                "accepted_answers": json.dumps(p["accepted_answers"]),
+            },
+        )
+    await session.commit()
+    logger.info("seed.picture.done", count=len(puzzles))

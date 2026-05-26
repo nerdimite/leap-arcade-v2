@@ -1,7 +1,7 @@
 # Sub-1: Happy-Path Tracer Bullet
 
 **Type:** AFK
-**Status:** ready-for-agent
+**Status:** done
 **Depends on:** nothing
 **Blocks:** Sub-2, Sub-3
 
@@ -45,19 +45,24 @@ response: {
 
 ## Acceptance criteria
 
-- [ ] `picture_puzzles` and `picture_puzzle_attempts` tables exist after migration; FKs and nullability match the PRD schema
-- [ ] `picture.json` seed loads 5 rows on startup; idempotent re-runs do not duplicate
-- [ ] `normalize_answer` correctly handles: lowercase, hyphen removal, dot removal, mixed punctuation, collapsed whitespace, trimmed edges
-- [ ] `score_per_puzzle` returns 200 / 150 / 100 / 50 for attempt counts 1 / 2 / 3 / 4+
-- [ ] `POST /games/picture/play` for a new player creates a session and returns the first puzzle
-- [ ] `POST /games/picture/play` mid-game returns an unresolved puzzle (one with no `correct=true` or `skipped=true` attempt row); puzzles already resolved are not served again
-- [ ] `POST /games/picture/answer` with a wrong answer returns `correct=false`, `next_puzzle=null`, creates an attempt row with `correct=false, skipped=false`
-- [ ] `POST /games/picture/answer` with a correct answer (in any accepted variation, including punctuation/case/whitespace variants) returns `correct=true`, `score_earned` reflecting the attempt count for that puzzle, advances `next_puzzle` to a different unresolved one
-- [ ] `POST /games/picture/answer` resolving the final puzzle returns `next_puzzle=null` and an inline `result` block; session is marked `completed` with the final score persisted on `game_sessions.score`
-- [ ] Replay protection: submitting an answer for a `puzzle_id` that already has a `correct=true` or `skipped=true` row returns 409
-- [ ] Frontend `(games)/picture/page.tsx` no longer renders the placeholder; player can play through the full game using only correct answers
-- [ ] All 5 image filenames referenced in seed data exist under `frontend/public/games/picture/`
-- [ ] Unit tests for `scoring.py` and `PictureService` happy paths pass; tests use hand-written DAO fakes (no `MagicMock`) per project convention
+- [x] `picture_puzzles` and `picture_puzzle_attempts` tables exist after migration; FKs and nullability match the PRD schema
+- [x] `picture.json` seed loads 5 rows on startup; idempotent re-runs do not duplicate
+- [x] `normalize_answer` correctly handles: lowercase, hyphen removal, dot removal, mixed punctuation, collapsed whitespace, trimmed edges
+- [x] `score_per_puzzle` returns 200 / 150 / 100 / 50 for attempt counts 1 / 2 / 3 / 4+
+- [x] `POST /games/picture/play` for a new player creates a session and returns the first puzzle
+- [x] `POST /games/picture/play` mid-game returns an unresolved puzzle (one with no `correct=true` or `skipped=true` attempt row); puzzles already resolved are not served again
+- [x] `POST /games/picture/answer` with a wrong answer returns `correct=false`, `next_puzzle=null`, creates an attempt row with `correct=false, skipped=false`
+- [x] `POST /games/picture/answer` with a correct answer (in any accepted variation, including punctuation/case/whitespace variants) returns `correct=true`, `score_earned` reflecting the attempt count for that puzzle, advances `next_puzzle` to a different unresolved one
+- [x] `POST /games/picture/answer` resolving the final puzzle returns `next_puzzle=null` and an inline `result` block; session is marked `completed` with the final score persisted on `game_sessions.score`
+- [x] Replay protection: submitting an answer for a `puzzle_id` that already has a `correct=true` or `skipped=true` row returns 409
+- [x] Frontend `(games)/picture/page.tsx` no longer renders the placeholder; player can play through the full game using only correct answers
+- [x] All 5 image filenames referenced in seed data exist under `frontend/public/games/picture/`
+- [x] Unit tests for `scoring.py` and `PictureService` happy paths pass; tests use hand-written DAO fakes (no `MagicMock`) per project convention
+
+## Notes (implementation)
+
+- Example images were not present under `docs/games-examples/picture-illustration/` in this checkout; minimal valid PNGs were written under `frontend/public/games/picture/` for all five seed filenames instead.
+- `docs/games-examples/...` can still be synced later to swap in the real illustration assets without changing filenames.
 
 ## Blocked by
 

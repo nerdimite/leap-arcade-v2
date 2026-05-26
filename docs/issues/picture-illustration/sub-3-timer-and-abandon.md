@@ -1,7 +1,7 @@
 # Sub-3: Global Session Timer + Abandon + Time Bonus
 
 **Type:** AFK
-**Status:** ready-for-agent
+**Status:** done
 **Depends on:** Sub-1
 **Blocks:** Sub-4, Sub-5
 
@@ -34,20 +34,20 @@ End-to-end behaviour delivered:
 
 ## Acceptance criteria
 
-- [ ] `PICTURE_TIME_LIMIT_MS` constant exists and defaults to `300_000`
-- [ ] `compute_time_bonus` returns floor of seconds remaining; clamped to 0 when elapsed exceeds time limit
-- [ ] `submit_answer` on the final puzzle resolution stores `score = accuracy_score + time_bonus` on `game_sessions.score`
-- [ ] `POST /games/picture/abandon` ends an active session as `completed`, persists score with time bonus = 0, returns the result block
-- [ ] `POST /games/picture/abandon` on a completed session returns 409
-- [ ] `POST /games/picture/abandon` with no session returns 404
-- [ ] `play` response for an active session carries `session_started_at` (or equivalent) sufficient for the client to compute remaining time after a page refresh
-- [ ] If the server receives a `submit_answer` after the time limit has elapsed, the session is closed as `completed` with `time_bonus=0`; the response is the result block
-- [ ] Frontend `SessionTimer` renders the countdown, transitions to red+pulse under 60s, and triggers `/abandon` on reaching zero
-- [ ] Frontend navigation guard arms on session start and calls `/abandon` on nav-away / beforeunload, then permits navigation
-- [ ] On a page refresh during an active session, the timer correctly resumes with the remaining time (computed server-side, not from local state)
-- [ ] `ResultSchema` exposes `accuracy_score`, `time_bonus`, and `time_remaining_seconds` separately from `score`
-- [ ] Per-puzzle entries in `result.puzzles` include the `not_reached` status for puzzles never resolved
-- [ ] Service-level unit tests cover: time bonus computation; submit-after-expiry behaviour; abandon; abandon-then-replay returns 409
+- [x] `PICTURE_TIME_LIMIT_MS` constant exists and defaults to `300_000`
+- [x] `compute_time_bonus` returns floor of seconds remaining; clamped to 0 when elapsed exceeds time limit
+- [x] `submit_answer` on the final puzzle resolution stores `score = accuracy_score + time_bonus` on `game_sessions.score`
+- [x] `POST /games/picture/abandon` ends an active session as `completed`, persists score with time bonus = 0, returns the result block
+- [x] `POST /games/picture/abandon` on a completed session returns 409
+- [x] `POST /games/picture/abandon` with no session returns 404
+- [x] `play` response for an active session carries `session_started_at` (or equivalent) sufficient for the client to compute remaining time after a page refresh
+- [x] If the server receives a `submit_answer` after the time limit has elapsed, the session is closed as `completed` with `time_bonus=0`; the response is the result block
+- [x] Frontend `SessionTimer` renders the countdown, transitions to red+pulse under 60s, and triggers `/abandon` on reaching zero
+- [x] Frontend navigation guard arms on session start and calls `/abandon` on nav-away / beforeunload, then permits navigation
+- [x] On a page refresh during an active session, the timer correctly resumes with the remaining time (computed server-side, not from local state)
+- [x] `ResultSchema` exposes `accuracy_score`, `time_bonus`, and `time_remaining_seconds` separately from `score`
+- [x] Per-puzzle entries in `result.puzzles` include the `not_reached` status for puzzles never resolved
+- [x] Service-level unit tests cover: time bonus computation; submit-after-expiry behaviour; abandon; abandon-then-replay returns 409
 
 ## Blocked by
 

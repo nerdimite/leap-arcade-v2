@@ -17,12 +17,16 @@ Player plays a rebus-puzzle game where each puzzle is one image encoding a tech/
 - Lobby tile reflects `not_started` / `in_progress` / `completed` via the existing `GET /players/me/sessions` integration
 - All e2e API acceptance tests across the happy path, skip, abandon, timer-expiry, normalisation, and resume scenarios pass
 
+## Status
+
+**done** — all sub-issues complete, all overall acceptance criteria satisfied.
+
 ## Execution Plan
 
 ```
-Batch 1 (solo):     Sub-1 (happy-path tracer bullet)
-Batch 2 (parallel): Sub-2 (skip) ∥ Sub-3 (timer + abandon + time bonus)
-Batch 3 (parallel): Sub-4 (result screen + lobby tile) ∥ Sub-5 (e2e api tests)
+Batch 1 (solo):     Sub-1 (happy-path tracer bullet)       ✓ done
+Batch 2 (parallel): Sub-2 (skip) ∥ Sub-3 (timer + abandon + time bonus)  ✓ done
+Batch 3 (parallel): Sub-4 (result screen + lobby tile) ∥ Sub-5 (e2e api tests)  ✓ done
 ```
 
 ## References

@@ -141,3 +141,35 @@ class InvalidQuestionIdException(BaseServiceException):
             http_status=error.http_status,
             details={"question_id": question_id},
         )
+
+
+class AlreadyResolvedException(BaseServiceException):
+    def __init__(self, puzzle_id: str) -> None:
+        error = ERRORS["PICTURE_PUZZLE_ALREADY_RESOLVED"]
+        super().__init__(
+            error_code=error.code,
+            message=error.message,
+            http_status=error.http_status,
+            details={"puzzle_id": puzzle_id},
+        )
+
+
+class InvalidPuzzleIdException(BaseServiceException):
+    def __init__(self, puzzle_id: str) -> None:
+        error = ERRORS["INVALID_PICTURE_PUZZLE_ID"]
+        super().__init__(
+            error_code=error.code,
+            message=error.message,
+            http_status=error.http_status,
+            details={"puzzle_id": puzzle_id},
+        )
+
+
+class NoPicturePuzzlesAvailableException(BaseServiceException):
+    def __init__(self) -> None:
+        error = ERRORS["NO_PICTURE_PUZZLES_AVAILABLE"]
+        super().__init__(
+            error_code=error.code,
+            message=error.message,
+            http_status=error.http_status,
+        )
