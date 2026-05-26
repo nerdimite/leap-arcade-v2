@@ -16,7 +16,7 @@ All `/api/*` requests from the browser are handled by a single catch-all Route H
 3. Forwards the request (method, body, other headers) to `http://fastapi:8000/api/<path>`
 4. Streams the FastAPI response back to the browser
 
-The login endpoint (`app/api/auth/login/route.ts`) is a separate explicit handler that sets the cookie and is excluded from the catch-all's auth injection logic.
+The login endpoint is handled by the catch-all Route Handler when the path is `auth/login`: it calls `handleAuthLogin` in `lib/server/auth-login-handler.ts`, which sets the cookie and is excluded from the catch-all's Bearer-token injection. Do **not** add a separate `app/api/auth/login/route.ts` alongside `[...path]` — Turbopack dev resolves that pair to 404 even though production build lists both routes.
 
 ## Consequences
 

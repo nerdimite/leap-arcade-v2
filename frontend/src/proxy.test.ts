@@ -39,6 +39,7 @@ describe("proxy", () => {
     expect(m).toContain("_next/static");
     expect(m).toContain("_next/image");
     expect(m).toContain("games");
+    expect(m).toContain("images");
     expect(m).not.toContain("login");
   });
 });

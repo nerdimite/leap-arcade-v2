@@ -63,6 +63,7 @@ No Redis. No external services at runtime (except Wikipedia live proxy for the w
 - Game content (questions, puzzles, image sets) lives in content tables, seeded from `leap/seeds/data/*.json` at startup — game services query content via DAOs, never read seed files at runtime
 - Server-side timestamp (`started_at`) is the source of truth for all timer logic — never trust client-reported elapsed time
 - Unique constraint on `(player_id, game_id)` in `game_sessions` enforces one session per game per player — duplicate start attempts should 409, not create a second row
+- **Seed image paths** returned in API responses must be frontend static URLs that resolve under `frontend/public/` **and** are excluded from the auth proxy in `frontend/src/proxy.ts` — otherwise `next/image` breaks (server-side fetch hits login redirect). Prefer `/games/<game-id>/…` (see `frontend/AGENTS.md`); if using another prefix (e.g. `/images/four-pics/…`), ensure that prefix is added to the proxy matcher before shipping.
 
 ## Agent Memory
 

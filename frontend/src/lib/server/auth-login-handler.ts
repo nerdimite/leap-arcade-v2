@@ -11,7 +11,13 @@ function defaultBackendOrigin(): string {
   return process.env.BACKEND_INTERNAL_ORIGIN ?? "http://localhost:8000";
 }
 
-export async function POST(request: NextRequest) {
+/** True when catch-all segments are `auth/login` (POST /api/auth/login). */
+export function isAuthLoginPath(pathSegments: string[]): boolean {
+  return pathSegments.length === 2 && pathSegments[0] === "auth" && pathSegments[1] === "login";
+}
+
+/** Proxies login to FastAPI and sets the httpOnly session cookie (ADR-0001). */
+export async function handleAuthLogin(request: NextRequest): Promise<NextResponse> {
   let jsonUnknown: unknown;
   try {
     jsonUnknown = await request.json();

@@ -72,6 +72,7 @@ All `/api/*` requests are proxied from Next.js to FastAPI via `next.config.mjs` 
 - Every game sets `setIsDirty(true)` via `useNavigationGuard` on session start and `setIsDirty(false)` on completion — this arms the history trap and `beforeunload` handler automatically
 - Split non-trivial route UIs into `*Client.tsx` (smart: hooks, mutations, effects, navigation guard, reducer) and `*View.tsx` (dumb: `viewState` + callback props, switches on `viewState.status`, renders leaf components). Leaf components have no hooks; the only sanctioned exception is `WikiArticlePane`'s DOM click delegation `useEffect` (see ADR-0005).
 - Stories are co-located as `*.stories.tsx`; meta omits `title` (path-derived sidebar); default to one `Default` story per leaf unless variants warrant more; add one story per status for every `*View`.
+- **Game static assets** (puzzle images, Four Pics tiles, etc.) live under `public/games/<game-id>/` (preferred) or another path prefix excluded from the auth proxy — see Learned Workspace Facts below. Never serve game images from an unlisted public path without updating `src/proxy.ts`.
 
 ## Agent Memory
 
@@ -95,6 +96,9 @@ All `/api/*` requests are proxied from Next.js to FastAPI via `next.config.mjs` 
 - Game result is shown inline on the game page (reducer transitions to `result` state); no separate result route
 - TypeScript types come from `z.infer<>` on Zod schemas in `src/services/<domain>/schema.ts` — no separate `types/` duplication
 - Test stack: Vitest + React Testing Library + msw. Test targets: reducer state transitions, Zod schema parsing, API client fetch wrappers, login form mutation.
+- **Auth proxy vs static assets:** `src/proxy.ts` guards all routes except those listed in its `matcher` negative lookahead. `next/image` fetches source URLs **server-side without auth cookies** — if a game image path is not excluded, the optimizer gets redirected to `/login` and images break (broken-image icons in the grid). Picture Illustration fixed this by excluding `/games/*`; Four Pics needed `/images/*` as well. When adding a new public asset prefix, update `src/proxy.ts` **and** `src/proxy.test.ts` (`documents static asset paths…` test). Current exclusions: `api`, `_next/static`, `_next/image`, `favicon.ico`, `games`, `images`.
+- **Login API route:** `POST /api/auth/login` is handled inside `app/api/[...path]/route.ts` via `handleAuthLogin` — do not add a sibling `app/api/auth/login/route.ts`; Turbopack dev returns 404 when both exist (production build tolerates it). See ADR-0002.
+- **Static asset layout:** prefer `public/games/<game-id>/…` with client URLs `/games/<game-id>/…` (Picture Illustration pattern). Existing exception: Four Pics uses `public/images/four-pics/…` → `/images/four-pics/…` because `images` is in the proxy matcher.
 
 ## Reference Docs
 

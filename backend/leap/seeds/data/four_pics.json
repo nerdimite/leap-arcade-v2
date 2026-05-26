@@ -1,0 +1,32 @@
+[
+  {
+    "id": "aaaaaaaa-aaaa-aaaa-aaaa-000000000001",
+    "image_paths": [
+      "/images/four-pics/wearables/1.png",
+      "/images/four-pics/wearables/2.png",
+      "/images/four-pics/wearables/3.png",
+      "/images/four-pics/wearables/4.png"
+    ],
+    "odd_one_out_index": 2
+  },
+  {
+    "id": "bbbbbbbb-bbbb-bbbb-bbbb-000000000002",
+    "image_paths": [
+      "/images/four-pics/animals/1.png",
+      "/images/four-pics/animals/2.png",
+      "/images/four-pics/animals/3.png",
+      "/images/four-pics/animals/4.png"
+    ],
+    "odd_one_out_index": 1
+  },
+  {
+    "id": "cccccccc-cccc-cccc-cccc-000000000003",
+    "image_paths": [
+      "/images/four-pics/office/1.png",
+      "/images/four-pics/office/2.png",
+      "/images/four-pics/office/3.png",
+      "/images/four-pics/office/4.png"
+    ],
+    "odd_one_out_index": 3
+  }
+]

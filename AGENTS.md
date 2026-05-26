@@ -48,6 +48,7 @@ All commands run from `backend/`:
 - Do not define fixed-count constants for game content (e.g., no `RAPID_FIRE_QUESTION_COUNT`) — pool size comes from the DB
 - Seeds are idempotent (`ON CONFLICT DO NOTHING` / `DO UPDATE`) — safe to re-run on every startup
 - Never add game logic for wiki, picture, four_pics, crossword — they are out of scope
+- **Cross-stack static assets:** games that serve images from seed JSON (Picture Illustration, Four Pics) must coordinate backend `image_paths` with `frontend/public/` layout and the auth proxy matcher in `frontend/src/proxy.ts` — see `frontend/AGENTS.md` (Learned Workspace Facts: auth proxy vs static assets)
 
 ## Agent Memory
 

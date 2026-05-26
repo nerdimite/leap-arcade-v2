@@ -12,6 +12,7 @@ from typing import Any, AsyncGenerator, Dict, List, Optional
 import pytz
 
 from leap.core.common import time as leap_time
+from leap.games.four_pics.service import FourPicsService
 from leap.games.rapid_fire.service import RapidFireService
 from leap.games.wiki.service import WikiSpeedRunService
 from leap.service.auth_service import AuthService
@@ -24,6 +25,7 @@ from leap.types.game import (
     LeaderboardEntryDTO,
 )
 from leap.types.player import PlayerDTO
+from leap.types.four_pics import FourPicsQuestionAttemptDTO, FourPicsQuestionDTO
 from leap.types.picture import PicturePuzzleAttemptDTO, PicturePuzzleDTO
 from leap.types.rapid_fire import RapidFireAnswerDTO, RapidFireQuestionDTO
 from leap.types.wiki import WikiArticleDTO, WikiPuzzleAttemptDTO, WikiRoundDTO
@@ -505,6 +507,115 @@ class FakeRapidFireAnswerDAO:
         return [a for a in self._answers if a.game_session_id == game_session_id]
 
 
+class FakeFourPicsQuestionDAO:
+    """In-memory Four Pics question store."""
+
+    def __init__(self, questions: Optional[List[FourPicsQuestionDTO]] = None) -> None:
+        self._questions: List[FourPicsQuestionDTO] = list(questions or [])
+
+    async def get_all(self, session: Any) -> List[FourPicsQuestionDTO]:
+        _ = session
+        return sorted(self._questions, key=lambda q: q.id)
+
+
+class FakeFourPicsQuestionAttemptDAO:
+    """In-memory Four Pics attempt store."""
+
+    def __init__(self) -> None:
+        self._attempts: List[FourPicsQuestionAttemptDTO] = []
+
+    async def create(
+        self,
+        session: Any,
+        session_id: str,
+        question_id: str,
+        started_at: datetime.datetime,
+    ) -> FourPicsQuestionAttemptDTO:
+        _ = session
+        dto = FourPicsQuestionAttemptDTO(
+            id=str(uuid.uuid4()),
+            session_id=session_id,
+            question_id=question_id,
+            status="active",
+            started_at=started_at,
+        )
+        self._attempts.append(dto)
+        return dto
+
+    async def get_active_for_session(
+        self, session: Any, session_id: str
+    ) -> Optional[FourPicsQuestionAttemptDTO]:
+        _ = session
+        for attempt in self._attempts:
+            if attempt.session_id == session_id and attempt.status == "active":
+                return attempt
+        return None
+
+    async def get_all_for_session(
+        self, session: Any, session_id: str
+    ) -> List[FourPicsQuestionAttemptDTO]:
+        _ = session
+        return sorted(
+            [a for a in self._attempts if a.session_id == session_id],
+            key=lambda a: a.started_at,
+        )
+
+    async def update_status_and_score(
+        self,
+        session: Any,
+        attempt_id: str,
+        *,
+        status: str,
+        selected_index: int,
+        score: int,
+        time_bonus: int,
+        time_ms: int,
+        completed_at: datetime.datetime,
+    ) -> FourPicsQuestionAttemptDTO:
+        _ = session
+        for i, attempt in enumerate(self._attempts):
+            if attempt.id != attempt_id:
+                continue
+            updated = attempt.model_copy(
+                update={
+                    "status": status,
+                    "selected_index": selected_index,
+                    "score": score,
+                    "time_bonus": time_bonus,
+                    "time_ms": time_ms,
+                    "completed_at": completed_at,
+                }
+            )
+            self._attempts[i] = updated
+            return updated
+        raise KeyError(attempt_id)
+
+    async def close_active_on_abandon(
+        self,
+        session: Any,
+        attempt_id: str,
+        *,
+        completed_at: datetime.datetime,
+    ) -> FourPicsQuestionAttemptDTO:
+        _ = session
+        for i, attempt in enumerate(self._attempts):
+            if attempt.id != attempt_id:
+                continue
+            updated = attempt.model_copy(
+                update={
+                    "status": "wrong",
+                    "selected_index": None,
+                    "score": 0,
+                    "time_bonus": 0,
+                    "time_ms": None,
+                    "completed_at": completed_at,
+                }
+            )
+            self._attempts[i] = updated
+            return updated
+        raise KeyError(attempt_id)
+
+
 class FakeServiceContainer:
     """Wires real services to fake DAOs for HTTP-level unit tests."""
 
@@ -515,6 +626,8 @@ class FakeServiceContainer:
         game_session_dao: FakeGameSessionDAO,
         rapid_fire_answer_dao: FakeRapidFireAnswerDAO,
         rapid_fire_question_dao: FakeRapidFireQuestionDAO,
+        four_pics_question_dao: FakeFourPicsQuestionDAO,
+        four_pics_attempt_dao: FakeFourPicsQuestionAttemptDAO,
         wiki_round_dao: FakeWikiRoundDAO,
         wiki_puzzle_attempt_dao: FakeWikiPuzzleAttemptDAO,
         wikipedia_client: FakeWikipediaClient,
@@ -527,6 +640,8 @@ class FakeServiceContainer:
         self.game_session_dao = game_session_dao
         self.rapid_fire_answer_dao = rapid_fire_answer_dao
         self.rapid_fire_question_dao = rapid_fire_question_dao
+        self.four_pics_question_dao = four_pics_question_dao
+        self.four_pics_attempt_dao = four_pics_attempt_dao
         self.wiki_round_dao = wiki_round_dao
         self.wiki_puzzle_attempt_dao = wiki_puzzle_attempt_dao
         self.wikipedia_client = wikipedia_client
@@ -540,6 +655,12 @@ class FakeServiceContainer:
             game_session_dao,
             rapid_fire_answer_dao,
             rapid_fire_question_dao,
+        )
+        self.four_pics = FourPicsService(
+            context_manager,
+            game_session_dao,
+            four_pics_attempt_dao,
+            four_pics_question_dao,
         )
         self.wiki_speed_run = WikiSpeedRunService(
             context_manager,
@@ -588,11 +709,14 @@ def make_fake_container(
     players: Optional[Dict[str, PlayerDTO]] = None,
     sessions: Optional[List[GameSessionDTO]] = None,
     rapid_fire_questions: Optional[List[RapidFireQuestionDTO]] = None,
+    four_pics_questions: Optional[List[FourPicsQuestionDTO]] = None,
     wiki_rounds: Optional[List[WikiRoundDTO]] = None,
     player_dao: Optional[FakePlayerDAO] = None,
     game_session_dao: Optional[FakeGameSessionDAO] = None,
     rapid_fire_answer_dao: Optional[FakeRapidFireAnswerDAO] = None,
     rapid_fire_question_dao: Optional[FakeRapidFireQuestionDAO] = None,
+    four_pics_question_dao: Optional[FakeFourPicsQuestionDAO] = None,
+    four_pics_attempt_dao: Optional[FakeFourPicsQuestionAttemptDAO] = None,
     wiki_round_dao: Optional[FakeWikiRoundDAO] = None,
     wiki_puzzle_attempt_dao: Optional[FakeWikiPuzzleAttemptDAO] = None,
     wikipedia_client: Optional[FakeWikipediaClient] = None,
@@ -611,6 +735,10 @@ def make_fake_container(
     rf_questions = rapid_fire_question_dao or FakeRapidFireQuestionDAO(
         questions=rapid_fire_questions
     )
+    fp_questions = four_pics_question_dao or FakeFourPicsQuestionDAO(
+        questions=four_pics_questions
+    )
+    fp_attempts = four_pics_attempt_dao or FakeFourPicsQuestionAttemptDAO()
     gdao = game_session_dao or FakeGameSessionDAO(
         sessions=sessions,
         player_dao=pdao,
@@ -627,6 +755,8 @@ def make_fake_container(
         gdao,
         rf_answers,
         rf_questions,
+        fp_questions,
+        fp_attempts,
         wrdao,
         wadao,
         wiki_client,

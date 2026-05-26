@@ -21,6 +21,7 @@ async def seed_all(session: AsyncSession) -> None:
     await _seed_rapid_fire(session)
     await _seed_wiki(session)
     await _seed_picture(session)
+    await _seed_four_pics(session)
 
 
 async def _seed_players(session: AsyncSession) -> None:
@@ -177,3 +178,39 @@ async def _seed_picture(session: AsyncSession) -> None:
         )
     await session.commit()
     logger.info("seed.picture.done", count=len(puzzles))
+
+
+async def _seed_four_pics(session: AsyncSession) -> None:
+    path = DATA_DIR / "four_pics.json"
+    if not path.exists():
+        logger.warning("seed.four_pics.missing", path=str(path))
+        return
+
+    questions = json.loads(path.read_text())
+    for q in questions:
+        await session.execute(
+            text(
+                """
+                INSERT INTO four_pics_questions (
+                    id,
+                    image_paths,
+                    odd_one_out_index
+                )
+                VALUES (
+                    :id,
+                    CAST(:image_paths AS jsonb),
+                    :odd_one_out_index
+                )
+                ON CONFLICT (id) DO UPDATE SET
+                    image_paths = EXCLUDED.image_paths,
+                    odd_one_out_index = EXCLUDED.odd_one_out_index
+                """
+            ),
+            {
+                "id": q["id"],
+                "image_paths": json.dumps(q["image_paths"]),
+                "odd_one_out_index": q["odd_one_out_index"],
+            },
+        )
+    await session.commit()
+    logger.info("seed.four_pics.done", count=len(questions))

@@ -1,9 +1,9 @@
 import { NextRequest } from "next/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { POST } from "./route";
+import { handleAuthLogin } from "./auth-login-handler";
 
-describe("POST /api/auth/login route", () => {
+describe("handleAuthLogin", () => {
   const originalFetch = globalThis.fetch;
 
   beforeEach(() => {
@@ -38,7 +38,7 @@ describe("POST /api/auth/login route", () => {
       body: JSON.stringify({ corp_id: "p1", event_code: "ev" }),
     });
 
-    const res = await POST(req);
+    const res = await handleAuthLogin(req);
 
     expect(res.status).toBe(200);
     expect(fetchMock).toHaveBeenCalledTimes(1);
@@ -70,7 +70,7 @@ describe("POST /api/auth/login route", () => {
       body: JSON.stringify({ corp_id: "x", event_code: "wrong" }),
     });
 
-    const res = await POST(req);
+    const res = await handleAuthLogin(req);
     expect(res.status).toBe(401);
 
     expect(res.headers.get("set-cookie")).toBeNull();

@@ -1,7 +1,7 @@
 # Sub-3: Answer Overlay + Stopwatch + Result Polish
 
 **Type:** AFK
-**Status:** ready-for-agent
+**Status:** done
 **Depends on:** Sub-1
 **Blocks:** nothing
 
@@ -30,15 +30,15 @@ End-to-end behaviour delivered:
 
 ## Acceptance criteria
 
-- [ ] On a correct tap, a green overlay appears within ~50 ms and auto-dismisses after 2 s, displaying `+100 base + N bonus = X pts` with the actual returned values
-- [ ] On a wrong tap, a red overlay appears within ~50 ms and auto-dismisses after 2 s, displaying `+0 pts`; no visual indication of which image was the correct answer
-- [ ] After the overlay dismisses, the UI advances to the next question (using the `question` from the same `POST /answer` response — no extra round-trip) or to the result view (when `result` is populated)
-- [ ] Image tiles are non-interactive during the overlay window; rapid-fire double taps do not trigger a second submission
-- [ ] The stopwatch displays mm:ss, ticks live, and is initialised from `question_started_at`; refreshing the page resumes from the server time, not from zero
-- [ ] The stopwatch has a visible decay cue that intensifies as the player approaches the 30 s bonus floor and settles into a stable "no bonus" state past 30 s
-- [ ] The result view shows the total score, status counts, and a per-question table; no images appear on the result screen
-- [ ] "Back to Lobby" button on the result view returns the player to the Lobby; lobby tile shows `completed` (or `abandoned` once Sub-2 ships)
-- [ ] Storybook stories exist for `AnswerOverlay` (correct + wrong), `Stopwatch` (multiple states), and `ResultView` (mixed-status fixture) and render without runtime errors
+- [x] On a correct tap, a green overlay appears within ~50 ms and auto-dismisses after 2 s, displaying `+100 base + N bonus = X pts` with the actual returned values
+- [x] On a wrong tap, a red overlay appears within ~50 ms and auto-dismisses after 2 s, displaying `+0 pts`; no visual indication of which image was the correct answer
+- [x] After the overlay dismisses, the UI advances to the next question (using the `question` from the same `POST /answer` response — no extra round-trip) or to the result view (when `result` is populated)
+- [x] Image tiles are non-interactive during the overlay window; rapid-fire double taps do not trigger a second submission
+- [x] The stopwatch displays mm:ss, ticks live, and is initialised from `question_started_at`; refreshing the page resumes from the server time, not from zero
+- [x] The stopwatch has a visible decay cue that intensifies as the player approaches the 30 s bonus floor and settles into a stable "no bonus" state past 30 s
+- [x] The result view shows the total score, status counts, and a per-question table; no images appear on the result screen
+- [x] "Back to Lobby" button on the result view returns the player to the Lobby; lobby tile shows `completed` (or `abandoned` once Sub-2 ships)
+- [x] Storybook stories exist for `AnswerOverlay` (correct + wrong), `Stopwatch` (multiple states), and `ResultView` (mixed-status fixture) and render without runtime errors
 
 ## Blocked by
 

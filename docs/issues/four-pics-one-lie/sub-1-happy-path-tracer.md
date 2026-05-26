@@ -1,7 +1,7 @@
 # Sub-1: Happy-Path Tracer Bullet
 
 **Type:** AFK
-**Status:** ready-for-agent
+**Status:** done
 **Depends on:** nothing
 **Blocks:** Sub-2, Sub-3, Sub-4
 
@@ -46,23 +46,23 @@ response: {
 
 ## Acceptance criteria
 
-- [ ] `four_pics_questions` and `four_pics_question_attempts` tables exist after migration; FKs, nullability, and CHECK constraints match the PRD schema
-- [ ] `four_pics.json` seed loads ≥3 rows on startup; idempotent re-runs do not duplicate
-- [ ] All image paths referenced in seed data exist under `frontend/public/images/four-pics/`
-- [ ] `compute_time_bonus` returns `50` at 0 ms, `25` at 15 000 ms, `0` at 30 000 ms, `0` at 45 000 ms (clamped)
-- [ ] `compute_question_score(correct=True, elapsed_ms=15_000)` returns `(125, 25)`; `compute_question_score(correct=False, elapsed_ms=0)` returns `(0, 0)`
-- [ ] `POST /games/four-pics/play` for a new player creates a session and returns a randomly chosen first question with `status = "active"`; `odd_one_out_index` is not present in the response
-- [ ] `POST /games/four-pics/play` mid-game returns the same active question idempotently (same `question_id`, same `started_at`); after a terminal attempt advances to a different unattempted question
-- [ ] `POST /games/four-pics/answer` with the matching `selected_index` returns `correct=true`, `score = 100 + time_bonus`, persists an attempt with `status = "correct"`, and advances `question` to a different unattempted question
-- [ ] `POST /games/four-pics/answer` with a non-matching `selected_index` returns `correct=false`, `score=0`, `time_bonus=0`, persists an attempt with `status = "wrong"`, and advances `question` to a different unattempted question
-- [ ] `POST /games/four-pics/answer` resolving the final question returns `question=null` and an inline `result` block; session is marked `completed` with the final score persisted on `game_sessions.score`
-- [ ] Server-side time clamping: a client-submitted `time_ms` greater than `now − started_at` is clamped down before scoring
-- [ ] Replay protection: submitting an answer for a `question_id` that already has a terminal attempt row returns 409 (or the configured `QuestionAlreadyAnsweredException` mapping)
-- [ ] Submitting an answer for a `question_id` that does not match the session's currently-active attempt returns 400/409 (`InvalidQuestionIdException` mapping)
-- [ ] `selected_index` outside 0–3 is rejected at the schema layer with 422
-- [ ] Frontend `(games)/four-pics/page.tsx` no longer renders the placeholder; player can play the full game using the 2×2 grid and reach the minimal result screen
-- [ ] `odd_one_out_index` is not present in any HTTP response — verified by an API-level test that asserts the field is absent on `play` and `answer` responses
-- [ ] Unit tests for `scoring.py` and `FourPicsService` happy paths pass; tests use hand-written DAO fakes (no `MagicMock`) per project convention
+- [x] `four_pics_questions` and `four_pics_question_attempts` tables exist after migration; FKs, nullability, and CHECK constraints match the PRD schema
+- [x] `four_pics.json` seed loads ≥3 rows on startup; idempotent re-runs do not duplicate
+- [x] All image paths referenced in seed data exist under `frontend/public/images/four-pics/`
+- [x] `compute_time_bonus` returns `50` at 0 ms, `25` at 15 000 ms, `0` at 30 000 ms, `0` at 45 000 ms (clamped)
+- [x] `compute_question_score(correct=True, elapsed_ms=15_000)` returns `(125, 25)`; `compute_question_score(correct=False, elapsed_ms=0)` returns `(0, 0)`
+- [x] `POST /games/four-pics/play` for a new player creates a session and returns a randomly chosen first question with `status = "active"`; `odd_one_out_index` is not present in the response
+- [x] `POST /games/four-pics/play` mid-game returns the same active question idempotently (same `question_id`, same `started_at`); after a terminal attempt advances to a different unattempted question
+- [x] `POST /games/four-pics/answer` with the matching `selected_index` returns `correct=true`, `score = 100 + time_bonus`, persists an attempt with `status = "correct"`, and advances `question` to a different unattempted question
+- [x] `POST /games/four-pics/answer` with a non-matching `selected_index` returns `correct=false`, `score=0`, `time_bonus=0`, persists an attempt with `status = "wrong"`, and advances `question` to a different unattempted question
+- [x] `POST /games/four-pics/answer` resolving the final question returns `question=null` and an inline `result` block; session is marked `completed` with the final score persisted on `game_sessions.score`
+- [x] Server-side time clamping: a client-submitted `time_ms` greater than `now − started_at` is clamped down before scoring
+- [x] Replay protection: submitting an answer for a `question_id` that already has a terminal attempt row returns 409 (or the configured `QuestionAlreadyAnsweredException` mapping)
+- [x] Submitting an answer for a `question_id` that does not match the session's currently-active attempt returns 400/409 (`InvalidQuestionIdException` mapping)
+- [x] `selected_index` outside 0–3 is rejected at the schema layer with 422
+- [x] Frontend `(games)/four-pics/page.tsx` no longer renders the placeholder; player can play the full game using the 2×2 grid and reach the minimal result screen
+- [x] `odd_one_out_index` is not present in any HTTP response — verified by an API-level test that asserts the field is absent on `play` and `answer` responses
+- [x] Unit tests for `scoring.py` and `FourPicsService` happy paths pass; tests use hand-written DAO fakes (no `MagicMock`) per project convention
 
 ## Blocked by
 

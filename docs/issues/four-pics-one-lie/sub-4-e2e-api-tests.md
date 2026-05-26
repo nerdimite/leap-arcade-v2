@@ -1,7 +1,7 @@
 # Sub-4: E2E API Tests
 
 **Type:** AFK
-**Status:** ready-for-agent
+**Status:** done
 **Depends on:** Sub-2
 **Blocks:** nothing
 
@@ -35,14 +35,14 @@ Test design: assert **external behaviour** — HTTP responses, DB state visible 
 
 ## Acceptance criteria
 
-- [ ] `backend/tests/e2e/test_four_pics_journey.py` exists and passes against a fresh test DB; covers a full-pool playthrough with a mix of correct and wrong answers; final `session_score` equals the expected sum within the time-bonus tolerance
-- [ ] `test_four_pics_journey.py` asserts `odd_one_out_index` is absent from every `play` and `answer` response body
-- [ ] `test_four_pics_journey.py` asserts the Lobby tile (`GET /players/me/sessions`) flips to `completed` and the leaderboard reflects the score
-- [ ] `backend/tests/e2e/test_four_pics_lifecycle_journeys.py` exists and passes; covers abandon-mid-session, refresh-mid-question idempotency, and post-completion replay protection
-- [ ] After abandon, the lifecycle test asserts `session_status == "abandoned"`, `result.questions_not_reached` matches the count of unattempted questions, and subsequent `play` / `answer` calls are rejected appropriately
-- [ ] Refresh-mid-question test asserts `question_id` and `started_at` are stable across consecutive `POST /play` calls with no intervening answer
-- [ ] Tests follow existing e2e patterns (fixtures, login helper, HTTP client) and do not introduce new test infrastructure unless strictly required
-- [ ] Tests run in CI alongside existing e2e suites and complete within a reasonable time budget
+- [x] `backend/tests/e2e/test_four_pics_journey.py` exists and passes against a fresh test DB; covers a full-pool playthrough with a mix of correct and wrong answers; final `session_score` equals the expected sum within the time-bonus tolerance
+- [x] `test_four_pics_journey.py` asserts `odd_one_out_index` is absent from every `play` and `answer` response body
+- [x] `test_four_pics_journey.py` asserts the Lobby tile (`GET /players/me/sessions`) flips to `completed` and the leaderboard reflects the score
+- [x] `backend/tests/e2e/test_four_pics_lifecycle_journeys.py` exists and passes; covers abandon-mid-session, refresh-mid-question idempotency, and post-completion replay protection
+- [x] After abandon, the lifecycle test asserts `session_status == "abandoned"`, `result.questions_not_reached` matches the count of unattempted questions, and subsequent `play` / `answer` calls are rejected appropriately
+- [x] Refresh-mid-question test asserts `question_id` and `started_at` are stable across consecutive `POST /play` calls with no intervening answer
+- [x] Tests follow existing e2e patterns (fixtures, login helper, HTTP client) and do not introduce new test infrastructure unless strictly required
+- [x] Tests run in CI alongside existing e2e suites and complete within a reasonable time budget
 
 ## Blocked by
 

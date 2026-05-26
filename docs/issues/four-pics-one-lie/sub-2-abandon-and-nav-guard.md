@@ -1,7 +1,7 @@
 # Sub-2: Abandon Endpoint + Navigation Guard
 
 **Type:** AFK
-**Status:** ready-for-agent
+**Status:** done
 **Depends on:** Sub-1
 **Blocks:** Sub-4
 
@@ -26,14 +26,14 @@ End-to-end behaviour delivered:
 
 ## Acceptance criteria
 
-- [ ] `POST /games/four-pics/abandon` with an active session returns `{ result }` where `result.score` is the sum of completed-attempt scores, `result.questions_not_reached` equals the count of unattempted questions, and `result.questions` includes one row per seeded question with the correct status (`correct` / `wrong` / `not_reached`)
-- [ ] After abandon, the `game_sessions` row is `status = "abandoned"` with `score` set to the final summed score
-- [ ] If a question attempt was `active` at abandon time, the corresponding row becomes `status = "wrong"`, `score = 0`, `time_bonus = 0`, `selected_index = null`, `completed_at = now`
-- [ ] `POST /games/four-pics/abandon` on a `completed` or already-`abandoned` session returns 409
-- [ ] `POST /games/four-pics/abandon` with no Four Pics session for the player returns 404
-- [ ] Frontend: navigating back, refreshing-then-leaving, or closing the tab mid-game triggers the navigation guard, which calls `abandon` before the navigation completes; on success the player is redirected to the Lobby
-- [ ] After abandon, the Lobby tile reflects `abandoned` via `GET /players/me/sessions`; the tile is locked and cannot be re-entered
-- [ ] Service-level unit tests cover all three abandon paths (active / already-terminal / not-found) using hand-written DAO fakes
+- [x] `POST /games/four-pics/abandon` with an active session returns `{ result }` where `result.score` is the sum of completed-attempt scores, `result.questions_not_reached` equals the count of unattempted questions, and `result.questions` includes one row per seeded question with the correct status (`correct` / `wrong` / `not_reached`)
+- [x] After abandon, the `game_sessions` row is `status = "abandoned"` with `score` set to the final summed score
+- [x] If a question attempt was `active` at abandon time, the corresponding row becomes `status = "wrong"`, `score = 0`, `time_bonus = 0`, `selected_index = null`, `completed_at = now`
+- [x] `POST /games/four-pics/abandon` on a `completed` or already-`abandoned` session returns 409
+- [x] `POST /games/four-pics/abandon` with no Four Pics session for the player returns 404
+- [x] Frontend: navigating back, refreshing-then-leaving, or closing the tab mid-game triggers the navigation guard, which calls `abandon` before the navigation completes; on success the player is redirected to the Lobby
+- [x] After abandon, the Lobby tile reflects `abandoned` via `GET /players/me/sessions`; the tile is locked and cannot be re-entered
+- [x] Service-level unit tests cover all three abandon paths (active / already-terminal / not-found) using hand-written DAO fakes
 
 ## Blocked by
 

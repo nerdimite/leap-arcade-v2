@@ -127,5 +127,11 @@ A per-puzzle bonus computed from the elapsed time between `puzzle_started_at` an
 ### Proxy Route Handler
 The Next.js catch-all Route Handler at `app/api/[...path]/route.ts`. Reads the `token` httpOnly cookie, injects `Authorization: Bearer <token>`, and forwards the request to FastAPI. Owns the entire auth seam on the frontend — FastAPI is unchanged.
 
+### Four Pics Question
+A single seed-data record defining one Four Pics round: exactly four static image paths in a JSONB array and one server-side `odd_one_out_index` (0–3). The odd image is never sent to the client.
+
+### Four Pics Question Attempt
+A server-side record of one question served within a Four Pics game session. Created when the question is first shown with `status = active` and a server-authoritative `started_at`. Transitions to `correct` or `wrong` on the player's single tap; both are terminal.
+
 ### Auth Guard (proxy.ts)
 Next.js 16 `proxy.ts` at the project root. Reads the `token` cookie; redirects unauthenticated requests to `/login`. Protected routes: all routes except `/(auth)/login` and static assets.

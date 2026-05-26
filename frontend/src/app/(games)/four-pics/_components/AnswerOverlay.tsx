@@ -1,0 +1,39 @@
+/** 2s feedback overlay after a tap — correct shows score breakdown; wrong shows +0 only. */
+
+import { FOUR_PICS_BASE_SCORE } from "@/lib/constants";
+import { cn } from "@/lib/utils";
+
+export type AnswerOverlayProps = {
+  correct: boolean;
+  score: number;
+  timeBonus: number;
+  selectedIndex: number;
+};
+
+export function AnswerOverlay(props: AnswerOverlayProps) {
+  const { correct, score, timeBonus, selectedIndex } = props;
+
+  return (
+    <div
+      className={cn(
+        "pointer-events-none absolute inset-0 z-20 flex items-center justify-center rounded-xl",
+        correct ? "bg-emerald-600/75" : "bg-destructive/75",
+      )}
+      aria-live="polite"
+      role="status"
+    >
+      <p
+        className={cn(
+          "rounded-lg px-4 py-3 text-center font-semibold text-lg text-white shadow-lg tabular-nums",
+          correct ? "bg-emerald-800/90" : "bg-destructive/90",
+        )}
+      >
+        {correct
+          ? `+${FOUR_PICS_BASE_SCORE} base + ${timeBonus} bonus = ${score} pts`
+          : "+0 pts"}
+      </p>
+      {/* selectedIndex reserved for parent tile ring on correct only */}
+      <span className="sr-only">Selected option {selectedIndex + 1}</span>
+    </div>
+  );
+}

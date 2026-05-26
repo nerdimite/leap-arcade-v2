@@ -41,10 +41,11 @@ async def truncate_transaction_tables(engine: AsyncEngine) -> None:
 
 
 async def truncate_all_tables_for_suite(engine: AsyncEngine) -> None:
-    """Full wipe including ``rapid_fire_questions`` — used once per pytest session."""
+    """Full wipe including seeded question pools — used once per pytest session."""
     stmt = text(
-        "TRUNCATE TABLE rapid_fire_answers, game_sessions, players, "
-        "rapid_fire_questions RESTART IDENTITY CASCADE"
+        "TRUNCATE TABLE rapid_fire_answers, four_pics_question_attempts, "
+        "game_sessions, players, rapid_fire_questions, four_pics_questions "
+        "RESTART IDENTITY CASCADE"
     )
     async with engine.begin() as conn:
         await conn.execute(stmt)
