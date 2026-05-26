@@ -19,8 +19,8 @@ Expect the user to provide:
 2. Parse the parent issue's execution plan into batches.
 3. Run batches sequentially.
 4. Within each batch, spawn one subagent per sub-issue in parallel.
-5. Prefer `composer-2-fast` for every subagent.
-6. If a `composer-2-fast` subagent reports it cannot complete the issue, retry that specific sub-issue once with the inherited/default model.
+5. Prefer `composer-2.5-fast` for every subagent.
+6. If a `composer-2.5-fast` subagent reports it cannot complete the issue, retry that specific sub-issue once with the inherited/default model.
 7. Respect blockers from each issue file even if the parent batch plan already accounts for them.
 8. After each subagent completes, verify the sub-issue was implemented and its status was marked `done`.
 9. When all issues in a batch are done, update the parent issue to mark that batch/sub-issues done.
