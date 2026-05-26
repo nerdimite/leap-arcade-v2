@@ -17,7 +17,7 @@ src/app/
     picture/            — Picture Illustration
     rapid-fire/         — Rapid Fire Quiz
     four-pics/          — Four Pics, One Lie
-    crossword/          — Crossword Puzzle
+    word-hunt/          — Word Hunt
   lobby/                — game tile grid + mini leaderboard
   leaderboard/          — full leaderboard page
   admin/                — facilitator view (stub)

@@ -1,7 +1,7 @@
 # Sub-4: Navigation Guard and Polished Result Screen
 
 **Type:** AFK
-**Status:** ready-for-agent
+**Status:** done
 **Depends on:** Sub-1
 **Blocks:** Sub-5 (e2e tests cover both the guard-submit path and the polished result)
 

@@ -24,9 +24,9 @@ Implement Word Hunt end-to-end: a server-authoritative riddle-driven word-search
 ## Execution Plan
 
 ```
-Batch 1 (solo):     Sub-1 (happy-path tracer)
-Batch 2 (parallel): Sub-2 (drag UX polish) ∥ Sub-3 (time bonus + stopwatch) ∥ Sub-4 (nav guard + polished result screen)
-Batch 3 (solo):     Sub-5 (e2e api journey tests)
+Batch 1 (solo):     Sub-1 (happy-path tracer) ✅ done
+Batch 2 (parallel): Sub-2 (drag UX polish) ✅ done ∥ Sub-3 (time bonus + stopwatch) ✅ done ∥ Sub-4 (nav guard + polished result screen) ✅ done
+Batch 3 (solo):     Sub-5 (e2e api journey tests) ✅ done
 ```
 
 ## References

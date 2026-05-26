@@ -90,6 +90,16 @@ ERRORS: Dict[str, ErrorDefinition] = {
         http_status=HTTPStatus.SERVICE_UNAVAILABLE,
         message="No pinpoint puzzles are configured for this event",
     ),
+    "NO_WORD_HUNT_PUZZLE_AVAILABLE": ErrorDefinition(
+        code=3015,
+        http_status=HTTPStatus.SERVICE_UNAVAILABLE,
+        message="No word hunt puzzle is configured for this event",
+    ),
+    "WORD_HUNT_SESSION_ALREADY_COMPLETED": ErrorDefinition(
+        code=2010,
+        http_status=HTTPStatus.CONFLICT,
+        message="Word Hunt session is already completed",
+    ),
     "WIKI_PUZZLE_NOT_ACTIVE": ErrorDefinition(
         code=2005,
         http_status=HTTPStatus.CONFLICT,

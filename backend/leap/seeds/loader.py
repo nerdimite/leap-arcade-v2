@@ -10,6 +10,8 @@ from pathlib import Path
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from leap.games.word_hunt.grid import validate_seeded_word
+
 logger = structlog.get_logger(__name__)
 
 DATA_DIR = Path(__file__).parent / "data"
@@ -23,6 +25,7 @@ async def seed_all(session: AsyncSession) -> None:
     await _seed_picture(session)
     await _seed_four_pics(session)
     await _seed_pinpoint(session)
+    await _seed_word_hunt(session)
 
 
 async def _seed_players(session: AsyncSession) -> None:
@@ -267,3 +270,93 @@ async def _seed_pinpoint(session: AsyncSession) -> None:
         )
     await session.commit()
     logger.info("seed.pinpoint.done", count=len(puzzles))
+
+
+async def _seed_word_hunt(session: AsyncSession) -> None:
+    path = DATA_DIR / "word_hunt.json"
+    if not path.exists():
+        logger.warning("seed.word_hunt.missing", path=str(path))
+        return
+
+    payload = json.loads(path.read_text())
+    puzzle = payload["puzzle"]
+    words = payload["words"]
+    grid = puzzle["grid"]
+
+    for word_entry in words:
+        if not validate_seeded_word(
+            grid,
+            word_entry["word"],
+            word_entry["start_row"],
+            word_entry["start_col"],
+            word_entry["end_row"],
+            word_entry["end_col"],
+        ):
+            raise ValueError(
+                f"word_hunt seed validation failed for word {word_entry['word']!r}"
+            )
+
+    puzzle_id = puzzle.get("id", "11111111-1111-1111-1111-111111111111")
+    await session.execute(
+        text(
+            """
+            INSERT INTO word_hunt_puzzles (id, rows, cols, grid)
+            VALUES (:id, :rows, :cols, CAST(:grid AS jsonb))
+            ON CONFLICT (id) DO UPDATE SET
+                rows = EXCLUDED.rows,
+                cols = EXCLUDED.cols,
+                grid = EXCLUDED.grid
+            """
+        ),
+        {
+            "id": puzzle_id,
+            "rows": puzzle["rows"],
+            "cols": puzzle["cols"],
+            "grid": json.dumps(grid),
+        },
+    )
+
+    for word_entry in words:
+        await session.execute(
+            text(
+                """
+                INSERT INTO word_hunt_words (
+                    puzzle_id,
+                    word,
+                    clue,
+                    start_row,
+                    start_col,
+                    end_row,
+                    end_col
+                )
+                VALUES (
+                    :puzzle_id,
+                    :word,
+                    :clue,
+                    :start_row,
+                    :start_col,
+                    :end_row,
+                    :end_col
+                )
+                ON CONFLICT (puzzle_id, word) DO UPDATE SET
+                    clue = EXCLUDED.clue,
+                    start_row = EXCLUDED.start_row,
+                    start_col = EXCLUDED.start_col,
+                    end_row = EXCLUDED.end_row,
+                    end_col = EXCLUDED.end_col
+                """
+            ),
+            {
+                "puzzle_id": puzzle_id,
+                "word": word_entry["word"],
+                "clue": word_entry["clue"],
+                "start_row": word_entry["start_row"],
+                "start_col": word_entry["start_col"],
+                "end_row": word_entry["end_row"],
+                "end_col": word_entry["end_col"],
+            },
+        )
+
+    await session.commit()
+    logger.info("seed.word_hunt.done", puzzle_id=puzzle_id, word_count=len(words))
+

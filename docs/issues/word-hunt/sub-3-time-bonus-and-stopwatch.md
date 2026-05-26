@@ -1,7 +1,7 @@
 # Sub-3: Time Bonus and Stopwatch
 
 **Type:** AFK
-**Status:** ready-for-agent
+**Status:** done
 **Depends on:** Sub-1
 **Blocks:** Sub-5 (e2e tests assert on time-bonus values)
 
@@ -26,15 +26,15 @@ This slice does NOT touch the navigation guard, the polished result screen layou
 
 ## Acceptance criteria
 
-- [ ] `compute_time_bonus` returns the values listed above at all boundaries; never returns a negative number
-- [ ] `compute_final_score` is correct across a representative set of `(found_count, elapsed_ms)` pairs
-- [ ] `WordHuntService` accepts an injectable clock; service-level tests using a fake clock can assert `time_bonus` values exactly (e.g. a session that completes at simulated `elapsed_ms = 300_000` returns `time_bonus = 250`)
-- [ ] Auto-complete via `submit_find` finalises `game_sessions.score` to `found_count * 100 + time_bonus`
-- [ ] Explicit `submit` finalises `game_sessions.score` to `found_count * 100 + time_bonus`
-- [ ] `play` response includes `started_at` as ISO8601
-- [ ] Result payload (returned by auto-complete `find`, by `submit`, and by `play` on a `completed` session) includes `base_score`, `time_bonus`, `time_elapsed_ms`
-- [ ] Frontend renders a live `mm:ss` stopwatch that resumes from the server's `started_at` on refresh
-- [ ] Existing Sub-1 happy-path behaviour still works end-to-end
+- [x] `compute_time_bonus` returns the values listed above at all boundaries; never returns a negative number
+- [x] `compute_final_score` is correct across a representative set of `(found_count, elapsed_ms)` pairs
+- [x] `WordHuntService` accepts an injectable clock; service-level tests using a fake clock can assert `time_bonus` values exactly (e.g. a session that completes at simulated `elapsed_ms = 300_000` returns `time_bonus = 250`)
+- [x] Auto-complete via `submit_find` finalises `game_sessions.score` to `found_count * 100 + time_bonus`
+- [x] Explicit `submit` finalises `game_sessions.score` to `found_count * 100 + time_bonus`
+- [x] `play` response includes `started_at` as ISO8601
+- [x] Result payload (returned by auto-complete `find`, by `submit`, and by `play` on a `completed` session) includes `base_score`, `time_bonus`, `time_elapsed_ms`
+- [x] Frontend renders a live `mm:ss` stopwatch that resumes from the server's `started_at` on refresh
+- [x] Existing Sub-1 happy-path behaviour still works end-to-end
 
 ## Blocked by
 

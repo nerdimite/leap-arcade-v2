@@ -45,13 +45,13 @@ const fourPicsTile = (
   ...props,
 });
 
-const crosswordTile = (
+const wordHuntTile = (
   props: Partial<GameTileProps> & Pick<GameTileProps, "badge" | "locked">,
 ): GameTileProps => ({
-  name: "Crossword Puzzle",
-  description: "Classic across and down clues — finish fast for a time bonus.",
+  name: "Word Hunt",
+  description: "Trace hidden words in a letter grid using riddle clues.",
   maxPoints: 100,
-  href: "/crossword",
+  href: "/word-hunt",
   ...props,
 });
 
@@ -75,7 +75,7 @@ export const AllAvailable: Story = {
       rapidTile({ badge: "Not started", locked: false }),
       pictureTile({ badge: "Not started", locked: false }),
       fourPicsTile({ badge: "Not started", locked: false }),
-      crosswordTile({ badge: "Not started", locked: false }),
+      wordHuntTile({ badge: "Not started", locked: false }),
     ],
     sidebar: (
       <MiniLeaderboard entries={storySidebarEntries} currentCorpId={null} />
@@ -90,7 +90,7 @@ export const MixedStatuses: Story = {
       rapidTile({ badge: "Completed", score: 95, locked: true }),
       pictureTile({ badge: "Not started", locked: false }),
       fourPicsTile({ badge: "Abandoned", score: 12, locked: true }),
-      crosswordTile({ badge: "Not started", locked: false }),
+      wordHuntTile({ badge: "Not started", locked: false }),
     ],
     sidebar: <MiniLeaderboard entries={storySidebarEntries} currentCorpId="c2" />,
   },
@@ -103,7 +103,7 @@ export const AllLocked: Story = {
       rapidTile({ badge: "Completed", score: 280, locked: true }),
       pictureTile({ badge: "Completed", score: 260, locked: true }),
       fourPicsTile({ badge: "Abandoned", score: 40, locked: true }),
-      crosswordTile({ badge: "Completed", score: 310, locked: true }),
+      wordHuntTile({ badge: "Completed", score: 310, locked: true }),
     ],
     sidebar: <div className="text-muted-foreground text-sm">Sidebar placeholder</div>,
   },

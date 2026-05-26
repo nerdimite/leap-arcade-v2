@@ -7,7 +7,7 @@ express the contract honestly and survive internal refactors.
 import datetime
 import uuid
 from contextlib import asynccontextmanager
-from typing import Any, AsyncGenerator, Dict, List, Optional
+from typing import Any, AsyncGenerator, Callable, Dict, List, Optional
 
 import pytz
 
@@ -29,6 +29,7 @@ from leap.types.four_pics import FourPicsQuestionAttemptDTO, FourPicsQuestionDTO
 from leap.types.picture import PicturePuzzleAttemptDTO, PicturePuzzleDTO
 from leap.types.pinpoint import PinpointPuzzleAttemptDTO, PinpointPuzzleDTO
 from leap.types.rapid_fire import RapidFireAnswerDTO, RapidFireQuestionDTO
+from leap.types.word_hunt import WordHuntFindDTO, WordHuntPuzzleDTO
 from leap.types.wiki import WikiArticleDTO, WikiPuzzleAttemptDTO, WikiRoundDTO
 
 
@@ -79,9 +80,11 @@ class FakeGameSessionDAO:
         self,
         sessions: Optional[List[GameSessionDTO]] = None,
         player_dao: Optional["FakePlayerDAO"] = None,
+        clock: Optional[Callable[[], datetime.datetime]] = None,
     ) -> None:
         self._sessions: List[GameSessionDTO] = sessions or []
         self._player_dao: Optional[FakePlayerDAO] = player_dao
+        self._clock = clock or leap_time.utc_now
 
     async def get_by_player_and_game(
         self, session: Any, player_id: str, game_id: str
@@ -100,7 +103,7 @@ class FakeGameSessionDAO:
             game_id=game_id,
             status=GameSessionStatus.ACTIVE,
             score=None,
-            started_at=leap_time.utc_now(),
+            started_at=self._clock(),
             completed_at=None,
         )
         self._sessions.append(dto)
@@ -117,7 +120,7 @@ class FakeGameSessionDAO:
             if s.id == game_session_id:
                 new_completed_at = s.completed_at
                 if status in (GameSessionStatus.COMPLETED, GameSessionStatus.ABANDONED):
-                    new_completed_at = leap_time.utc_now()
+                    new_completed_at = self._clock()
                 updated = s.model_copy(
                     update={
                         "status": status,
@@ -721,6 +724,59 @@ class FakePinpointPuzzleAttemptDAO:
             self._attempts[i] = updated
             return updated
         raise KeyError(attempt_id)
+
+
+class FakeWordHuntPuzzleDAO:
+    """In-memory word hunt puzzle store."""
+
+    def __init__(self, puzzles: Optional[List[WordHuntPuzzleDTO]] = None) -> None:
+        self._puzzles = puzzles or []
+
+    async def get_all_with_words(self, session: Any) -> List[WordHuntPuzzleDTO]:
+        _ = session
+        return list(self._puzzles)
+
+
+class FakeWordHuntFindDAO:
+    """In-memory word hunt find store."""
+
+    def __init__(self, finds: Optional[List[WordHuntFindDTO]] = None) -> None:
+        self._finds: List[WordHuntFindDTO] = finds or []
+
+    async def create(
+        self,
+        session: Any,
+        session_id: str,
+        word_id: str,
+        start_row: int,
+        start_col: int,
+        end_row: int,
+        end_col: int,
+    ) -> WordHuntFindDTO:
+        _ = session
+        dto = WordHuntFindDTO(
+            id=str(uuid.uuid4()),
+            session_id=session_id,
+            word_id=word_id,
+            start_row=start_row,
+            start_col=start_col,
+            end_row=end_row,
+            end_col=end_col,
+            found_at=leap_time.utc_now(),
+        )
+        self._finds.append(dto)
+        return dto
+
+    async def get_for_session(self, session: Any, session_id: str) -> List[WordHuntFindDTO]:
+        _ = session
+        return sorted(
+            [f for f in self._finds if f.session_id == session_id],
+            key=lambda f: f.found_at,
+        )
+
+    async def count_for_session(self, session: Any, session_id: str) -> int:
+        _ = session
+        return len([f for f in self._finds if f.session_id == session_id])
 
 
 class FakeServiceContainer:

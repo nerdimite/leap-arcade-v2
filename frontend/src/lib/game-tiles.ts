@@ -47,10 +47,10 @@ export const GAME_TILES: readonly GameTileDefinition[] = [
     maxPoints: GAME_MAX_POINTS.four_pics,
   },
   {
-    id: "crossword",
-    name: "Crossword Puzzle",
-    description: "Classic across and down clues — finish fast for a time bonus.",
-    href: "/crossword",
-    maxPoints: GAME_MAX_POINTS.crossword,
+    id: "word_hunt",
+    name: "Word Hunt",
+    description: "Trace hidden words in a letter grid using riddle clues.",
+    href: "/word-hunt",
+    maxPoints: GAME_MAX_POINTS.word_hunt,
   },
 ];

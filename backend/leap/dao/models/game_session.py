@@ -16,7 +16,7 @@ class GameSession(Base):
             name="ck_game_sessions_status",
         ),
         CheckConstraint(
-            "game_id IN ('wiki', 'picture', 'rapid_fire', 'four_pics', 'crossword', 'pinpoint')",
+            "game_id IN ('wiki', 'picture', 'rapid_fire', 'four_pics', 'word_hunt', 'pinpoint')",
             name="ck_game_sessions_game_id",
         ),
     )

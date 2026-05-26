@@ -1,7 +1,7 @@
 # Sub-5: E2E API Journey Tests
 
 **Type:** AFK
-**Status:** ready-for-agent
+**Status:** done
 **Depends on:** Sub-1, Sub-2, Sub-3, Sub-4
 **Blocks:** nothing
 
@@ -45,13 +45,13 @@ These tests are written against the same e2e harness used by other games (real P
 
 ## Acceptance criteria
 
-- [ ] `test_word_hunt_journey.py` and `test_word_hunt_lifecycle_journeys.py` exist under `backend/tests/e2e/`
-- [ ] Both test files pass against the e2e harness
-- [ ] Happy-path journey asserts the final persisted `game_sessions.score = N * 100 + time_bonus`, lobby reflection, and leaderboard reflection
-- [ ] Partial-submit, refresh-resume, and navigation-guard-equivalence scenarios all assert that unfound `word` text never appears in any response
-- [ ] All cheating-attempt scenarios assert `matched=false` AND no DB write
-- [ ] Time-bonus boundary scenario uses the injectable clock and asserts the exact `time_bonus` value
-- [ ] `POST /games/word-hunt/abandon` returns 404 (covered explicitly)
+- [x] `test_word_hunt_journey.py` and `test_word_hunt_lifecycle_journeys.py` exist under `backend/tests/e2e/`
+- [x] Both test files pass against the e2e harness
+- [x] Happy-path journey asserts the final persisted `game_sessions.score = N * 100 + time_bonus`, lobby reflection, and leaderboard reflection
+- [x] Partial-submit, refresh-resume, and navigation-guard-equivalence scenarios all assert that unfound `word` text never appears in any response
+- [x] All cheating-attempt scenarios assert `matched=false` AND no DB write
+- [x] Time-bonus boundary scenario uses the injectable clock and asserts the exact `time_bonus` value
+- [x] `POST /games/word-hunt/abandon` returns 404 (covered explicitly)
 
 ## Blocked by
 

@@ -183,3 +183,23 @@ class NoPinpointPuzzlesAvailableException(BaseServiceException):
             message=error.message,
             http_status=error.http_status,
         )
+
+
+class NoWordHuntPuzzleAvailableException(BaseServiceException):
+    def __init__(self) -> None:
+        error = ERRORS["NO_WORD_HUNT_PUZZLE_AVAILABLE"]
+        super().__init__(
+            error_code=error.code,
+            message=error.message,
+            http_status=error.http_status,
+        )
+
+
+class WordHuntSessionAlreadyCompletedException(BaseServiceException):
+    def __init__(self) -> None:
+        error = ERRORS["WORD_HUNT_SESSION_ALREADY_COMPLETED"]
+        super().__init__(
+            error_code=error.code,
+            message=error.message,
+            http_status=error.http_status,
+        )

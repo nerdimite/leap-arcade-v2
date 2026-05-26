@@ -17,6 +17,18 @@ export const FOUR_PICS_TIME_DECAY_MS = 30_000;
 /** Matches backend `PINPOINT_TIME_BONUS_DECAY_MS` — time bonus reaches zero at this elapsed. */
 export const PINPOINT_TIME_BONUS_DECAY_MS = 90_000;
 
+/** Matches backend `WORD_HUNT_TIME_DECAY_MS` — time bonus reaches zero at this elapsed. */
+export const WORD_HUNT_TIME_DECAY_MS = 600_000;
+
+/** Matches backend `WORD_HUNT_BASE_PER_WORD` — shown in find hit feedback. */
+export const WORD_HUNT_BASE_PER_WORD = 100;
+
+/** Miss flash duration on failed grid traces (PRD). */
+export const WORD_HUNT_MISS_FLASH_MS = 250;
+
+/** Score increment chip visibility after a successful find. */
+export const WORD_HUNT_SCORE_INCREMENT_MS = 800;
+
 /** React Query stale time for lobby session prefetch/hydration (avoid instant refetch flash). */
 export const PLAYER_SESSIONS_STALE_TIME_MS = 30_000;
 
@@ -31,7 +43,7 @@ export const GAME_MAX_POINTS = {
   pinpoint: 3000,
   picture: 800,
   four_pics: 600,
-  crossword: 1200,
+  word_hunt: 1000,
 } as const;
 
 export type LobbyGameId = keyof typeof GAME_MAX_POINTS;

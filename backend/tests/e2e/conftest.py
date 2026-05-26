@@ -44,7 +44,8 @@ async def truncate_all_tables_for_suite(engine: AsyncEngine) -> None:
     """Full wipe including seeded question pools — used once per pytest session."""
     stmt = text(
         "TRUNCATE TABLE rapid_fire_answers, four_pics_question_attempts, "
-        "game_sessions, players, rapid_fire_questions, four_pics_questions "
+        "word_hunt_finds, game_sessions, players, rapid_fire_questions, "
+        "four_pics_questions, word_hunt_words, word_hunt_puzzles "
         "RESTART IDENTITY CASCADE"
     )
     async with engine.begin() as conn:
