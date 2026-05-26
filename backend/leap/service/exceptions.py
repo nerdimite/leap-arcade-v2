@@ -173,3 +173,13 @@ class NoPicturePuzzlesAvailableException(BaseServiceException):
             message=error.message,
             http_status=error.http_status,
         )
+
+
+class NoPinpointPuzzlesAvailableException(BaseServiceException):
+    def __init__(self) -> None:
+        error = ERRORS["NO_PINPOINT_PUZZLES_AVAILABLE"]
+        super().__init__(
+            error_code=error.code,
+            message=error.message,
+            http_status=error.http_status,
+        )

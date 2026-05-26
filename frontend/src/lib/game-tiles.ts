@@ -26,6 +26,13 @@ export const GAME_TILES: readonly GameTileDefinition[] = [
     maxPoints: GAME_MAX_POINTS.rapid_fire,
   },
   {
+    id: "pinpoint",
+    name: "Pinpoint",
+    description: "Word-association puzzles — guess the hidden category from thematic clues, one at a time.",
+    href: "/pinpoint",
+    maxPoints: GAME_MAX_POINTS.pinpoint,
+  },
+  {
     id: "picture",
     name: "Picture Illustration",
     description: "Images reveal a concept step by step — type the answer early for more points.",

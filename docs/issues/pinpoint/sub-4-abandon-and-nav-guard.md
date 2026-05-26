@@ -1,7 +1,7 @@
 # Sub-4: Abandon Endpoint + Navigation Guard
 
 **Type:** AFK
-**Status:** ready-for-agent
+**Status:** done
 **Depends on:** Sub-1
 **Blocks:** Sub-5
 
@@ -24,15 +24,15 @@ End-to-end behaviour delivered:
 
 ## Acceptance criteria
 
-- [ ] `POST /games/pinpoint/abandon` exists and is reachable through the proxy
-- [ ] Abandoning an active session flips `game_sessions.status` to `abandoned`, closes any `active` attempt as `failed` with `score = 0` and `time_bonus = NULL`, and persists the partial `game_sessions.score`
-- [ ] The result schema returned by abandon includes `puzzles_not_reached` and `not_reached` rows for puzzles with no attempt — those rows have `clues_used: null`, `score: 0`, `time_bonus: 0`
-- [ ] No response payload from any Pinpoint endpoint contains canonical `answer` or `answer_aliases`, including the abandon result
-- [ ] `abandon` on a non-existent session returns 4xx (`SessionNotFoundException`); on an already-terminal session returns 4xx (`SessionAlreadyCompletedException`)
-- [ ] After `abandon`, subsequent `play` calls return the result block (not a new puzzle); subsequent `guess` calls return 4xx
-- [ ] Frontend navigation guard intercepts back / refresh / unload while a Pinpoint puzzle is active and triggers the abandon flow; the guard disarms cleanly on `completed` or `abandoned`
-- [ ] Lobby tile for Pinpoint reflects `abandoned` after the flow completes (locked, no re-entry)
-- [ ] Service tests cover: abandon active mid-puzzle → puzzle `failed` 0pts, session `abandoned`, unattempted puzzles `not_reached`; abandon already-completed → exception; abandon no-session → exception
+- [x] `POST /games/pinpoint/abandon` exists and is reachable through the proxy
+- [x] Abandoning an active session flips `game_sessions.status` to `abandoned`, closes any `active` attempt as `failed` with `score = 0` and `time_bonus = NULL`, and persists the partial `game_sessions.score`
+- [x] The result schema returned by abandon includes `puzzles_not_reached` and `not_reached` rows for puzzles with no attempt — those rows have `clues_used: null`, `score: 0`, `time_bonus: 0`
+- [x] No response payload from any Pinpoint endpoint contains canonical `answer` or `answer_aliases`, including the abandon result
+- [x] `abandon` on a non-existent session returns 4xx (`SessionNotFoundException`); on an already-terminal session returns 4xx (`SessionAlreadyCompletedException`)
+- [x] After `abandon`, subsequent `play` calls return the result block (not a new puzzle); subsequent `guess` calls return 4xx
+- [x] Frontend navigation guard intercepts back / refresh / unload while a Pinpoint puzzle is active and triggers the abandon flow; the guard disarms cleanly on `completed` or `abandoned`
+- [x] Lobby tile for Pinpoint reflects `abandoned` after the flow completes (locked, no re-entry)
+- [x] Service tests cover: abandon active mid-puzzle → puzzle `failed` 0pts, session `abandoned`, unattempted puzzles `not_reached`; abandon already-completed → exception; abandon no-session → exception
 
 ## Blocked by
 

@@ -6,6 +6,7 @@ import {
   FOUR_PICS_BASE_SCORE,
   FOUR_PICS_TIME_DECAY_MS,
   LEADERBOARD_POLL_INTERVAL_MS,
+  PINPOINT_RESULT_FLASH_MS,
   QUESTION_START_DELAY_MS,
 } from "./constants";
 
@@ -20,5 +21,9 @@ describe("constants", () => {
     expect(FOUR_PICS_ANSWER_OVERLAY_MS).toBe(2000);
     expect(FOUR_PICS_BASE_SCORE).toBe(100);
     expect(FOUR_PICS_TIME_DECAY_MS).toBe(30_000);
+  });
+
+  it("exports Pinpoint result flash duration", () => {
+    expect(PINPOINT_RESULT_FLASH_MS).toBe(2000);
   });
 });

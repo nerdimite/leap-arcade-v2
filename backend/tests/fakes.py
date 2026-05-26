@@ -27,6 +27,7 @@ from leap.types.game import (
 from leap.types.player import PlayerDTO
 from leap.types.four_pics import FourPicsQuestionAttemptDTO, FourPicsQuestionDTO
 from leap.types.picture import PicturePuzzleAttemptDTO, PicturePuzzleDTO
+from leap.types.pinpoint import PinpointPuzzleAttemptDTO, PinpointPuzzleDTO
 from leap.types.rapid_fire import RapidFireAnswerDTO, RapidFireQuestionDTO
 from leap.types.wiki import WikiArticleDTO, WikiPuzzleAttemptDTO, WikiRoundDTO
 
@@ -609,6 +610,112 @@ class FakeFourPicsQuestionAttemptDAO:
                     "time_bonus": 0,
                     "time_ms": None,
                     "completed_at": completed_at,
+                }
+            )
+            self._attempts[i] = updated
+            return updated
+        raise KeyError(attempt_id)
+
+
+class FakePinpointPuzzleDAO:
+    """In-memory pinpoint puzzle store."""
+
+    def __init__(self, puzzles: Optional[List[PinpointPuzzleDTO]] = None) -> None:
+        self._puzzles: List[PinpointPuzzleDTO] = list(puzzles or [])
+
+    async def get_all(self, session: Any) -> List[PinpointPuzzleDTO]:
+        _ = session
+        return sorted(self._puzzles, key=lambda p: p.id)
+
+
+class FakePinpointPuzzleAttemptDAO:
+    """In-memory pinpoint puzzle attempt store."""
+
+    def __init__(self) -> None:
+        self._attempts: List[PinpointPuzzleAttemptDTO] = []
+
+    async def create(
+        self,
+        session: Any,
+        game_session_id: str,
+        puzzle_id: str,
+        started_at: datetime.datetime,
+    ) -> PinpointPuzzleAttemptDTO:
+        _ = session
+        dto = PinpointPuzzleAttemptDTO(
+            id=str(uuid.uuid4()),
+            game_session_id=game_session_id,
+            puzzle_id=puzzle_id,
+            clues_revealed=1,
+            guesses=[],
+            status="active",
+            score=None,
+            time_bonus=None,
+            started_at=started_at,
+            completed_at=None,
+        )
+        self._attempts.append(dto)
+        return dto
+
+    async def get_for_session(self, session: Any, game_session_id: str) -> List[PinpointPuzzleAttemptDTO]:
+        _ = session
+        return sorted(
+            [a for a in self._attempts if a.game_session_id == game_session_id],
+            key=lambda a: a.started_at,
+        )
+
+    async def get_by_session_and_puzzle(
+        self,
+        session: Any,
+        game_session_id: str,
+        puzzle_id: str,
+    ) -> Optional[PinpointPuzzleAttemptDTO]:
+        _ = session
+        for attempt in self._attempts:
+            if attempt.game_session_id == game_session_id and attempt.puzzle_id == puzzle_id:
+                return attempt
+        return None
+
+    async def update_status_and_score(
+        self,
+        session: Any,
+        attempt_id: str,
+        *,
+        status: str,
+        score: int,
+        time_bonus: Optional[int],
+        completed_at: datetime.datetime,
+    ) -> PinpointPuzzleAttemptDTO:
+        _ = session
+        for i, attempt in enumerate(self._attempts):
+            if attempt.id != attempt_id:
+                continue
+            updated = attempt.model_copy(
+                update={
+                    "status": status,
+                    "score": score,
+                    "time_bonus": time_bonus,
+                    "completed_at": completed_at,
+                }
+            )
+            self._attempts[i] = updated
+            return updated
+        raise KeyError(attempt_id)
+
+    async def append_guess_and_increment_clues(
+        self,
+        session: Any,
+        attempt_id: str,
+        guess: str,
+    ) -> PinpointPuzzleAttemptDTO:
+        _ = session
+        for i, attempt in enumerate(self._attempts):
+            if attempt.id != attempt_id:
+                continue
+            updated = attempt.model_copy(
+                update={
+                    "guesses": list(attempt.guesses) + [guess],
+                    "clues_revealed": attempt.clues_revealed + 1,
                 }
             )
             self._attempts[i] = updated

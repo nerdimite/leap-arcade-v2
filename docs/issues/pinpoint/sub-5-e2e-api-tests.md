@@ -1,7 +1,7 @@
 # Sub-5: E2E API Journey Tests
 
 **Type:** AFK
-**Status:** ready-for-agent
+**Status:** done
 **Depends on:** Sub-2, Sub-3, Sub-4
 **Blocks:** nothing
 
@@ -30,12 +30,12 @@ These tests intentionally do NOT mock the DAO or service layers — they exercis
 
 ## Acceptance criteria
 
-- [ ] `tests/e2e/test_pinpoint_journey.py` runs against the FastAPI app, plays through the full seeded pool with mixed outcomes, and asserts the final session score and per-puzzle result rows match expectations
-- [ ] The journey test asserts that no response body contains the canonical `answer` or `answer_aliases`
-- [ ] The journey test runs with a fixed clock so time-bonus assertions are deterministic
-- [ ] `tests/e2e/test_pinpoint_lifecycle_journeys.py` covers abandon-mid-puzzle, refresh-resume idempotency, and post-completion replay protection
-- [ ] The leaderboard journey assertion confirms that a completed Pinpoint session updates the player's total score visible via the leaderboard endpoint
-- [ ] All e2e tests pass when run with `uv run pytest tests/e2e/ -v` against a clean test database
+- [x] `tests/e2e/test_pinpoint_journey.py` runs against the FastAPI app, plays through the full seeded pool with mixed outcomes, and asserts the final session score and per-puzzle result rows match expectations
+- [x] The journey test asserts that no response body contains the canonical `answer` or `answer_aliases`
+- [x] The journey test runs with a fixed clock so time-bonus assertions are deterministic
+- [x] `tests/e2e/test_pinpoint_lifecycle_journeys.py` covers abandon-mid-puzzle, refresh-resume idempotency, and post-completion replay protection
+- [x] The leaderboard journey assertion confirms that a completed Pinpoint session updates the player's total score visible via the leaderboard endpoint
+- [x] All e2e tests pass when run with `uv run pytest tests/e2e/ -v` against a clean test database
 
 ## Blocked by
 

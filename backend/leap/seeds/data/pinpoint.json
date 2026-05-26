@@ -1,0 +1,47 @@
+[
+  {
+    "answer": "Cloud Computing",
+    "answer_aliases": ["cloud", "cloud computing", "the cloud", "aws", "azure", "gcp"],
+    "clue1": "virtualization",
+    "clue2": "redundancy",
+    "clue3": "scalability",
+    "clue4": "load balancing",
+    "clue5": "instances"
+  },
+  {
+    "answer": "Machine Learning",
+    "answer_aliases": ["machine learning", "ml", "artificial intelligence", "ai"],
+    "clue1": "algorithms",
+    "clue2": "training data",
+    "clue3": "model",
+    "clue4": "prediction",
+    "clue5": "artificial intelligence"
+  },
+  {
+    "answer": "Blockchain",
+    "answer_aliases": ["blockchain", "distributed ledger", "crypto ledger"],
+    "clue1": "decentralization",
+    "clue2": "cryptography",
+    "clue3": "ledger",
+    "clue4": "consensus",
+    "clue5": "smart contracts"
+  },
+  {
+    "answer": "Large Language Model",
+    "answer_aliases": ["llm", "large language model", "large language models", "language model"],
+    "clue1": "tokens",
+    "clue2": "transformer",
+    "clue3": "prompt",
+    "clue4": "embeddings",
+    "clue5": "parameters"
+  },
+  {
+    "answer": "Cybersecurity",
+    "answer_aliases": ["cybersecurity", "cyber security", "information security", "infosec"],
+    "clue1": "firewall",
+    "clue2": "encryption",
+    "clue3": "phishing",
+    "clue4": "authentication",
+    "clue5": "vulnerability"
+  }
+]

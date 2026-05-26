@@ -6,11 +6,14 @@ from leap.dao.rapid_fire_answer_dao import RapidFireAnswerDAO
 from leap.dao.rapid_fire_question_dao import RapidFireQuestionDAO
 from leap.dao.four_pics_question_attempt_dao import FourPicsQuestionAttemptDAO
 from leap.dao.four_pics_question_dao import FourPicsQuestionDAO
+from leap.dao.pinpoint_puzzle_attempt_dao import PinpointPuzzleAttemptDAO
+from leap.dao.pinpoint_puzzle_dao import PinpointPuzzleDAO
 from leap.dao.picture_puzzle_attempt_dao import PicturePuzzleAttemptDAO
 from leap.dao.picture_puzzle_dao import PicturePuzzleDAO
 from leap.dao.wiki_puzzle_attempt_dao import WikiPuzzleAttemptDAO
 from leap.dao.wiki_round_dao import WikiRoundDAO
 from leap.games.four_pics.service import FourPicsService
+from leap.games.pinpoint.service import PinpointService
 from leap.games.picture.service import PictureService
 from leap.games.rapid_fire.service import RapidFireService
 from leap.games.wiki.html_rewriter import WikiHtmlRewriter
@@ -41,6 +44,8 @@ class ServiceContainer:
         picture_attempt_dao = PicturePuzzleAttemptDAO()
         four_pics_question_dao = FourPicsQuestionDAO()
         four_pics_attempt_dao = FourPicsQuestionAttemptDAO()
+        pinpoint_puzzle_dao = PinpointPuzzleDAO()
+        pinpoint_attempt_dao = PinpointPuzzleAttemptDAO()
 
         self.wikipedia_client = WikipediaClient()
         self.wiki_html_rewriter = WikiHtmlRewriter()
@@ -74,5 +79,11 @@ class ServiceContainer:
             game_session_dao,
             four_pics_attempt_dao,
             four_pics_question_dao,
+        )
+        self.pinpoint = PinpointService(
+            context_manager,
+            game_session_dao,
+            pinpoint_puzzle_dao,
+            pinpoint_attempt_dao,
         )
         self.leaderboard = LeaderboardService(context_manager, game_session_dao)

@@ -85,6 +85,11 @@ ERRORS: Dict[str, ErrorDefinition] = {
         http_status=HTTPStatus.SERVICE_UNAVAILABLE,
         message="No picture puzzles are configured for this event",
     ),
+    "NO_PINPOINT_PUZZLES_AVAILABLE": ErrorDefinition(
+        code=3014,
+        http_status=HTTPStatus.SERVICE_UNAVAILABLE,
+        message="No pinpoint puzzles are configured for this event",
+    ),
     "WIKI_PUZZLE_NOT_ACTIVE": ErrorDefinition(
         code=2005,
         http_status=HTTPStatus.CONFLICT,

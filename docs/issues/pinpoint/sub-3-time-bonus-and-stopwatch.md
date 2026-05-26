@@ -1,7 +1,7 @@
 # Sub-3: Time Bonus + Stopwatch
 
 **Type:** AFK
-**Status:** ready-for-agent
+**Status:** done
 **Depends on:** Sub-1
 **Blocks:** Sub-5
 
@@ -25,16 +25,16 @@ End-to-end behaviour delivered:
 
 ## Acceptance criteria
 
-- [ ] `time_bonus` column exists on `pinpoint_puzzle_attempts` after migration
-- [ ] `compute_time_bonus(0) == 100`; `compute_time_bonus(45_000) == 50`; `compute_time_bonus(90_000) == 0`; `compute_time_bonus(120_000) == 0` (clamped); function is pure and reads no time source
-- [ ] On a correct guess, the service stores `time_bonus` on the attempt and persists `score = base + time_bonus`
-- [ ] On a failed puzzle, `time_bonus` is NULL on the attempt and contributes 0 to session score
-- [ ] `PuzzleState.time_bonus` appears in API responses, populated only when `status == "solved"`
-- [ ] `ResultSchema.puzzles[].time_bonus` is present on every row (0 for non-solved)
-- [ ] Service tests cover: solve at simulated `elapsed_ms = 30_000` produces `time_bonus = 66`; solve at `elapsed_ms = 120_000` produces `time_bonus = 0` (still earns full base); failed puzzle has `time_bonus = NULL` and contributes 0
-- [ ] Service tests use an injectable clock — no direct calls to `datetime.utcnow()` in the production path
-- [ ] Stopwatch is visible above the badge row during active play and resets on each new puzzle
-- [ ] Result screen renders the per-puzzle `<base> + <time_bonus> = <total>` breakdown for solved rows; failed rows show `0`
+- [x] `time_bonus` column exists on `pinpoint_puzzle_attempts` after migration
+- [x] `compute_time_bonus(0) == 100`; `compute_time_bonus(45_000) == 50`; `compute_time_bonus(90_000) == 0`; `compute_time_bonus(120_000) == 0` (clamped); function is pure and reads no time source
+- [x] On a correct guess, the service stores `time_bonus` on the attempt and persists `score = base + time_bonus`
+- [x] On a failed puzzle, `time_bonus` is NULL on the attempt and contributes 0 to session score
+- [x] `PuzzleState.time_bonus` appears in API responses, populated only when `status == "solved"`
+- [x] `ResultSchema.puzzles[].time_bonus` is present on every row (0 for non-solved)
+- [x] Service tests cover: solve at simulated `elapsed_ms = 30_000` produces `time_bonus = 66`; solve at `elapsed_ms = 120_000` produces `time_bonus = 0` (still earns full base); failed puzzle has `time_bonus = NULL` and contributes 0
+- [x] Service tests use an injectable clock — no direct calls to `datetime.utcnow()` in the production path
+- [x] Stopwatch is visible above the badge row during active play and resets on each new puzzle
+- [x] Result screen renders the per-puzzle `<base> + <time_bonus> = <total>` breakdown for solved rows; failed rows show `0`
 
 ## Blocked by
 

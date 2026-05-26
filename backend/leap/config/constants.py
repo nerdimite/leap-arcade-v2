@@ -10,6 +10,7 @@ from typing import Dict, List
 GAMES: List[Dict[str, str]] = [
     {"id": "wiki", "display_name": "Wikipedia Speed Run"},
     {"id": "rapid_fire", "display_name": "Rapid Fire Quiz"},
+    {"id": "pinpoint", "display_name": "Pinpoint"},
     {"id": "picture", "display_name": "Picture Illustration"},
     {"id": "four_pics", "display_name": "Four Pics One Lie"},
     {"id": "crossword", "display_name": "Crossword"},

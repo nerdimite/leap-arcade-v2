@@ -22,10 +22,12 @@ Implement Pinpoint end-to-end: a server-authoritative word-association game insp
 ## Execution Plan
 
 ```
-Batch 1 (solo):     Sub-1 (happy-path tracer)
-Batch 2 (parallel): Sub-2 (failure path + 5-card UI) ∥ Sub-3 (time bonus + stopwatch) ∥ Sub-4 (abandon + nav guard)
-Batch 3 (solo):     Sub-5 (e2e api journey tests)
+Batch 1 (solo):     Sub-1 (happy-path tracer) — done
+Batch 2 (parallel): Sub-2 (failure path + 5-card UI) ∥ Sub-3 (time bonus + stopwatch) ∥ Sub-4 (abandon + nav guard) — done
+Batch 3 (solo):     Sub-5 (e2e api journey tests) — done
 ```
+
+**Status:** complete (all sub-issues done; lobby tile wired in `frontend/src/lib/game-tiles.ts`).
 
 ## References
 

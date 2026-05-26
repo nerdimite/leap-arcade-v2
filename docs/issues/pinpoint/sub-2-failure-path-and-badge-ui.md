@@ -1,7 +1,7 @@
 # Sub-2: Failure Path + 5-Card Badge UI
 
 **Type:** AFK
-**Status:** ready-for-agent
+**Status:** done
 **Depends on:** Sub-1
 **Blocks:** Sub-5
 

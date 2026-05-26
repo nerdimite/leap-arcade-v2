@@ -22,6 +22,7 @@ async def seed_all(session: AsyncSession) -> None:
     await _seed_wiki(session)
     await _seed_picture(session)
     await _seed_four_pics(session)
+    await _seed_pinpoint(session)
 
 
 async def _seed_players(session: AsyncSession) -> None:
@@ -214,3 +215,55 @@ async def _seed_four_pics(session: AsyncSession) -> None:
         )
     await session.commit()
     logger.info("seed.four_pics.done", count=len(questions))
+
+
+async def _seed_pinpoint(session: AsyncSession) -> None:
+    path = DATA_DIR / "pinpoint.json"
+    if not path.exists():
+        logger.warning("seed.pinpoint.missing", path=str(path))
+        return
+
+    puzzles = json.loads(path.read_text())
+    for p in puzzles:
+        await session.execute(
+            text(
+                """
+                INSERT INTO pinpoint_puzzles (
+                    answer,
+                    answer_aliases,
+                    clue1,
+                    clue2,
+                    clue3,
+                    clue4,
+                    clue5
+                )
+                VALUES (
+                    :answer,
+                    CAST(:answer_aliases AS jsonb),
+                    :clue1,
+                    :clue2,
+                    :clue3,
+                    :clue4,
+                    :clue5
+                )
+                ON CONFLICT (answer) DO UPDATE SET
+                    answer_aliases = EXCLUDED.answer_aliases,
+                    clue1 = EXCLUDED.clue1,
+                    clue2 = EXCLUDED.clue2,
+                    clue3 = EXCLUDED.clue3,
+                    clue4 = EXCLUDED.clue4,
+                    clue5 = EXCLUDED.clue5
+                """
+            ),
+            {
+                "answer": p["answer"],
+                "answer_aliases": json.dumps(p["answer_aliases"]),
+                "clue1": p["clue1"],
+                "clue2": p["clue2"],
+                "clue3": p["clue3"],
+                "clue4": p["clue4"],
+                "clue5": p["clue5"],
+            },
+        )
+    await session.commit()
+    logger.info("seed.pinpoint.done", count=len(puzzles))

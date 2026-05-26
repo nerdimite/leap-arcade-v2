@@ -133,6 +133,38 @@
   animation: picture-input-shake 0.45s ease-in-out;
 }
 
+@keyframes pinpoint-badge-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
+}
+
+@keyframes pinpoint-badge-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@utility animate-pinpoint-badge-shake {
+  animation: pinpoint-badge-shake 0.45s ease-in-out;
+}
+
+@utility animate-pinpoint-badge-reveal {
+  animation: pinpoint-badge-reveal 0.35s ease-out;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
