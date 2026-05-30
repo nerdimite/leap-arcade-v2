@@ -29,6 +29,9 @@ export const WORD_HUNT_MISS_FLASH_MS = 250;
 /** Score increment chip visibility after a successful find. */
 export const WORD_HUNT_SCORE_INCREMENT_MS = 800;
 
+/** Staggered letter-pop celebration after a successful find (covers the per-letter delay tail). */
+export const WORD_HUNT_LAND_ANIMATION_MS = 750;
+
 /** Matches backend `CROSSWORD_BASE_PER_ENTRY` — shown in solve hit feedback. */
 export const CROSSWORD_BASE_PER_ENTRY = 100;
 
@@ -37,6 +40,9 @@ export const CROSSWORD_MISS_FLASH_MS = 250;
 
 /** Score increment chip visibility after a successful solve. */
 export const CROSSWORD_SCORE_INCREMENT_MS = 800;
+
+/** Staggered letter-pop celebration when an entry locks in (covers the per-letter delay tail). */
+export const CROSSWORD_SOLVE_FLASH_MS = 750;
 
 /** React Query stale time for lobby session prefetch/hydration (avoid instant refetch flash). */
 export const PLAYER_SESSIONS_STALE_TIME_MS = 30_000;

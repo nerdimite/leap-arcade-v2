@@ -1,5 +1,7 @@
 "use client";
 
+import { Check } from "lucide-react";
+
 import type { Clue } from "@/services/crossword/schema";
 
 type Props = {
@@ -34,7 +36,12 @@ export function ClueListPanel({ clues, activeEntryId, onClueClick }: Props) {
           }`}
         >
           <span className="font-semibold text-ink">{clue.number}.</span> {clue.clue}
-          {isSolved ? " ✓" : null}
+          {isSolved ? (
+            <Check
+              aria-hidden
+              className="animate-clue-check ml-1 inline size-3.5 text-four motion-reduce:animate-none"
+            />
+          ) : null}
         </button>
       </li>
     );

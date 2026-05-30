@@ -7,6 +7,7 @@ import { postPictureAbandon } from "@/lib/api/picture";
 import { useSubmitPictureAnswer } from "@/services/picture/hooks";
 import type { AnswerResponse, PlayResponse, Puzzle, Result } from "@/services/picture/schema";
 
+import type { Celebration } from "./PictureView";
 import { PictureView } from "./PictureView";
 
 type Props = {
@@ -37,11 +38,16 @@ function applyAnswer(
 }
 
 const WRONG_ANSWER_CLEAR_MS = 1000;
+/** How long the correct-answer celebration stays on screen before clearing. */
+const CELEBRATION_CLEAR_MS = 900;
 
 export function PictureClient({ initialPlay }: Props) {
   const { setIsDirty, navigateSafe, registerBeforeNavigateConfirm } = useNavigationGuard();
   const { mutateAsync: submitAnswer, isPending } = useSubmitPictureAnswer();
   const wrongAnswerClearTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const celebrationTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const celebrationTokenRef = useRef(0);
+  const streakRef = useRef(0);
 
   const [timerStartedAt, setTimerStartedAt] = useState<string | null>(() =>
     initialPlay.status === "active" ? initialPlay.session_started_at : null,
@@ -60,6 +66,7 @@ export function PictureClient({ initialPlay }: Props) {
   const [answer, setAnswer] = useState("");
   const [wrongMessage, setWrongMessage] = useState<string | null>(null);
   const [inputShakeActive, setInputShakeActive] = useState(false);
+  const [celebration, setCelebration] = useState<Celebration | null>(null);
 
   const clearWrongAnswerTimer = useCallback(() => {
     if (wrongAnswerClearTimerRef.current !== undefined) {
@@ -68,8 +75,30 @@ export function PictureClient({ initialPlay }: Props) {
     }
   }, []);
 
+  const celebrateCorrect = useCallback((scoreDelta: number) => {
+    if (celebrationTimerRef.current !== undefined) {
+      clearTimeout(celebrationTimerRef.current);
+    }
+    streakRef.current += 1;
+    celebrationTokenRef.current += 1;
+    setCelebration({
+      token: celebrationTokenRef.current,
+      scoreDelta,
+      streak: streakRef.current,
+    });
+    celebrationTimerRef.current = setTimeout(() => {
+      setCelebration(null);
+      celebrationTimerRef.current = undefined;
+    }, CELEBRATION_CLEAR_MS);
+  }, []);
+
   useEffect(() => {
-    return () => clearWrongAnswerTimer();
+    return () => {
+      clearWrongAnswerTimer();
+      if (celebrationTimerRef.current !== undefined) {
+        clearTimeout(celebrationTimerRef.current);
+      }
+    };
   }, [clearWrongAnswerTimer]);
 
   const handleSessionExpired = useCallback(async () => {
@@ -143,6 +172,11 @@ export function PictureClient({ initialPlay }: Props) {
     try {
       const res = await submitAnswer({ puzzle_id: puzzle.id, submitted_answer: answer });
       setCurrentScore(res.current_score);
+      if (res.correct && res.result === null) {
+        celebrateCorrect(res.score_earned);
+      } else if (!res.correct) {
+        streakRef.current = 0;
+      }
       const next = applyAnswer(puzzle, res);
       setPuzzle(next.puzzle);
       if (next.result !== null) {
@@ -174,6 +208,7 @@ export function PictureClient({ initialPlay }: Props) {
     if (!puzzle || isPending) return;
     clearWrongAnswerTimer();
     setInputShakeActive(false);
+    streakRef.current = 0;
     try {
       const res = await submitAnswer({ puzzle_id: puzzle.id, submitted_answer: null });
       setCurrentScore(res.current_score);
@@ -208,6 +243,7 @@ export function PictureClient({ initialPlay }: Props) {
           timerStartedAt !== null && timerLimitMs !== null
             ? { startedAt: timerStartedAt, limitMs: timerLimitMs }
             : null,
+        celebration,
       }}
       onAnswerChange={setAnswer}
       onSubmit={handleSubmit}

@@ -1,3 +1,5 @@
+import { ArrowLeft } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { formatMs } from "@/lib/utils";
 import type { Result } from "@/services/crossword/schema";
@@ -9,10 +11,6 @@ export type ResultViewProps = {
 
 function formatDirection(direction: string): string {
   return direction.charAt(0).toUpperCase() + direction.slice(1).toLowerCase();
-}
-
-function entryHeading(number: number, direction: string, answer: string): string {
-  return `${number} ${formatDirection(direction)} — ${answer}`;
 }
 
 function scoreBreakdown(result: Result): string | null {
@@ -75,8 +73,11 @@ export function ResultView({ result, onBackToLobby }: ResultViewProps) {
                 key={entry.entry_id}
                 className="flex flex-col gap-0.5 border-t-[1.5px] border-line bg-bg-2 px-4 py-3 first:border-t-0"
               >
-                <span className="font-semibold text-ink">
-                  {entryHeading(entry.number, entry.direction, entry.answer)}
+                <span className="font-semibold uppercase tracking-[0.5px] text-ink">
+                  <span className="mr-1.5 text-[11px] font-bold uppercase tracking-[1px] text-ink-faint">
+                    {entry.number} {formatDirection(entry.direction)}
+                  </span>
+                  {entry.answer}
                 </span>
                 <span className="text-[13px] text-ink-dim">{entry.clue}</span>
               </li>
@@ -86,6 +87,7 @@ export function ResultView({ result, onBackToLobby }: ResultViewProps) {
       ) : null}
 
       <Button type="button" size="lg" className="w-full" onClick={onBackToLobby}>
+        <ArrowLeft aria-hidden className="size-4" />
         Back to Lobby
       </Button>
     </div>

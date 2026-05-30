@@ -6,6 +6,7 @@ import { useNavigationGuard } from "@/hooks/use-navigation-guard";
 import {
   CROSSWORD_MISS_FLASH_MS,
   CROSSWORD_SCORE_INCREMENT_MS,
+  CROSSWORD_SOLVE_FLASH_MS,
 } from "@/lib/constants";
 import {
   useCrosswordCheck,
@@ -46,6 +47,28 @@ function cellsForEntryIds(
     }
   }
   return cells;
+}
+
+/** Maps each just-solved cell to its position along the entry, so the lime pop
+ *  travels letter by letter. Shared cells keep their earliest index. */
+function solveFlashOrderForEntryIds(
+  cluesById: Record<string, Clue>,
+  entryIds: string[],
+): Map<string, number> {
+  const order = new Map<string, number>();
+  for (const entryId of entryIds) {
+    const clue = cluesById[entryId];
+    if (!clue) {
+      continue;
+    }
+    collectEntryCellKeys(clue).forEach((key, index) => {
+      const existing = order.get(key);
+      if (existing === undefined || index < existing) {
+        order.set(key, index);
+      }
+    });
+  }
+  return order;
 }
 
 export function CrosswordClient({ initialPlay }: Props) {
@@ -117,6 +140,16 @@ export function CrosswordClient({ initialPlay }: Props) {
       playState.missFlashEntryIds,
     );
   }, [playState.context, playState.missFlashEntryIds]);
+
+  const solveFlashOrder = useMemo(() => {
+    if (!playState.context) {
+      return new Map<string, number>();
+    }
+    return solveFlashOrderForEntryIds(
+      playState.context.cluesById,
+      playState.solveFlashEntryIds,
+    );
+  }, [playState.context, playState.solveFlashEntryIds]);
 
   const displayLetter = useCallback(
     (row: number, col: number) => getDisplayLetter(playState, cellKey(row, col)),
@@ -205,6 +238,18 @@ export function CrosswordClient({ initialPlay }: Props) {
       window.clearTimeout(timeout);
     };
   }, [playState.missFlashEntryIds]);
+
+  useEffect(() => {
+    if (playState.solveFlashEntryIds.length === 0) {
+      return undefined;
+    }
+    const timeout = window.setTimeout(() => {
+      dispatchPlay({ type: "SOLVE_FLASH_COMPLETE" });
+    }, CROSSWORD_SOLVE_FLASH_MS);
+    return () => {
+      window.clearTimeout(timeout);
+    };
+  }, [playState.solveFlashEntryIds]);
 
   useEffect(() => {
     if (!playState.showScoreIncrement) {
@@ -343,6 +388,7 @@ export function CrosswordClient({ initialPlay }: Props) {
         selectedCell: playState.cursor,
         activeEntryCells,
         missFlashCells,
+        solveFlashOrder,
         activeEntryId: getActiveClueEntryId(playState),
         showScoreIncrement: playState.showScoreIncrement,
         submitDisabled: isSubmitPending,

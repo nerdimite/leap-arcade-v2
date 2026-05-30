@@ -1,5 +1,7 @@
 /** Read-only clickable-path breadcrumb for the wiki run, styled as cabinet pills. */
 
+import { ChevronRight } from "lucide-react";
+
 import { cn } from "@/lib/utils";
 
 export type WikiClickBreadcrumbProps = {
@@ -30,7 +32,7 @@ export function WikiClickBreadcrumb(props: WikiClickBreadcrumbProps) {
                 key={crumbs.slice(0, i + 1).join("\u203a")}
                 className="flex items-center gap-2"
               >
-                {i > 0 ? <span aria-hidden>›</span> : null}
+                {i > 0 ? <ChevronRight aria-hidden className="size-3 shrink-0" /> : null}
                 <span
                   title={c}
                   className={cn(

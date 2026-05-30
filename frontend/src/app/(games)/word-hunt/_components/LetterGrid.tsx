@@ -31,6 +31,14 @@ function isCellInTrace(row: number, col: number, trace: Coordinates | null | und
   return cellsInTrace(trace).some((cell) => cell.row === row && cell.col === col);
 }
 
+/** Position of a cell along a trace (start = 0), or -1 if it isn't on it. Drives the per-letter stagger. */
+function traceIndexOf(row: number, col: number, trace: Coordinates | null | undefined): number {
+  if (!trace) {
+    return -1;
+  }
+  return cellsInTrace(trace).findIndex((cell) => cell.row === row && cell.col === col);
+}
+
 export function LetterGrid({
   rows,
   cols,
@@ -113,7 +121,8 @@ export function LetterGrid({
           const found = highlighted.some((trace) => isCellInTrace(row, col, trace));
           const selecting = isCellInTrace(row, col, preview);
           const missing = isCellInTrace(row, col, missFlash);
-          const landing = isCellInTrace(row, col, landAnimation);
+          const landIndex = traceIndexOf(row, col, landAnimation);
+          const landing = landIndex >= 0;
 
           let cellClass = "border-line bg-bg-2 text-ink";
           if (found) {
@@ -131,8 +140,9 @@ export function LetterGrid({
               data-cell-row={row}
               data-cell-col={col}
               className={`flex aspect-square items-center justify-center rounded-[var(--radius)] border-2 text-[15px] font-semibold uppercase transition-colors duration-150 ${cellClass} ${
-                landing ? "scale-105" : ""
+                landing ? "animate-cell-solve motion-reduce:animate-none" : ""
               }`}
+              style={landing ? { animationDelay: `${landIndex * 45}ms` } : undefined}
               disabled={disabled}
               onPointerDown={() => handlePointerDown(row, col)}
             >

@@ -255,6 +255,178 @@
   animation: rf-confetti 0.7s var(--ease-arcade) forwards;
 }
 
+/* Picture Illustration win celebration — a verdict stamp that punches in over
+   the clue, holds, then clears itself so nothing lingers on the next puzzle. */
+@keyframes picture-correct-stamp {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.14);
+  }
+  16% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  68% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.96);
+  }
+}
+
+/* Reduced-motion fallback: same beat, opacity only, no scale. */
+@keyframes picture-correct-stamp-soft {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  16%,
+  68% {
+    opacity: 1;
+  }
+}
+
+@utility animate-picture-correct-stamp {
+  animation: picture-correct-stamp 0.85s var(--ease-arcade) forwards;
+}
+
+@utility animate-picture-correct-stamp-soft {
+  animation: picture-correct-stamp-soft 0.85s linear forwards;
+}
+
+/* The lit-cabinet flare: the clue frame briefly glows its violet accent on a win. */
+@keyframes picture-correct-glow {
+  0% {
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@utility animate-picture-correct-glow {
+  animation: picture-correct-glow 0.7s var(--ease-arcade) forwards;
+}
+
+/* Floating +points chip rising off the score plate on a win. */
+@keyframes picture-score-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  22% {
+    opacity: 1;
+    transform: translateY(-4px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+}
+
+@keyframes picture-score-pop-soft {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  22%,
+  70% {
+    opacity: 1;
+  }
+}
+
+@utility animate-picture-score-pop {
+  animation: picture-score-pop 0.9s var(--ease-arcade) forwards;
+}
+
+@utility animate-picture-score-pop-soft {
+  animation: picture-score-pop-soft 0.9s linear forwards;
+}
+
+/* Shared solve-feedback motion — one language across the letter games
+   (Word Hunt, Crossword). Lime is the success accent (--four). */
+
+/* A solved clue's lime check punches in, certain and quick. */
+@keyframes clue-check {
+  0% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  60% {
+    transform: scale(1.14);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@utility animate-clue-check {
+  animation: clue-check 0.32s var(--ease-arcade);
+}
+
+/* A revealed answer rises into place beneath its clue. */
+@keyframes clue-reveal {
+  0% {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@utility animate-clue-reveal {
+  animation: clue-reveal 0.3s var(--ease-arcade);
+}
+
+/* Each letter of a solved word pops and flares lime, then settles into its
+   locked tint. Staggered per letter via animation-delay for a travelling glow. */
+@keyframes cell-solve {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 oklch(0.82 0.19 135 / 0);
+  }
+  40% {
+    transform: scale(1.2);
+    box-shadow: 0 0 16px 1px oklch(0.82 0.19 135 / 0.7);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 oklch(0.82 0.19 135 / 0);
+  }
+}
+
+@utility animate-cell-solve {
+  animation: cell-solve 0.42s var(--ease-arcade);
+}
+
+/* The +points chip lifts off the score plate on a correct solve, then fades. */
+@keyframes score-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(4px) scale(0.9);
+  }
+  25% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-15px) scale(1);
+  }
+}
+
+@utility animate-score-rise {
+  animation: score-rise 0.8s var(--ease-arcade) forwards;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

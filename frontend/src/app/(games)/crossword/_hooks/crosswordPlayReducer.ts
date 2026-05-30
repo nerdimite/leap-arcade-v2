@@ -22,6 +22,7 @@ export type CrosswordPlayState = {
   direction: CrosswordDirection;
   draft: Record<string, string>;
   missFlashEntryIds: string[];
+  solveFlashEntryIds: string[];
   showScoreIncrement: boolean;
   pendingCheckEntryIds: string[];
   checkQueue: string[];
@@ -41,6 +42,7 @@ export type CrosswordPlayAction =
   | { type: "CHECK_HIT"; payload: { entryId: string } }
   | { type: "CHECK_MISS"; payload: { entryId: string } }
   | { type: "MISS_FLASH_COMPLETE" }
+  | { type: "SOLVE_FLASH_COMPLETE" }
   | { type: "SCORE_INCREMENT_COMPLETE" };
 
 export const crosswordPlayInitialState: CrosswordPlayState = {
@@ -49,6 +51,7 @@ export const crosswordPlayInitialState: CrosswordPlayState = {
   direction: "across",
   draft: {},
   missFlashEntryIds: [],
+  solveFlashEntryIds: [],
   showScoreIncrement: false,
   pendingCheckEntryIds: [],
   checkQueue: [],
@@ -395,6 +398,9 @@ export function crosswordPlayReducer(
         ...state,
         draft,
         showScoreIncrement: true,
+        solveFlashEntryIds: state.solveFlashEntryIds.includes(action.payload.entryId)
+          ? state.solveFlashEntryIds
+          : [...state.solveFlashEntryIds, action.payload.entryId],
       };
     }
 
@@ -408,6 +414,9 @@ export function crosswordPlayReducer(
 
     case "MISS_FLASH_COMPLETE":
       return { ...state, missFlashEntryIds: [] };
+
+    case "SOLVE_FLASH_COMPLETE":
+      return { ...state, solveFlashEntryIds: [] };
 
     case "SCORE_INCREMENT_COMPLETE":
       return { ...state, showScoreIncrement: false };

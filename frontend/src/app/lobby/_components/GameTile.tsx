@@ -1,6 +1,6 @@
 /** Lobby game tile — a lit arcade cabinet. Link when playable, locked shell when done. */
 
-import { Lock } from "lucide-react";
+import { Check, Lock, X } from "lucide-react";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 
@@ -24,7 +24,8 @@ function pill(badge: string, locked: boolean, score?: number | null) {
     const ended = badge === "Abandoned";
     return {
       kind: "done" as const,
-      label: ended ? "✗ Ended" : `✓ ${score ?? 0}`,
+      ended,
+      score: score ?? 0,
     };
   }
   if (badge === "In progress") return { kind: "play" as const, label: "Resume" };
@@ -73,8 +74,18 @@ export function GameTile({
             {status.label}
           </span>
         ) : (
-          <span className="rounded-full border-[1.5px] border-line px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.5px] text-ink-faint">
-            {status.label}
+          <span className="inline-flex items-center gap-1 rounded-full border-[1.5px] border-line px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.5px] text-ink-faint">
+            {status.ended ? (
+              <>
+                <X aria-hidden className="size-3" />
+                Ended
+              </>
+            ) : (
+              <>
+                <Check aria-hidden className="size-3" />
+                {status.score}
+              </>
+            )}
           </span>
         )}
       </div>

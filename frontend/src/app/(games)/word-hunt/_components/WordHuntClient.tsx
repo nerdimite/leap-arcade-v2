@@ -4,6 +4,7 @@ import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 
 import { useNavigationGuard } from "@/hooks/use-navigation-guard";
 import {
+  WORD_HUNT_LAND_ANIMATION_MS,
   WORD_HUNT_MISS_FLASH_MS,
   WORD_HUNT_SCORE_INCREMENT_MS,
 } from "@/lib/constants";
@@ -162,7 +163,7 @@ export function WordHuntClient({ initialPlay }: Props) {
     }
     const timeout = window.setTimeout(() => {
       dispatchDrag({ type: "LAND_ANIMATION_COMPLETE" });
-    }, WORD_HUNT_MISS_FLASH_MS);
+    }, WORD_HUNT_LAND_ANIMATION_MS);
     return () => {
       window.clearTimeout(timeout);
     };

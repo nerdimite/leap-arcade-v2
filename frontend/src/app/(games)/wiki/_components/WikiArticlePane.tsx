@@ -1,6 +1,6 @@
 /** Diegetic browser window: window chrome + address bar over the light article. */
 
-import { ArrowLeft, Loader2, Lock } from "lucide-react";
+import { ArrowLeft, Loader2, Lock, Minus, Square, X } from "lucide-react";
 import { memo, useEffect, useRef } from "react";
 
 import { cn } from "@/lib/utils";
@@ -76,15 +76,15 @@ export const WikiArticlePane = memo(function WikiArticlePane(props: WikiArticleP
             <span className="text-ink">{currentTitle}</span> — Wikipedia · LEAP Browser
           </span>
         </div>
-        <div aria-hidden className="flex gap-1.5 text-[11px] text-ink-dim">
+        <div aria-hidden className="flex gap-1.5 text-ink-dim">
           <span className="grid h-[18px] w-[22px] place-items-center rounded-[2px] border border-line bg-[oklch(0.20_0.04_283)]">
-            —
+            <Minus className="size-2.5" />
           </span>
           <span className="grid h-[18px] w-[22px] place-items-center rounded-[2px] border border-line bg-[oklch(0.20_0.04_283)]">
-            ▢
+            <Square className="size-2.5" />
           </span>
           <span className="grid h-[18px] w-[22px] place-items-center rounded-[2px] border border-line bg-[oklch(0.20_0.04_283)] text-cross">
-            ✕
+            <X className="size-2.5" />
           </span>
         </div>
       </div>

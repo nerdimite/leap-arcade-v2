@@ -64,6 +64,39 @@ export const Playing: Story = {
       inputShakeActive: false,
       isPending: false,
       timer: { startedAt: new Date().toISOString(), limitMs: 300_000 },
+      celebration: null,
+    },
+  },
+};
+
+export const CorrectAnswer: Story = {
+  args: {
+    viewState: {
+      status: "playing",
+      puzzle: samplePuzzle,
+      currentScore: 520,
+      answer: "",
+      wrongMessage: null,
+      inputShakeActive: false,
+      isPending: false,
+      timer: { startedAt: new Date().toISOString(), limitMs: 300_000 },
+      celebration: { token: 1, scoreDelta: 180, streak: 1 },
+    },
+  },
+};
+
+export const CorrectStreak: Story = {
+  args: {
+    viewState: {
+      status: "playing",
+      puzzle: samplePuzzle,
+      currentScore: 880,
+      answer: "",
+      wrongMessage: null,
+      inputShakeActive: false,
+      isPending: false,
+      timer: { startedAt: new Date().toISOString(), limitMs: 300_000 },
+      celebration: { token: 4, scoreDelta: 200, streak: 4 },
     },
   },
 };
@@ -79,6 +112,7 @@ export const WrongAnswer: Story = {
       inputShakeActive: true,
       isPending: false,
       timer: { startedAt: new Date().toISOString(), limitMs: 300_000 },
+      celebration: null,
     },
   },
 };
@@ -94,6 +128,7 @@ export const UrgentTimer: Story = {
       inputShakeActive: false,
       isPending: false,
       timer: { startedAt: new Date().toISOString(), limitMs: 25_000 },
+      celebration: null,
     },
   },
 };

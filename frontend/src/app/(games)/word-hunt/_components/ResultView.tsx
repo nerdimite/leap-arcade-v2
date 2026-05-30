@@ -1,3 +1,5 @@
+import { ArrowLeft } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { formatMs } from "@/lib/utils";
 import type { Result } from "@/services/word_hunt/schema";
@@ -78,6 +80,7 @@ export function ResultView({ result, onBackToLobby }: ResultViewProps) {
       ) : null}
 
       <Button type="button" size="lg" className="w-full" onClick={onBackToLobby}>
+        <ArrowLeft aria-hidden className="size-4" />
         Back to Lobby
       </Button>
     </div>

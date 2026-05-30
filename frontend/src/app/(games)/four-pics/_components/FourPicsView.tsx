@@ -1,5 +1,6 @@
 /** Assembled dumb Four Pics screen: image grid play surface, answer overlay, result. */
 
+import { Check, X } from "lucide-react";
 import Image from "next/image";
 import type { CSSProperties } from "react";
 
@@ -80,28 +81,57 @@ export function FourPicsView({ viewState, onSelect, onBackToLobby }: FourPicsVie
 
       <div className="relative">
         <div className="grid grid-cols-2 gap-3">
-          {question.image_paths.map((path, index) => (
-            <button
-              key={path}
-              type="button"
-              disabled={inputDisabled}
-              className={cn(
-                "relative aspect-square overflow-hidden rounded-[var(--radius)] border-2 border-line bg-bg-2 shadow-[var(--shadow-cabinet-sm)] transition-[transform] duration-150 ease-[var(--ease-arcade)] disabled:pointer-events-none disabled:opacity-60 hover:not-disabled:-translate-y-0.5 motion-reduce:transition-none motion-reduce:hover:translate-y-0",
-                overlay?.correct && overlay.selectedIndex === index
-                  ? "ring-2 ring-[var(--accent)] ring-offset-2 ring-offset-bg"
-                  : null,
-              )}
-              onClick={() => onSelect(index)}
-            >
-              <Image
-                src={path}
-                alt={`Option ${index + 1}`}
-                fill
-                className="object-cover"
-                sizes="(max-width: 512px) 50vw, 256px"
-              />
-            </button>
-          ))}
+          {question.image_paths.map((path, index) => {
+            const isSelected = overlay !== null && overlay.selectedIndex === index;
+            const isCorrectPick = isSelected && overlay.correct;
+            const isWrongPick = isSelected && !overlay.correct;
+            const isDimmed = overlay !== null && !isSelected;
+
+            return (
+              <button
+                key={path}
+                type="button"
+                disabled={inputDisabled}
+                className={cn(
+                  "relative aspect-square overflow-hidden rounded-[var(--radius)] border-2 border-line bg-bg-2 shadow-[var(--shadow-cabinet-sm)] transition-[transform,opacity,border-color] duration-150 ease-[var(--ease-arcade)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-bg motion-reduce:transition-none",
+                  // Idle play: lift toward the cursor, press in on tap (cabinet button).
+                  overlay === null &&
+                    "hover:not-disabled:-translate-y-0.5 hover:not-disabled:shadow-[var(--shadow-cabinet)] active:not-disabled:translate-y-0 active:not-disabled:shadow-[var(--shadow-cabinet-sm)] motion-reduce:hover:translate-y-0",
+                  // Pending submit, before the verdict lands.
+                  overlay === null && inputDisabled && "opacity-60",
+                  // Verdict: the picked tile stays lit and rises; the rest recede.
+                  isCorrectPick &&
+                    "z-30 border-four ring-2 ring-four motion-safe:animate-rf-verdict-in",
+                  isWrongPick && "z-30 border-cross motion-safe:animate-picture-input-shake",
+                  isDimmed && "opacity-35",
+                )}
+                onClick={() => onSelect(index)}
+              >
+                <Image
+                  src={path}
+                  alt={`Option ${index + 1}`}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 512px) 50vw, 256px"
+                />
+                {isSelected ? (
+                  <span
+                    aria-hidden
+                    className={cn(
+                      "absolute right-2 top-2 z-10 flex size-7 items-center justify-center rounded-full border-2 shadow-[var(--shadow-cabinet-sm)]",
+                      isCorrectPick ? "border-four bg-four text-bg" : "border-cross bg-cross text-bg",
+                    )}
+                  >
+                    {isCorrectPick ? (
+                      <Check className="size-4 stroke-[3]" />
+                    ) : (
+                      <X className="size-4 stroke-[3]" />
+                    )}
+                  </span>
+                ) : null}
+              </button>
+            );
+          })}
         </div>
         {overlay !== null ? (
           <AnswerOverlay
@@ -112,6 +142,12 @@ export function FourPicsView({ viewState, onSelect, onBackToLobby }: FourPicsVie
           />
         ) : null}
       </div>
+
+      {question.question_number === 1 && overlay === null ? (
+        <p className="text-center text-[13px] text-ink-faint">
+          Tap the picture that doesn&apos;t belong.
+        </p>
+      ) : null}
     </div>
   );
 }

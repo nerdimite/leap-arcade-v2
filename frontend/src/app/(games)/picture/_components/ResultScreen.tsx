@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { ArrowLeft } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -109,6 +110,7 @@ export function ResultScreen({ result, onBackToLobby }: ResultScreenProps) {
       </section>
 
       <Button type="button" size="lg" className="w-full sm:w-auto" onClick={onBackToLobby}>
+        <ArrowLeft aria-hidden className="size-4" />
         Back to Lobby
       </Button>
     </div>

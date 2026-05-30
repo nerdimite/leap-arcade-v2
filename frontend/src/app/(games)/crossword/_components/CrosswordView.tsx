@@ -21,6 +21,7 @@ export type CrosswordViewState =
       selectedCell: { row: number; col: number } | null;
       activeEntryCells: Set<string>;
       missFlashCells: Set<string>;
+      solveFlashOrder?: Map<string, number>;
       activeEntryId: string | null;
       showScoreIncrement: boolean;
       submitDisabled: boolean;
@@ -60,6 +61,7 @@ export function CrosswordView(props: CrosswordViewProps) {
     selectedCell,
     activeEntryCells,
     missFlashCells,
+    solveFlashOrder,
     activeEntryId,
     showScoreIncrement,
     submitDisabled,
@@ -93,6 +95,7 @@ export function CrosswordView(props: CrosswordViewProps) {
           selectedCell={selectedCell}
           activeEntryCells={activeEntryCells}
           missFlashCells={missFlashCells}
+          solveFlashOrder={solveFlashOrder}
           onCellClick={onCellClick}
           data-testid="crossword-grid"
         />

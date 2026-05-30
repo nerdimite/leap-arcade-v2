@@ -4,7 +4,7 @@
  * Dumb view; all wiring lives in LoginClient.
  */
 
-import { Loader2, TriangleAlert } from "lucide-react";
+import { ChevronRight, Loader2, TriangleAlert } from "lucide-react";
 import type { FormEvent } from "react";
 
 import { Wordmark } from "@/components/chrome/Wordmark";
@@ -130,9 +130,7 @@ export function LoginView({
                 </>
               ) : (
                 <>
-                  <span aria-hidden className="font-pixel text-[10px] leading-none">
-                    ▸
-                  </span>
+                  <ChevronRight aria-hidden className="size-4" />
                   Sign in
                 </>
               )}

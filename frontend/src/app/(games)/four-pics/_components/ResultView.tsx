@@ -1,13 +1,27 @@
 /** End-of-run summary — per-question rows by number only (no images). */
 
+import { ArrowLeft } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { Result, ResultQuestion } from "@/services/four_pics/schema";
+
+import { Confetti } from "./Confetti";
+import { useCountUp } from "../_lib/use-count-up";
 
 export type ResultViewProps = {
   result: Result;
   onBackToLobby: () => void;
 };
+
+/** Game-show sign-off keyed to how clean the run was. Short, never solemn. */
+function runHeadline(result: Result): string {
+  if (result.questions_correct === 0) return "Run complete";
+  if (result.questions_wrong === 0 && result.questions_not_reached === 0) return "Flawless run";
+  if (result.questions_wrong === 0) return "Sharp run";
+  if (result.questions_correct > result.questions_wrong) return "Good run";
+  return "Run complete";
+}
 
 function statusBadge(status: ResultQuestion["status"]): { label: string; className: string } {
   switch (status) {
@@ -22,17 +36,20 @@ function statusBadge(status: ResultQuestion["status"]): { label: string; classNa
 
 export function ResultView({ result, onBackToLobby }: ResultViewProps) {
   const rows = [...result.questions].map((q, index) => ({ ...q, questionNumber: index + 1 }));
+  const score = useCountUp(result.score);
+  const cleanRun = result.questions_correct > 0 && result.questions_wrong === 0;
 
   return (
     <div className="mx-auto flex max-w-lg flex-col gap-6 p-6 pb-10">
       <div className="overflow-hidden rounded-[var(--radius)] border-2 border-line bg-panel shadow-[var(--shadow-cabinet)]">
         <div className="h-2 bg-[var(--accent,var(--four))]" style={{ boxShadow: "0 0 18px var(--accent, var(--four))" }} />
-        <div className="p-6">
+        <div className="relative p-6">
+          {cleanRun ? <Confetti className="left-10 top-10" /> : null}
           <p className="font-pixel text-[9px] uppercase tracking-[2px] text-[var(--accent,var(--four))]">
-            ▸ Session complete
+            ▸ {runHeadline(result)}
           </p>
           <p className="mt-4 font-pixel text-[26px] leading-none tabular-nums text-four">
-            {result.score}
+            {score}
           </p>
           <p className="mt-2 text-[11px] font-bold uppercase tracking-[1px] text-ink-faint">
             Total score
@@ -103,6 +120,7 @@ export function ResultView({ result, onBackToLobby }: ResultViewProps) {
       </section>
 
       <Button type="button" size="lg" className="w-full" onClick={onBackToLobby}>
+        <ArrowLeft aria-hidden className="size-4" />
         Back to Lobby
       </Button>
     </div>

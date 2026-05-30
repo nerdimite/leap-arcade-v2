@@ -1,5 +1,6 @@
 /** Full-width verdict band shown at the top of the question card during feedback. */
 
+import { Check, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { cn } from "@/lib/utils";
@@ -66,11 +67,16 @@ export function FeedbackBand(props: { lastCorrect: boolean; scoreDelta: number }
     >
       <span
         className={cn(
-          "font-pixel text-[13px] leading-none",
+          "flex items-center gap-1.5 font-pixel text-[13px] leading-none",
           correct ? "text-four" : "text-cross",
         )}
       >
-        {correct ? "✓ CORRECT" : "✗ WRONG"}
+        {correct ? (
+          <Check aria-hidden className="size-3.5 stroke-[3]" />
+        ) : (
+          <X aria-hidden className="size-3.5 stroke-[3]" />
+        )}
+        {correct ? "CORRECT" : "WRONG"}
       </span>
       {correct && props.scoreDelta > 0 ? (
         <span className="font-pixel text-[14px] tabular-nums text-four">+{delta}</span>

@@ -8,7 +8,7 @@
  * logout. Runs on the default Wiki-cyan accent since no game is in context.
  */
 
-import { ChevronDown, LogOut } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronDown, LogOut } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import type { CSSProperties } from "react";
@@ -78,8 +78,8 @@ export function AppBar({ corpId, displayName }: AppBarProps) {
 
   const onLeaderboard = pathname?.startsWith("/leaderboard") ?? false;
   const dest = onLeaderboard
-    ? { href: "/lobby", label: "Lobby", arrow: "←", side: "before" as const }
-    : { href: "/leaderboard", label: "Leaderboard", arrow: "→", side: "after" as const };
+    ? { href: "/lobby", label: "Lobby", Icon: ArrowLeft, side: "before" as const }
+    : { href: "/leaderboard", label: "Leaderboard", Icon: ArrowRight, side: "after" as const };
 
   const initials = initialsFrom(displayName ?? null, corpId);
   const primaryName = displayName?.trim() || corpId || "Player";
@@ -111,9 +111,9 @@ export function AppBar({ corpId, displayName }: AppBarProps) {
 
         <div className="flex items-center gap-2.5 sm:gap-3">
           <Link href={dest.href} className={NAV_CTA}>
-            {dest.side === "before" ? <span aria-hidden>{dest.arrow}</span> : null}
+            {dest.side === "before" ? <dest.Icon aria-hidden className="size-3.5" /> : null}
             {dest.label}
-            {dest.side === "after" ? <span aria-hidden>{dest.arrow}</span> : null}
+            {dest.side === "after" ? <dest.Icon aria-hidden className="size-3.5" /> : null}
           </Link>
 
           <DropdownMenu>

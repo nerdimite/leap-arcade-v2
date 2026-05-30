@@ -1,5 +1,7 @@
 /** End-of-run score summary for Rapid Fire. */
 
+import { ArrowLeft } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import type { Result } from "@/services/rapid_fire/schema";
 
@@ -45,6 +47,7 @@ export function ResultCard(props: {
         </dl>
 
         <Button type="button" className="mt-6 w-full" onClick={props.onBackToLobby}>
+          <ArrowLeft aria-hidden className="size-4" />
           Back to Lobby
         </Button>
       </div>

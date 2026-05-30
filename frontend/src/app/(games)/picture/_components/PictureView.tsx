@@ -1,5 +1,6 @@
 /** Assembled dumb Picture Illustration screen: clue image, answer form, timer, result. */
 
+import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import type { CSSProperties, FormEvent } from "react";
 
@@ -8,8 +9,12 @@ import { ScoreReadout } from "@/components/game/ScoreReadout";
 import { cn } from "@/lib/utils";
 import type { Puzzle, Result } from "@/services/picture/schema";
 
+import { CorrectBurst, ScorePop } from "./CorrectFeedback";
 import { ResultScreen } from "./ResultScreen";
 import { SessionTimer } from "./SessionTimer";
+
+/** A win to celebrate, set on a correct answer and cleared on a timer. */
+export type Celebration = { token: number; scoreDelta: number; streak: number };
 
 export type PictureViewState =
   | {
@@ -21,6 +26,7 @@ export type PictureViewState =
       inputShakeActive: boolean;
       isPending: boolean;
       timer: { startedAt: string; limitMs: number } | null;
+      celebration: Celebration | null;
     }
   | { status: "result"; result: Result }
   | { status: "empty" };
@@ -58,8 +64,16 @@ export function PictureView(props: PictureViewProps) {
     );
   }
 
-  const { puzzle, currentScore, answer, wrongMessage, inputShakeActive, isPending, timer } =
-    viewState;
+  const {
+    puzzle,
+    currentScore,
+    answer,
+    wrongMessage,
+    inputShakeActive,
+    isPending,
+    timer,
+    celebration,
+  } = viewState;
   const imgSrc = `/games/picture/${puzzle.image_filename}`;
 
   return (
@@ -75,7 +89,14 @@ export function PictureView(props: PictureViewProps) {
             onExpired={onSessionExpired}
           />
         ) : null}
-        <ScoreReadout score={currentScore} />
+        <ScoreReadout
+          score={currentScore}
+          accessory={
+            celebration ? (
+              <ScorePop key={celebration.token} scoreDelta={celebration.scoreDelta} />
+            ) : undefined
+          }
+        />
       </GameHeader>
 
       <div className="relative aspect-video w-full overflow-hidden rounded-[var(--radius)] border-2 border-line bg-bg-2 shadow-[var(--shadow-cabinet)]">
@@ -87,6 +108,14 @@ export function PictureView(props: PictureViewProps) {
           sizes="100vw"
           priority
         />
+        {celebration ? (
+          <CorrectBurst
+            key={celebration.token}
+            token={celebration.token}
+            scoreDelta={celebration.scoreDelta}
+            streak={celebration.streak}
+          />
+        ) : null}
       </div>
 
       <form className="flex flex-col gap-3" onSubmit={onSubmit}>
@@ -121,10 +150,11 @@ export function PictureView(props: PictureViewProps) {
           <button
             type="button"
             disabled={isPending}
-            className="inline-flex h-11 items-center justify-center rounded-[var(--radius)] border-2 border-line bg-transparent px-5 text-[12px] font-bold uppercase tracking-[1px] text-ink-dim hover:bg-panel-2 disabled:pointer-events-none disabled:opacity-50"
+            className="inline-flex h-11 items-center justify-center gap-1.5 rounded-[var(--radius)] border-2 border-line bg-transparent px-5 text-[12px] font-bold uppercase tracking-[1px] text-ink-dim hover:bg-panel-2 disabled:pointer-events-none disabled:opacity-50"
             onClick={onSkip}
           >
-            Skip →
+            Skip
+            <ArrowRight aria-hidden className="size-3.5" />
           </button>
         </div>
       </form>

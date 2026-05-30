@@ -49,9 +49,11 @@ describe("ResultView", () => {
     expect(screen.getByText(/200 \(= 2 × 100\) \+ 150 = 350/)).toBeInTheDocument();
     expect(screen.getByText(/2 \/ 5/)).toBeInTheDocument();
     expect(screen.getByText("2:05")).toBeInTheDocument();
-    expect(screen.getByText(/7 Across — ATOMICITY/)).toBeInTheDocument();
+    expect(screen.getByText("7 Across")).toBeInTheDocument();
+    expect(screen.getByText("ATOMICITY")).toBeInTheDocument();
     expect(screen.getByText(/Database property ensuring all-or-nothing commits/)).toBeInTheDocument();
-    expect(screen.getByText(/3 Down — K8S/)).toBeInTheDocument();
+    expect(screen.getByText("3 Down")).toBeInTheDocument();
+    expect(screen.getByText("K8S")).toBeInTheDocument();
     expect(screen.getByText(/Container orchestrator/)).toBeInTheDocument();
   });
 

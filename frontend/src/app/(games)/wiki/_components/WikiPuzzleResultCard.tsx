@@ -1,5 +1,7 @@
 /** Between-round summary after completing a wiki puzzle. */
 
+import { ArrowRight } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 
 export type WikiPuzzleResultCardProps = {
@@ -58,6 +60,7 @@ export function WikiPuzzleResultCard(props: WikiPuzzleResultCardProps) {
         onClick={() => void onContinue()}
       >
         {continuePending ? "Loading…" : hasNext ? "Continue to next puzzle" : "View final results"}
+        {!continuePending ? <ArrowRight aria-hidden className="size-4" /> : null}
       </Button>
     </div>
   );

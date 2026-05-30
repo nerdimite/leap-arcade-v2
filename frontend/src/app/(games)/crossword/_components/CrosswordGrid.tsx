@@ -13,6 +13,7 @@ type Props = {
   selectedCell: { row: number; col: number } | null;
   activeEntryCells: Set<string>;
   missFlashCells: Set<string>;
+  solveFlashOrder?: Map<string, number>;
   onCellClick: (row: number, col: number) => void;
   gridRef?: RefObject<HTMLDivElement | null>;
   "data-testid"?: string;
@@ -25,6 +26,7 @@ export function CrosswordGrid({
   selectedCell,
   activeEntryCells,
   missFlashCells,
+  solveFlashOrder,
   onCellClick,
   gridRef,
   "data-testid": dataTestId,
@@ -52,6 +54,8 @@ export function CrosswordGrid({
           const isLocked = lockedCells.has(key);
           const isActive = activeEntryCells.has(key);
           const isMissFlash = missFlashCells.has(key);
+          const solveIndex = solveFlashOrder?.get(key);
+          const isSolveFlash = solveIndex !== undefined;
           const letter = displayLetter(cell.row, cell.col);
 
           let cellClass = "border-line bg-bg-2 text-ink";
@@ -75,8 +79,11 @@ export function CrosswordGrid({
               style={{
                 gridRow: cell.row + 1,
                 gridColumn: cell.col + 1,
+                ...(isSolveFlash ? { animationDelay: `${solveIndex * 45}ms` } : {}),
               }}
-              className={`relative aspect-square border text-center text-sm font-semibold uppercase transition-colors duration-150 ${cellClass}`}
+              className={`relative flex aspect-square items-center justify-center border text-sm font-semibold uppercase transition-colors duration-150 ${cellClass} ${
+                isSolveFlash ? "animate-cell-solve motion-reduce:animate-none" : ""
+              }`}
             >
               {cell.number != null ? (
                 <span className="absolute left-0.5 top-0 text-[0.55rem] font-normal leading-none text-ink-faint">
