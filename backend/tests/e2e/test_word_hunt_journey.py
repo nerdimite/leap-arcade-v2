@@ -37,7 +37,7 @@ async def test_full_playthrough_completed_score_lobby_leaderboard(
 
     seeded_words = await fetch_seeded_words()
     word_count = len(seeded_words)
-    assert word_count == load_seed_word_count() == 5
+    assert word_count == load_seed_word_count() == 11
 
     bind_session_start, advance_to_terminal, _, restore = install_word_hunt_deterministic_controls(
         terminal_elapsed_ms=_ELAPSED_MS,
