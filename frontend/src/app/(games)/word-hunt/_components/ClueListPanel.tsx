@@ -10,7 +10,7 @@ type Props = {
 
 export function ClueListPanel({ clues }: Props) {
   return (
-    <ul className="space-y-2.5">
+    <ul className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {clues.map((clue) => (
         <ClueRow key={clue.word_id} clue={clue} />
       ))}

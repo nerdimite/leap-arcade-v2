@@ -5,7 +5,10 @@ import { useEffect, useState } from "react"
 import {
   elapsedMsFromStartedAt,
   formatMmSsFromElapsedMs,
+  stopwatchToneClass,
 } from "@/app/(games)/crossword/_lib/stopwatch"
+import { CROSSWORD_TIME_DECAY_MS } from "@/lib/constants"
+import { cn } from "@/lib/utils"
 
 export type StopwatchProps = {
   startedAt: string
@@ -23,14 +26,24 @@ export function Stopwatch({ startedAt }: StopwatchProps) {
     return () => window.clearInterval(id)
   }, [startedAt])
 
+  const pastDecay = elapsedMs >= CROSSWORD_TIME_DECAY_MS
+
   return (
-    <span
-      className="font-mono text-lg tracking-tight text-muted-foreground tabular-nums"
-      role="timer"
-      aria-live="polite"
-      aria-label={`Elapsed time ${formatMmSsFromElapsedMs(elapsedMs)}`}
-    >
-      {formatMmSsFromElapsedMs(elapsedMs)}
-    </span>
+    <div className="flex flex-col items-end gap-0.5">
+      <span
+        className={cn(
+          "font-mono text-lg tracking-tight tabular-nums",
+          stopwatchToneClass(elapsedMs)
+        )}
+        role="timer"
+        aria-live="polite"
+        aria-label={`Elapsed time ${formatMmSsFromElapsedMs(elapsedMs)}`}
+      >
+        {formatMmSsFromElapsedMs(elapsedMs)}
+      </span>
+      {pastDecay ? (
+        <span className="text-xs text-muted-foreground">No time bonus</span>
+      ) : null}
+    </div>
   )
 }

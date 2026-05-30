@@ -32,6 +32,9 @@ export const WORD_HUNT_SCORE_INCREMENT_MS = 800
 /** Staggered letter-pop celebration after a successful find (covers the per-letter delay tail). */
 export const WORD_HUNT_LAND_ANIMATION_MS = 750
 
+/** Matches backend `CROSSWORD_TIME_DECAY_MS` — time bonus reaches zero at this elapsed. */
+export const CROSSWORD_TIME_DECAY_MS = 600_000
+
 /** Matches backend `CROSSWORD_BASE_PER_ENTRY` — shown in solve hit feedback. */
 export const CROSSWORD_BASE_PER_ENTRY = 100
 

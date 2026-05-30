@@ -10,6 +10,7 @@ import { ClueListPanel } from "./ClueListPanel"
 import { CrosswordGrid } from "./CrosswordGrid"
 import { ResultView } from "./ResultView"
 import { ScoreIncrementChip } from "./ScoreIncrementChip"
+import { Stopwatch } from "./Stopwatch"
 
 export type CrosswordViewState =
   | {
@@ -76,54 +77,57 @@ export function CrosswordView(props: CrosswordViewProps) {
 
   return (
     <div
-      className="mx-auto flex max-w-6xl flex-col gap-6 p-4 lg:flex-row"
+      className="mx-auto flex max-w-6xl flex-col gap-8 p-4 sm:p-6"
       style={CROSS_ACCENT}
     >
-      <div className="space-y-4">
-        <GameHeader
-          gameId="crossword"
-          progress={`Solved ${puzzle.solved_count}/${puzzle.total_entries}`}
+      <GameHeader
+        gameId="crossword"
+        progress={`Solved ${puzzle.solved_count}/${puzzle.total_entries}`}
+      >
+        <Stopwatch startedAt={puzzle.started_at} />
+        <ScoreReadout
+          score={sessionScore}
+          accessory={<ScoreIncrementChip visible={showScoreIncrement} />}
+        />
+        <button
+          type="button"
+          className="inline-flex h-11 items-center justify-center rounded-[var(--radius)] border-2 border-[var(--accent)] bg-[var(--accent)] px-5 text-[12px] font-extrabold tracking-[1.5px] text-bg uppercase shadow-[var(--shadow-cabinet-sm)] transition-[transform,box-shadow] duration-150 ease-[var(--ease-arcade)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:pointer-events-none disabled:opacity-50 motion-reduce:transition-none"
+          disabled={submitDisabled}
+          onClick={onSubmit}
         >
-          <ScoreReadout
-            score={sessionScore}
-            accessory={<ScoreIncrementChip visible={showScoreIncrement} />}
+          Submit
+        </button>
+      </GameHeader>
+
+      <div className="overflow-x-auto">
+        <div className="flex justify-center">
+          <CrosswordGrid
+            gridRef={gridRef}
+            puzzle={puzzle}
+            displayLetter={displayLetter}
+            lockedCells={lockedCells}
+            selectedCell={selectedCell}
+            activeEntryCells={activeEntryCells}
+            missFlashCells={missFlashCells}
+            solveFlashOrder={solveFlashOrder}
+            onCellClick={onCellClick}
+            data-testid="crossword-grid"
           />
-          <button
-            type="button"
-            className="inline-flex h-11 items-center justify-center rounded-[var(--radius)] border-2 border-[var(--accent)] bg-[var(--accent)] px-5 text-[12px] font-extrabold tracking-[1.5px] text-bg uppercase shadow-[var(--shadow-cabinet-sm)] transition-[transform,box-shadow] duration-150 ease-[var(--ease-arcade)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:pointer-events-none disabled:opacity-50 motion-reduce:transition-none"
-            disabled={submitDisabled}
-            onClick={onSubmit}
-          >
-            Submit
-          </button>
-        </GameHeader>
-        <CrosswordGrid
-          gridRef={gridRef}
-          puzzle={puzzle}
-          displayLetter={displayLetter}
-          lockedCells={lockedCells}
-          selectedCell={selectedCell}
-          activeEntryCells={activeEntryCells}
-          missFlashCells={missFlashCells}
-          solveFlashOrder={solveFlashOrder}
-          onCellClick={onCellClick}
-          data-testid="crossword-grid"
-        />
-        <input
-          ref={hiddenInputRef}
-          aria-hidden
-          tabIndex={-1}
-          className="sr-only"
-          onChange={() => {}}
-        />
+        </div>
       </div>
-      <div className="min-w-[16rem] flex-1">
-        <ClueListPanel
-          clues={puzzle.clues}
-          activeEntryId={activeEntryId}
-          onClueClick={onClueClick}
-        />
-      </div>
+      <input
+        ref={hiddenInputRef}
+        aria-hidden
+        tabIndex={-1}
+        className="sr-only"
+        onChange={() => {}}
+      />
+
+      <ClueListPanel
+        clues={puzzle.clues}
+        activeEntryId={activeEntryId}
+        onClueClick={onClueClick}
+      />
     </div>
   )
 }

@@ -1,4 +1,4 @@
-/** Assembled dumb Word Hunt screen: letter grid play surface + clue panel, or result. */
+/** Assembled dumb Word Hunt screen: header + letter grid + clue grid, or result. */
 
 import type { CSSProperties } from "react"
 
@@ -14,6 +14,7 @@ import { ClueListPanel } from "./ClueListPanel"
 import { LetterGrid } from "./LetterGrid"
 import { ResultView } from "./ResultView"
 import { ScoreIncrementChip } from "./ScoreIncrementChip"
+import { Stopwatch } from "./Stopwatch"
 
 export type WordHuntViewState =
   | {
@@ -72,48 +73,57 @@ export function WordHuntView(props: WordHuntViewProps) {
 
   return (
     <div
-      className="mx-auto flex max-w-5xl flex-col gap-6 p-6 lg:flex-row"
+      className="mx-auto flex max-w-6xl flex-col gap-8 p-4 sm:p-6"
       style={WORD_ACCENT}
     >
-      <div>
-        <GameHeader
-          gameId="word_hunt"
-          progress={`Found ${puzzle.found_count} / ${puzzle.total_words}`}
-          className="mb-4"
-        >
-          <ScoreReadout
-            score={sessionScore}
-            accessory={<ScoreIncrementChip visible={showScoreIncrement} />}
-          />
-        </GameHeader>
-        <LetterGrid
-          rows={puzzle.rows}
-          cols={puzzle.cols}
-          grid={puzzle.grid}
-          highlighted={highlights}
-          preview={dragPreview}
-          missFlash={missFlash}
-          landAnimation={landAnimation}
-          onDragStart={onDragStart}
-          onDragMove={onDragMove}
-          onDragEnd={onDragEnd}
-          disabled={disabled}
+      <GameHeader
+        gameId="word_hunt"
+        progress={`Found ${puzzle.found_count} / ${puzzle.total_words}`}
+      >
+        <Stopwatch startedAt={puzzle.started_at} />
+        <ScoreReadout
+          score={sessionScore}
+          accessory={<ScoreIncrementChip visible={showScoreIncrement} />}
         />
-      </div>
-      <div className="flex-1">
-        <h2 className="mb-3 text-[10px] font-bold tracking-[1px] text-ink-faint uppercase">
-          Clues
-        </h2>
-        <ClueListPanel clues={puzzle.clues} />
         <button
           type="button"
-          className="mt-6 inline-flex h-11 items-center justify-center rounded-[var(--radius)] border-2 border-[var(--accent)] bg-[var(--accent)] px-5 text-[12px] font-extrabold tracking-[1.5px] text-bg uppercase shadow-[var(--shadow-cabinet-sm)] transition-[transform,box-shadow] duration-150 ease-[var(--ease-arcade)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:pointer-events-none disabled:opacity-50 motion-reduce:transition-none"
+          className="inline-flex h-11 items-center justify-center rounded-[var(--radius)] border-2 border-[var(--accent)] bg-[var(--accent)] px-5 text-[12px] font-extrabold tracking-[1.5px] text-bg uppercase shadow-[var(--shadow-cabinet-sm)] transition-[transform,box-shadow] duration-150 ease-[var(--ease-arcade)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:pointer-events-none disabled:opacity-50 motion-reduce:transition-none"
           disabled={disabled}
           onClick={onSubmit}
         >
           Submit
         </button>
+      </GameHeader>
+
+      <div className="overflow-x-auto">
+        <div className="flex justify-center">
+          <div className="rounded-[var(--radius)] border-2 border-line bg-panel p-3 shadow-[var(--shadow-cabinet)] sm:p-4">
+            <LetterGrid
+              rows={puzzle.rows}
+              cols={puzzle.cols}
+              grid={puzzle.grid}
+              highlighted={highlights}
+              preview={dragPreview}
+              missFlash={missFlash}
+              landAnimation={landAnimation}
+              onDragStart={onDragStart}
+              onDragMove={onDragMove}
+              onDragEnd={onDragEnd}
+              disabled={disabled}
+            />
+          </div>
+        </div>
       </div>
+
+      <section aria-labelledby="word-hunt-clues-heading">
+        <h2
+          id="word-hunt-clues-heading"
+          className="mb-3 text-[10px] font-bold tracking-[1px] text-ink-faint uppercase"
+        >
+          Clues
+        </h2>
+        <ClueListPanel clues={puzzle.clues} />
+      </section>
     </div>
   )
 }

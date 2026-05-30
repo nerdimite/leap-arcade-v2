@@ -49,7 +49,7 @@ export function ClueListPanel({ clues, activeEntryId, onClueClick }: Props) {
   }
 
   return (
-    <div className="space-y-5">
+    <div className="grid grid-cols-1 gap-x-10 gap-y-6 sm:grid-cols-2">
       <section>
         <h2 className="mb-2 text-[10px] font-bold tracking-[1px] text-ink-faint uppercase">
           Across
