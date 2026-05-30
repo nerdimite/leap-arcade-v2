@@ -11,21 +11,43 @@ export function ResultCard(props: {
   timeTakenSeconds: Result["time_taken_seconds"];
   onBackToLobby: () => void;
 }) {
+  const stats = [
+    { label: "Correct", value: props.correctCount, tone: "text-four" },
+    { label: "Wrong", value: props.wrongCount, tone: "text-cross" },
+    { label: "Skipped", value: props.skippedCount, tone: "text-ink" },
+    { label: "Time", value: `${props.timeTakenSeconds.toFixed(1)}s`, tone: "text-ink" },
+  ];
+
   return (
-    <>
-      <h1 className="font-semibold text-lg">Rapid Fire — Results</h1>
-      <div className="space-y-2 rounded-xl border border-border bg-card p-4 shadow-sm">
-        <p className="font-medium text-2xl tabular-nums">{props.score} points</p>
-        <ul className="space-y-1 text-muted-foreground text-sm">
-          <li>Correct: {props.correctCount}</li>
-          <li>Wrong: {props.wrongCount}</li>
-          <li>Skipped: {props.skippedCount}</li>
-          <li>Time: {props.timeTakenSeconds.toFixed(1)}s</li>
-        </ul>
-        <Button type="button" className="mt-4 w-full" onClick={props.onBackToLobby}>
+    <div className="overflow-hidden rounded-[var(--radius)] border-2 border-line bg-panel shadow-[var(--shadow-cabinet)]">
+      <div className="h-2 bg-[var(--accent)]" style={{ boxShadow: "0 0 18px var(--accent)" }} />
+      <div className="p-6">
+        <p className="font-pixel text-[9px] uppercase tracking-[2px] text-[var(--accent)]">
+          ▸ Run complete
+        </p>
+        <p className="mt-4 font-pixel text-[26px] leading-none text-four tabular-nums">
+          {props.score}
+        </p>
+        <p className="mt-2 text-[11px] font-bold uppercase tracking-[1px] text-ink-faint">Points</p>
+
+        <dl className="mt-6 grid grid-cols-2 gap-3">
+          {stats.map((s) => (
+            <div
+              key={s.label}
+              className="rounded-[var(--radius)] border-2 border-line bg-bg-2 px-4 py-3"
+            >
+              <dd className={`font-pixel text-[14px] tabular-nums ${s.tone}`}>{s.value}</dd>
+              <dt className="mt-1.5 text-[10px] font-bold uppercase tracking-[1px] text-ink-faint">
+                {s.label}
+              </dt>
+            </div>
+          ))}
+        </dl>
+
+        <Button type="button" className="mt-6 w-full" onClick={props.onBackToLobby}>
           Back to Lobby
         </Button>
       </div>
-    </>
+    </div>
   );
 }

@@ -115,13 +115,13 @@ export function LetterGrid({
           const missing = isCellInTrace(row, col, missFlash);
           const landing = isCellInTrace(row, col, landAnimation);
 
-          let cellClass = "border-border bg-background";
+          let cellClass = "border-line bg-bg-2 text-ink";
           if (found) {
-            cellClass = "border-green-600 bg-green-100";
+            cellClass = "border-four bg-four/20 text-ink";
           } else if (missing) {
-            cellClass = "border-red-500 bg-red-100";
+            cellClass = "border-cross bg-cross/20 text-ink";
           } else if (selecting) {
-            cellClass = "border-primary bg-primary/15";
+            cellClass = "border-[var(--accent)] bg-[var(--accent)]/20 text-ink";
           }
 
           return (
@@ -130,8 +130,8 @@ export function LetterGrid({
               type="button"
               data-cell-row={row}
               data-cell-col={col}
-              className={`flex aspect-square items-center justify-center rounded border text-sm font-semibold transition-colors duration-150 ${cellClass} ${
-                landing ? "scale-105 shadow-sm" : ""
+              className={`flex aspect-square items-center justify-center rounded-[var(--radius)] border-2 text-[15px] font-semibold uppercase transition-colors duration-150 ${cellClass} ${
+                landing ? "scale-105" : ""
               }`}
               disabled={disabled}
               onPointerDown={() => handlePointerDown(row, col)}

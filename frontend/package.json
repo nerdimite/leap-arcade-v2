@@ -11,6 +11,7 @@
     "lint:fix": "biome check --write .",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit",
+    "sync:seeds": "node scripts/sync-seeds.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "storybook": "storybook dev -p 6006",

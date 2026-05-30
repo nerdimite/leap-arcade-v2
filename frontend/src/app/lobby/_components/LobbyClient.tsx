@@ -34,12 +34,12 @@ export default function LobbyClient({ currentCorpId }: { currentCorpId: string |
 
   const tiles: GameTileProps[] = GAME_TILES.map((game) => {
     const session = byGame.get(game.id);
-    const terminal = session?.status === "completed" || session?.status === "abandoned";
-    /** Picture sessions stay tappable after completion so players can re-open the result summary. */
-    const locked = terminal && game.id !== "picture";
+    /** Once a game ends it stays ended — no re-entry or results re-view (may revisit later). */
+    const locked = session?.status === "completed" || session?.status === "abandoned";
     const badge = statusLabel(session);
 
     return {
+      gameId: game.id,
       name: game.name,
       description: game.description,
       maxPoints: game.maxPoints,

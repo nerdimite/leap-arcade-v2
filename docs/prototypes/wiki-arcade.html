@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>LEAP Arcade — Wikipedia Speed Run (Clean Retro Arcade)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;500;600;700;800&family=Georgia&display=swap" rel="stylesheet" />
+<style>
+  /* ============================================================
+     WIKIPEDIA SPEED RUN — "Clean retro arcade" exploration
+     Dark arcade chrome (HUD: start/target, timer, steps) framing
+     a single LIT retro browser window where the article renders in
+     LIGHT mode. The screen is the light source: one glowing browser
+     inside the dark cabinet. (Diegetic framing principle.)
+     ============================================================ */
+  :root {
+    --bg:        oklch(0.16 0.035 280);
+    --bg-2:      oklch(0.19 0.04 282);
+    --panel:     oklch(0.225 0.04 283);
+    --panel-2:   oklch(0.265 0.045 284);
+    --line:      oklch(0.34 0.05 285);
+    --ink:       oklch(0.97 0.01 280);
+    --ink-dim:   oklch(0.72 0.03 285);
+    --ink-faint: oklch(0.58 0.03 285);
+
+    --wiki:   oklch(0.78 0.16 220);   /* this game's accent: cyan-blue */
+    --rapid:  oklch(0.80 0.17 65);    /* amber — timer / warnings      */
+    --four:   oklch(0.82 0.19 135);   /* lime — score / success        */
+    --cross:  oklch(0.72 0.19 25);    /* coral — danger / low time     */
+
+    --shadow: 6px 6px 0 oklch(0.10 0.03 280 / 0.85);
+    --shadow-sm: 4px 4px 0 oklch(0.10 0.03 280 / 0.85);
+    --radius: 4px;
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: "Inter", system-ui, sans-serif;
+    background: radial-gradient(120% 90% at 50% -10%, var(--bg-2), var(--bg) 60%);
+    color: var(--ink);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    position: relative; overflow-x: hidden;
+  }
+  body::before {
+    content: ""; position: fixed; inset: 0; z-index: 9999; pointer-events: none;
+    background: repeating-linear-gradient(to bottom, transparent 0 2px, oklch(0 0 0 / 0.05) 2px 3px);
+    mix-blend-mode: multiply;
+  }
+  body::after {
+    content: ""; position: fixed; inset: 0; z-index: 9998; pointer-events: none;
+    background: radial-gradient(130% 110% at 50% 40%, transparent 55%, oklch(0 0 0 / 0.45));
+  }
+  .pixel { font-family: "Press Start 2P", monospace; line-height: 1.5; }
+
+  /* ---------- top HUD ---------- */
+  header {
+    position: sticky; top: 0; z-index: 50;
+    display: flex; align-items: center; gap: 22px;
+    padding: 16px 28px;
+    background: oklch(0.16 0.035 280 / 0.85);
+    backdrop-filter: blur(6px);
+    border-bottom: 2px solid var(--line);
+  }
+  .game-name { display: flex; align-items: center; gap: 12px; }
+  .game-name .ico {
+    width: 40px; height: 40px; border-radius: var(--radius);
+    display: grid; place-items: center; font-size: 21px;
+    background: oklch(0.16 0.035 280); border: 2px solid var(--wiki);
+    box-shadow: inset 0 0 12px oklch(0 0 0 / 0.6);
+  }
+  .game-name .t .pixel { font-size: 11px; color: var(--ink); }
+  .game-name .t small { display:block; color: var(--ink-faint); font-size: 11px; margin-top: 4px; }
+  .spacer { flex: 1; }
+
+  .hud-stat {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 6px 16px; min-width: 92px;
+    background: var(--panel); border: 2px solid var(--line);
+    border-radius: var(--radius); box-shadow: var(--shadow-sm);
+  }
+  .hud-stat .l { font-size: 9px; letter-spacing: 1px; color: var(--ink-faint); text-transform: uppercase; }
+  .hud-stat .v { font-family: "Press Start 2P", monospace; font-size: 14px; margin-top: 7px; }
+  .hud-stat.timer .v { color: var(--rapid); }
+  .hud-stat.timer.low .v { color: var(--cross); animation: tick 1s steps(2) infinite; }
+  .hud-stat.steps .v { color: var(--ink); }
+  .hud-stat.score .v { color: var(--four); }
+  @keyframes tick { 50% { opacity: 0.35; } }
+
+  /* ---------- objective ribbon: start ➜ target ---------- */
+  .objective {
+    max-width: 1100px; margin: 22px auto 0; padding: 0 28px;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .node {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 16px; background: var(--panel);
+    border: 2px solid var(--line); border-radius: var(--radius);
+    box-shadow: var(--shadow-sm); font-size: 14px;
+  }
+  .node .cap { font-size: 9px; letter-spacing: 1px; color: var(--ink-faint); text-transform: uppercase; }
+  .node strong { color: var(--ink); font-weight: 700; }
+  .node.start { border-color: var(--wiki); }
+  .node.start .cap { color: var(--wiki); }
+  .node.target { border-color: var(--four); }
+  .node.target .cap { color: var(--four); }
+  .arrow { flex: 1; height: 2px; background: repeating-linear-gradient(to right, var(--line) 0 8px, transparent 8px 14px); position: relative; }
+  .arrow::after { content: "▶"; position: absolute; right: -4px; top: -9px; color: var(--ink-faint); font-size: 12px; }
+
+  /* ---------- the LIT browser window (article = light mode) ---------- */
+  .browser {
+    max-width: 1100px; margin: 22px auto 40px;
+    background: #ffffff;
+    border: 2px solid var(--wiki);
+    border-radius: var(--radius);
+    box-shadow: 0 0 0 1px oklch(0 0 0 / 0.4), 0 0 38px oklch(0.78 0.16 220 / 0.28), var(--shadow);
+    overflow: hidden;
+  }
+  .chrome {
+    background: linear-gradient(to bottom, oklch(0.30 0.045 284), oklch(0.24 0.04 283));
+    border-bottom: 2px solid oklch(0.12 0.03 280);
+    padding: 9px 12px;
+  }
+  .chrome-row { display: flex; align-items: center; gap: 10px; }
+  .dots { display: flex; gap: 6px; }
+  .dots i { width: 12px; height: 12px; border-radius: 50%; display:block; border: 1px solid oklch(0 0 0 / 0.4); }
+  .dots .r { background: var(--cross); } .dots .y { background: var(--rapid); } .dots .g { background: var(--four); }
+  .navbtns { display: flex; gap: 4px; margin-left: 4px; }
+  .navbtns b {
+    width: 26px; height: 24px; display: grid; place-items: center;
+    background: oklch(0.20 0.04 283); border: 1px solid var(--line);
+    border-radius: 3px; color: var(--ink-dim); font-size: 13px;
+  }
+  .navbtns b.disabled { opacity: 0.3; position: relative; }
+  .navbtns b.disabled::after { content: "✕"; position: absolute; font-size: 8px; top: 1px; right: 2px; color: var(--cross); }
+  .addr {
+    flex: 1; display: flex; align-items: center; gap: 8px;
+    background: #fff; border: 1px solid var(--line); border-radius: 3px;
+    padding: 6px 10px; font-size: 13px; color: #333;
+  }
+  .addr .lock { color: #1a9d4b; font-size: 12px; }
+  .addr .url { color: #555; }
+  .addr .url b { color: #111; }
+  .addr .nosearch { margin-left: auto; font-size: 10px; color: var(--cross); border: 1px solid currentColor; border-radius: 3px; padding: 1px 6px; }
+
+  /* ---------- the article (LIGHT) ---------- */
+  .page { display: grid; grid-template-columns: 1fr; }
+  .article {
+    padding: 30px 44px 44px; color: #202122;
+    font-family: Georgia, "Times New Roman", serif;
+    max-height: 560px; overflow-y: auto;
+  }
+  .article h1 {
+    font-family: Georgia, serif; font-weight: 400; font-size: 30px;
+    margin: 0 0 4px; border-bottom: 1px solid #a2a9b1; padding-bottom: 8px; color: #000;
+  }
+  .article .from { font-family: "Inter", sans-serif; font-size: 12px; color: #54595d; margin: 0 0 20px; }
+  .article p { font-size: 15px; line-height: 1.7; margin: 0 0 16px; max-width: 70ch; }
+  .article a.wl { color: #3366cc; text-decoration: none; border-bottom: 1px solid transparent; cursor: pointer; }
+  .article a.wl:hover { border-bottom-color: #3366cc; background: #eaf0ff; }
+  .article a.target { color: #1a7f37; font-weight: 700; box-shadow: 0 0 0 2px #b6f0c4; border-radius: 2px; padding: 0 2px; }
+  .article h2 { font-family: Georgia, serif; font-weight: 400; font-size: 21px; border-bottom: 1px solid #a2a9b1; padding-bottom: 6px; margin: 26px 0 12px; color: #000; }
+  .infobox {
+    float: right; width: 250px; margin: 0 0 16px 22px;
+    border: 1px solid #a2a9b1; background: #f8f9fa; border-radius: 3px;
+    font-family: "Inter", sans-serif; font-size: 12.5px;
+  }
+  .infobox .ib-title { background: #ccd; text-align: center; font-weight: 700; padding: 7px; }
+  .infobox .ib-img { padding: 14px; text-align: center; font-size: 40px; }
+  .infobox table { width: 100%; border-collapse: collapse; }
+  .infobox td { padding: 5px 8px; border-top: 1px solid #eaecf0; vertical-align: top; }
+  .infobox td.k { color: #54595d; width: 40%; }
+
+  /* path breadcrumb under the browser */
+  .pathbar {
+    max-width: 1100px; margin: 0 auto 50px; padding: 0 28px;
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    font-size: 12px; color: var(--ink-faint);
+  }
+  .pathbar .step { color: var(--ink-dim); background: var(--panel); border: 1.5px solid var(--line); border-radius: 999px; padding: 4px 11px; }
+  .pathbar .step.cur { color: var(--wiki); border-color: var(--wiki); }
+  .pathbar .sep { color: var(--ink-faint); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hud-stat.timer.low .v { animation: none; }
+  }
+</style>
+</head>
+<body>
+  <header>
+    <div class="game-name">
+      <div class="ico">🌐</div>
+      <div class="t"><span class="pixel">SPEED RUN</span><small>Links only · no search · no back</small></div>
+    </div>
+    <div class="spacer"></div>
+    <div class="hud-stat steps"><span class="l">Clicks</span><span class="v">04</span></div>
+    <div class="hud-stat timer low"><span class="l">Time left</span><span class="v">01:12</span></div>
+    <div class="hud-stat score"><span class="l">Potential</span><span class="v">620</span></div>
+  </header>
+
+  <div class="objective">
+    <div class="node start"><span class="cap">Start</span><strong>Fidelity Investments</strong></div>
+    <div class="arrow"></div>
+    <div class="node target"><span class="cap">Target</span><strong>Mount Everest</strong></div>
+  </div>
+
+  <section class="browser">
+    <div class="chrome">
+      <div class="chrome-row">
+        <div class="dots"><i class="r"></i><i class="y"></i><i class="g"></i></div>
+        <div class="navbtns">
+          <b class="disabled" title="Back is blocked">←</b>
+          <b class="disabled">→</b>
+          <b title="Reload">⟳</b>
+        </div>
+        <div class="addr">
+          <span class="lock">🔒</span>
+          <span class="url">en.wikipedia.org/wiki/<b>Geography_of_Nepal</b></span>
+          <span class="nosearch">SEARCH DISABLED</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="page">
+      <div class="article">
+        <h1>Geography of Nepal</h1>
+        <p class="from">From Wikipedia, the free encyclopedia · rendered through the LEAP proxy</p>
+
+        <div class="infobox">
+          <div class="ib-title">Nepal</div>
+          <div class="ib-img">🏔️</div>
+          <table>
+            <tr><td class="k">Highest point</td><td><a class="wl target">Mount Everest</a></td></tr>
+            <tr><td class="k">Region</td><td><a class="wl">South Asia</a></td></tr>
+            <tr><td class="k">Borders</td><td><a class="wl">China</a>, <a class="wl">India</a></td></tr>
+            <tr><td class="k">Range</td><td><a class="wl">Himalayas</a></td></tr>
+          </table>
+        </div>
+
+        <p>Nepal is a landlocked country in <a class="wl">South Asia</a>, situated mainly in the <a class="wl">Himalayas</a> but also including parts of the <a class="wl">Indo-Gangetic Plain</a>. It borders <a class="wl">China</a> to the north and <a class="wl">India</a> to the south, east, and west.</p>
+
+        <p>The country's geography is dominated by the <a class="wl">Himalayas</a>, the highest mountain range in the world. Eight of the world's ten tallest peaks lie within Nepal or on its border, including <a class="wl target">Mount Everest</a>, the highest point on Earth above sea level.</p>
+
+        <h2>Physiographic regions</h2>
+        <p>Nepal is commonly divided into three physiographic belts: the <a class="wl">Terai</a> lowlands, the <a class="wl">Hill region</a>, and the high <a class="wl">Mountain region</a>. Each runs roughly east to west across the country.</p>
+
+        <p>The <a class="wl">Koshi River</a>, <a class="wl">Gandaki River</a>, and <a class="wl">Karnali River</a> systems drain the slopes, feeding eventually into the <a class="wl">Ganges</a>.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="pathbar">
+    <span class="step">Fidelity Investments</span><span class="sep">›</span>
+    <span class="step">List of countries</span><span class="sep">›</span>
+    <span class="step">Nepal</span><span class="sep">›</span>
+    <span class="step cur">Geography of Nepal</span>
+    <span style="margin-left:auto; color:var(--four)">🎯 Target is one click away</span>
+  </div>
+</body>
+</html>

@@ -5,63 +5,80 @@ import { LobbyView } from "./LobbyView";
 import type { MiniLeaderboardRow } from "./MiniLeaderboard";
 import { MiniLeaderboard } from "./MiniLeaderboard";
 
-const wikiTile = (
-  props: Partial<GameTileProps> & Pick<GameTileProps, "badge" | "locked">,
-): GameTileProps => ({
-  name: "Wikipedia Speed Run",
-  description: "Navigate Wikipedia by links only — reach the target page as fast as you can.",
-  maxPoints: 100,
-  href: "/wiki",
-  ...props,
-});
+/** Full seven-cabinet roster; each story overlays per-game status + score. */
+const ROSTER: Omit<GameTileProps, "badge" | "locked" | "score">[] = [
+  {
+    gameId: "wiki",
+    name: "Wikipedia Speed Run",
+    description: "Navigate Wikipedia by links only — reach the target page as fast as you can.",
+    maxPoints: 1000,
+    href: "/wiki",
+  },
+  {
+    gameId: "rapid_fire",
+    name: "Rapid Fire Quiz",
+    description: "Fast multiple-choice questions with a countdown — answer quickly for speed bonuses.",
+    maxPoints: 1500,
+    href: "/rapid-fire",
+  },
+  {
+    gameId: "pinpoint",
+    name: "Pinpoint",
+    description: "Guess the hidden category from thematic clues, revealed one at a time.",
+    maxPoints: 3000,
+    href: "/pinpoint",
+  },
+  {
+    gameId: "picture",
+    name: "Picture Illustration",
+    description: "Images reveal a concept step by step — type the answer early for more points.",
+    maxPoints: 800,
+    href: "/picture",
+  },
+  {
+    gameId: "four_pics",
+    name: "Four Pics, One Lie",
+    description: "Spot the image that does not belong with the other three.",
+    maxPoints: 600,
+    href: "/four-pics",
+  },
+  {
+    gameId: "word_hunt",
+    name: "Word Hunt",
+    description: "Trace hidden words in a letter grid using riddle clues.",
+    maxPoints: 1000,
+    href: "/word-hunt",
+  },
+  {
+    gameId: "crossword",
+    name: "Crossword",
+    description: "Fill in a classic intersecting-word grid from Across and Down clues.",
+    maxPoints: 1500,
+    href: "/crossword",
+  },
+];
 
-const rapidTile = (
-  props: Partial<GameTileProps> & Pick<GameTileProps, "badge" | "locked">,
-): GameTileProps => ({
-  name: "Rapid Fire Quiz",
-  description: "Fast multiple-choice questions with a countdown — answer quickly for speed bonuses.",
-  maxPoints: 100,
-  href: "/rapid-fire",
-  ...props,
-});
+type Overlay = Pick<GameTileProps, "badge" | "locked"> & { score?: number };
 
-const pictureTile = (
-  props: Partial<GameTileProps> & Pick<GameTileProps, "badge" | "locked">,
-): GameTileProps => ({
-  name: "Picture Illustration",
-  description: "Images reveal a concept step by step — type the answer early for more points.",
-  maxPoints: 100,
-  href: "/picture",
-  ...props,
-});
+/** Build the tile list, applying per-game status overlays by gameId. */
+function tiles(overlays: Partial<Record<GameTileProps["gameId"], Overlay>>): GameTileProps[] {
+  return ROSTER.map((game) => {
+    const o = overlays[game.gameId] ?? { badge: "Not started", locked: false };
+    return { ...game, badge: o.badge, locked: o.locked, score: o.score };
+  });
+}
 
-const fourPicsTile = (
-  props: Partial<GameTileProps> & Pick<GameTileProps, "badge" | "locked">,
-): GameTileProps => ({
-  name: "Four Pics, One Lie",
-  description: "Spot the image that does not belong with the other three.",
-  maxPoints: 100,
-  href: "/four-pics",
-  ...props,
-});
-
-const wordHuntTile = (
-  props: Partial<GameTileProps> & Pick<GameTileProps, "badge" | "locked">,
-): GameTileProps => ({
-  name: "Word Hunt",
-  description: "Trace hidden words in a letter grid using riddle clues.",
-  maxPoints: 100,
-  href: "/word-hunt",
-  ...props,
-});
-
-const storySidebarEntries: MiniLeaderboardRow[] = [
-  { rank: 1, corp_id: "c1", display_name: "Player One", total_score: 400, games_completed: 5 },
-  { rank: 2, corp_id: "c2", display_name: "Player Two", total_score: 360, games_completed: 4 },
+const sidebarEntries: MiniLeaderboardRow[] = [
+  { rank: 1, corp_id: "ri2026", display_name: "R. Iyer", total_score: 3420, games_completed: 6 },
+  { rank: 2, corp_id: "sk2026", display_name: "S. Khan", total_score: 3180, games_completed: 5 },
+  { rank: 3, corp_id: "pd2026", display_name: "P. Das", total_score: 2960, games_completed: 5 },
+  { rank: 4, corp_id: "nr2026", display_name: "N. Roy", total_score: 2510, games_completed: 4 },
+  { rank: 5, corp_id: "vn2026", display_name: "V. Nair", total_score: 2300, games_completed: 4 },
 ];
 
 const meta = {
   component: LobbyView,
+  parameters: { layout: "fullscreen" },
 } satisfies Meta<typeof LobbyView>;
 
 export default meta;
@@ -70,42 +87,47 @@ type Story = StoryObj<typeof meta>;
 
 export const AllAvailable: Story = {
   args: {
-    tiles: [
-      wikiTile({ badge: "Not started", locked: false }),
-      rapidTile({ badge: "Not started", locked: false }),
-      pictureTile({ badge: "Not started", locked: false }),
-      fourPicsTile({ badge: "Not started", locked: false }),
-      wordHuntTile({ badge: "Not started", locked: false }),
-    ],
-    sidebar: (
-      <MiniLeaderboard entries={storySidebarEntries} currentCorpId={null} />
-    ),
+    tiles: tiles({}),
+    sidebar: <MiniLeaderboard entries={sidebarEntries} currentCorpId={null} />,
   },
 };
 
 export const MixedStatuses: Story = {
   args: {
-    tiles: [
-      wikiTile({ badge: "In progress", score: 40, locked: false }),
-      rapidTile({ badge: "Completed", score: 95, locked: true }),
-      pictureTile({ badge: "Not started", locked: false }),
-      fourPicsTile({ badge: "Abandoned", score: 12, locked: true }),
-      wordHuntTile({ badge: "Not started", locked: false }),
-    ],
-    sidebar: <MiniLeaderboard entries={storySidebarEntries} currentCorpId="c2" />,
+    tiles: tiles({
+      wiki: { badge: "In progress", locked: false, score: 420 },
+      rapid_fire: { badge: "Completed", locked: true, score: 1150 },
+      four_pics: { badge: "Abandoned", locked: true, score: 0 },
+      picture: { badge: "Completed", locked: false, score: 560 },
+    }),
+    sidebar: (
+      <MiniLeaderboard
+        entries={sidebarEntries}
+        currentCorpId="sk2026"
+        pinnedEntry={{
+          rank: 9,
+          corp_id: "am2026",
+          display_name: "A. Mehta",
+          total_score: 1250,
+          games_completed: 3,
+        }}
+      />
+    ),
   },
 };
 
-export const AllLocked: Story = {
+export const AllCompleted: Story = {
   args: {
-    tiles: [
-      wikiTile({ badge: "Completed", score: 300, locked: true }),
-      rapidTile({ badge: "Completed", score: 280, locked: true }),
-      pictureTile({ badge: "Completed", score: 260, locked: true }),
-      fourPicsTile({ badge: "Abandoned", score: 40, locked: true }),
-      wordHuntTile({ badge: "Completed", score: 310, locked: true }),
-    ],
-    sidebar: <div className="text-muted-foreground text-sm">Sidebar placeholder</div>,
+    tiles: tiles({
+      wiki: { badge: "Completed", locked: true, score: 820 },
+      rapid_fire: { badge: "Completed", locked: true, score: 1150 },
+      pinpoint: { badge: "Completed", locked: true, score: 2100 },
+      picture: { badge: "Completed", locked: false, score: 700 },
+      four_pics: { badge: "Abandoned", locked: true, score: 0 },
+      word_hunt: { badge: "Completed", locked: true, score: 910 },
+      crossword: { badge: "Completed", locked: true, score: 1300 },
+    }),
+    sidebar: <MiniLeaderboard entries={sidebarEntries} currentCorpId="ri2026" />,
   },
 };
 

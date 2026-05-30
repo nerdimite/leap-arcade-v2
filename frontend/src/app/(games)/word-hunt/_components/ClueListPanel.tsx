@@ -16,12 +16,12 @@ export function ClueListPanel({ clues }: Props) {
               clue.found ? "[transform:rotateY(180deg)] opacity-60" : ""
             }`}
           >
-            <div className="absolute inset-0 flex items-center rounded-lg border bg-card p-4 [backface-visibility:hidden]">
-              <p className="text-sm leading-snug">{clue.clue}</p>
+            <div className="absolute inset-0 flex items-center rounded-[var(--radius)] border-2 border-line bg-panel p-4 [backface-visibility:hidden]">
+              <p className="text-[14px] leading-snug text-ink-dim">{clue.clue}</p>
             </div>
-            <div className="absolute inset-0 flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 p-4 line-through [backface-visibility:hidden] [transform:rotateY(180deg)]">
-              <span className="font-semibold">{clue.word}</span>
-              <span aria-hidden="true" className="text-green-700">
+            <div className="absolute inset-0 flex items-center gap-2 rounded-[var(--radius)] border-2 border-four/40 bg-four/12 p-4 line-through [backface-visibility:hidden] [transform:rotateY(180deg)]">
+              <span className="font-semibold text-four">{clue.word}</span>
+              <span aria-hidden="true" className="text-four">
                 ✓
               </span>
             </div>

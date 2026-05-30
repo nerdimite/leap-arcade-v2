@@ -14,6 +14,8 @@ const meta = {
     currentTitle: "Earth",
     articleHtml: sampleHtml,
     navPending: false,
+    backEnabled: true,
+    onBack: fn(),
     onNavigate: fn(async () => Promise.resolve()),
   },
 } satisfies Meta<typeof WikiArticlePane>;

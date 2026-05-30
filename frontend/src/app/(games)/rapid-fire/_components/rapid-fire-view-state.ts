@@ -30,6 +30,8 @@ export type RapidFireViewState =
       lastCorrectOption: number | null;
       submittedOption: number | null;
       currentScore: number;
+      /** Points earned this question; powers the +N verdict band. */
+      scoreDelta: number;
       questionsAnswered: number;
       questionsTotal: number;
     }
@@ -115,6 +117,7 @@ export function toRapidFireViewState(
         lastCorrectOption: state.lastCorrectOption,
         submittedOption: state.submittedOption,
         currentScore: state.currentScore,
+        scoreDelta: state.lastScoreDelta,
         questionsAnswered: state.questionsAnswered,
         questionsTotal: state.questionsTotal,
       };

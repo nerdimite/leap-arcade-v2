@@ -16,6 +16,28 @@ export function isAuthLoginPath(pathSegments: string[]): boolean {
   return pathSegments.length === 2 && pathSegments[0] === "auth" && pathSegments[1] === "login";
 }
 
+/** True when catch-all segments are `auth/logout` (POST /api/auth/logout). */
+export function isAuthLogoutPath(pathSegments: string[]): boolean {
+  return pathSegments.length === 2 && pathSegments[0] === "auth" && pathSegments[1] === "logout";
+}
+
+/**
+ * Clears the httpOnly session cookie (ADR-0001). The JWT is stateless, so there
+ * is nothing to revoke upstream — dropping the cookie ends the session.
+ */
+export function handleAuthLogout(): NextResponse {
+  const ok = NextResponse.json({ ok: true as const });
+  ok.cookies.set({
+    name: "token",
+    value: "",
+    httpOnly: true,
+    sameSite: "strict",
+    path: "/",
+    maxAge: 0,
+  });
+  return ok;
+}
+
 /** Proxies login to FastAPI and sets the httpOnly session cookie (ADR-0001). */
 export async function handleAuthLogin(request: NextRequest): Promise<NextResponse> {
   let jsonUnknown: unknown;

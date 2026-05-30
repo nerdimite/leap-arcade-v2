@@ -31,6 +31,7 @@ export default function LobbyLeaderboardSidebar({
       entries={top10}
       currentCorpId={currentCorpId}
       pinnedEntry={showPinned ? selfRow : undefined}
+      fullBoardHref="/leaderboard"
     />
   );
 }

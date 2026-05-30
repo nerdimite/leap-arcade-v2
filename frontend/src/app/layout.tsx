@@ -1,11 +1,18 @@
-import { Geist_Mono, Space_Grotesk } from "next/font/google"
+import { Geist_Mono, Inter, Press_Start_2P } from "next/font/google"
 
 import "./globals.css"
 import { QueryClientProviderWrapper } from "@/components/query-client-provider"
 import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils";
 
-const spaceGrotesk = Space_Grotesk({subsets:['latin'],variable:'--font-sans'})
+// Inter carries everything a player must read; Press Start 2P is pixel punctuation.
+const fontSans = Inter({ subsets: ["latin"], variable: "--font-sans" })
+
+const fontPixel = Press_Start_2P({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-pixel",
+})
 
 const fontMono = Geist_Mono({
   subsets: ["latin"],
@@ -21,7 +28,13 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn("antialiased", fontMono.variable, "font-sans", spaceGrotesk.variable)}
+      className={cn(
+        "antialiased",
+        "font-sans",
+        fontSans.variable,
+        fontPixel.variable,
+        fontMono.variable,
+      )}
     >
       <body>
         <ThemeProvider>

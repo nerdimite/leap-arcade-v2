@@ -21,16 +21,16 @@ export function PinpointResultOverlay(props: PinpointResultOverlayProps) {
   return (
     <div
       className={cn(
-        "pointer-events-none absolute inset-0 z-20 flex items-center justify-center rounded-xl",
-        kind === "solved" ? "bg-emerald-600/75" : "bg-destructive/75",
+        "pointer-events-none absolute inset-0 z-20 flex items-center justify-center rounded-[var(--radius)]",
+        kind === "solved" ? "bg-four/20" : "bg-cross/20",
       )}
       aria-live="polite"
       role="status"
     >
       <p
         className={cn(
-          "rounded-lg px-4 py-3 text-center font-semibold text-lg text-white shadow-lg tabular-nums",
-          kind === "solved" ? "bg-emerald-800/90" : "bg-destructive/90",
+          "rounded-[var(--radius)] border-2 bg-panel px-4 py-3 text-center text-[15px] font-semibold tabular-nums shadow-[var(--shadow-cabinet)]",
+          kind === "solved" ? "border-four text-four" : "border-cross text-cross",
         )}
       >
         {copy}

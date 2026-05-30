@@ -27,52 +27,58 @@ export function ResultView({ result, onBackToLobby }: ResultViewProps) {
 
   return (
     <div className="mx-auto flex max-w-lg flex-col gap-6 p-6 pb-10">
-      <header className="space-y-1">
-        <h1 className="text-xl font-semibold tracking-tight">Crossword</h1>
-        <p className="text-sm text-muted-foreground">Session complete.</p>
-      </header>
-
-      <section className="rounded-2xl border bg-card p-6 shadow-sm">
-        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          Total score
-        </p>
-        <p className="mt-1 text-5xl font-bold tabular-nums tracking-tight text-primary">
-          {result.score}
-        </p>
-        {breakdown !== null ? (
-          <p className="mt-2 text-sm text-muted-foreground tabular-nums">{breakdown}</p>
-        ) : null}
-        <ul className="mt-4 flex flex-wrap gap-3 text-sm text-muted-foreground">
-          <li>
-            <span className="font-medium tabular-nums text-foreground">
-              {result.solved_count} / {result.total_entries}
-            </span>{" "}
-            entries solved
-          </li>
-          {result.time_elapsed_ms !== undefined ? (
-            <li>
-              Time{" "}
-              <span className="font-medium tabular-nums text-foreground">
-                {formatMs(result.time_elapsed_ms)}
-              </span>
-            </li>
+      <div className="overflow-hidden rounded-[var(--radius)] border-2 border-line bg-panel shadow-[var(--shadow-cabinet)]">
+        <div
+          className="h-2 bg-[var(--accent,var(--cross))]"
+          style={{ boxShadow: "0 0 18px var(--accent, var(--cross))" }}
+        />
+        <div className="p-6">
+          <p className="font-pixel text-[9px] uppercase tracking-[2px] text-[var(--accent,var(--cross))]">
+            ▸ Session complete
+          </p>
+          <p className="mt-4 font-pixel text-[26px] leading-none tabular-nums text-four">
+            {result.score}
+          </p>
+          <p className="mt-2 text-[11px] font-bold uppercase tracking-[1px] text-ink-faint">
+            Total score
+          </p>
+          {breakdown !== null ? (
+            <p className="mt-3 text-[13px] tabular-nums text-ink-dim">{breakdown}</p>
           ) : null}
-        </ul>
-      </section>
+          <ul className="mt-4 flex flex-wrap gap-3 text-[14px] text-ink-dim">
+            <li>
+              <span className="font-pixel text-[11px] tabular-nums text-ink">
+                {result.solved_count} / {result.total_entries}
+              </span>{" "}
+              entries solved
+            </li>
+            {result.time_elapsed_ms !== undefined ? (
+              <li>
+                Time{" "}
+                <span className="font-pixel text-[11px] tabular-nums text-ink">
+                  {formatMs(result.time_elapsed_ms)}
+                </span>
+              </li>
+            ) : null}
+          </ul>
+        </div>
+      </div>
 
       {result.solved_entries.length > 0 ? (
         <section className="space-y-3">
-          <h2 className="text-sm font-semibold tracking-tight">Entries solved</h2>
-          <ul className="overflow-hidden rounded-xl border">
+          <h2 className="text-[10px] font-bold uppercase tracking-[1px] text-ink-faint">
+            Entries solved
+          </h2>
+          <ul className="overflow-hidden rounded-[var(--radius)] border-2 border-line">
             {result.solved_entries.map((entry) => (
               <li
                 key={entry.entry_id}
-                className="flex flex-col gap-0.5 border-b px-4 py-3 last:border-b-0"
+                className="flex flex-col gap-0.5 border-t-[1.5px] border-line bg-bg-2 px-4 py-3 first:border-t-0"
               >
-                <span className="font-medium">
+                <span className="font-semibold text-ink">
                   {entryHeading(entry.number, entry.direction, entry.answer)}
                 </span>
-                <span className="text-sm text-muted-foreground">{entry.clue}</span>
+                <span className="text-[13px] text-ink-dim">{entry.clue}</span>
               </li>
             ))}
           </ul>

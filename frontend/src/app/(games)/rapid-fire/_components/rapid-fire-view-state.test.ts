@@ -35,6 +35,7 @@ function baseState(overrides: Partial<RapidFireState> = {}): RapidFireState {
     pendingTimeMs: null,
     lastCorrect: null,
     lastCorrectOption: null,
+    lastScoreDelta: 0,
     pendingNextQuestion: null,
     pendingResult: null,
     result: null,
@@ -144,6 +145,7 @@ describe("toRapidFireViewState", () => {
       lastCorrect: false,
       lastCorrectOption: 1,
       currentScore: 4,
+      lastScoreDelta: 0,
     });
     expect(toRapidFireViewState(state, null)).toEqual({
       status: "feedback",
@@ -152,6 +154,7 @@ describe("toRapidFireViewState", () => {
       lastCorrectOption: 1,
       submittedOption: 3,
       currentScore: 4,
+      scoreDelta: 0,
       questionsAnswered: 0,
       questionsTotal: 15,
     });

@@ -100,6 +100,26 @@ export function RapidFireClient({ initialPlay }: { initialPlay: PlayResponse }) 
     submitAnswer,
   ]);
 
+  // Number keys 1-4 answer during the question phase, so speed players never reach for the mouse.
+  useEffect(() => {
+    const question = state.currentQuestion;
+    if (state.status !== "question" || !question) return undefined;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
+      const choice = Number.parseInt(event.key, 10);
+      if (!Number.isInteger(choice) || choice < 1 || choice > question.options.length) return;
+      event.preventDefault();
+      const limit = question.time_limit_ms;
+      const elapsed = Date.now() - questionEnteredAtRef.current;
+      dispatch({
+        type: "SELECT_OPTION",
+        payload: { selected_option: choice, time_ms: Math.min(limit, Math.max(0, elapsed)) },
+      });
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [dispatch, state.status, state.currentQuestion]);
+
   useEffect(() => {
     if (state.status !== "question" || !state.currentQuestion) return;
     const limit = state.currentQuestion.time_limit_ms;

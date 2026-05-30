@@ -125,6 +125,31 @@ def test_on_click_stripped() -> None:
     assert "onclick" not in out.html
 
 
+def test_inline_background_color_stripped_for_light_skin() -> None:
+    # Parsoid navbox/sidebar cells ship their own backgrounds; on the dark app
+    # surface those render as black boxes, so colour declarations are removed.
+    html = '<table class="navbox" style="background-color:#0a0a0a;color:#fff;width:22em">x</table>'
+    out = WikiHtmlRewriter().rewrite(html)
+    assert "background-color" not in out.html
+    assert "color:#fff" not in out.html
+    # Non-colour layout declarations survive.
+    assert "width:22em" in out.html
+
+
+def test_legacy_bgcolor_attribute_removed() -> None:
+    html = '<td bgcolor="#000000">cell</td>'
+    out = WikiHtmlRewriter().rewrite(html)
+    assert "bgcolor" not in out.html
+    assert "cell" in out.html
+
+
+def test_style_attribute_dropped_when_only_colors() -> None:
+    html = '<div style="background:#111;color:#eee">series</div>'
+    out = WikiHtmlRewriter().rewrite(html)
+    assert "style=" not in out.html
+    assert "series" in out.html
+
+
 def test_protocol_relative_enwiki_link_rewritten() -> None:
     html = '<p><a href="//en.wikipedia.org/wiki/Protocol_rel">x</a></p>'
     out = WikiHtmlRewriter().rewrite(html)

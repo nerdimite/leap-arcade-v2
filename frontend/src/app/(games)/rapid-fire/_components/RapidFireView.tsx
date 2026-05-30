@@ -1,10 +1,13 @@
-/** Assembled dumb Rapid Fire screen: switches on `viewState.status` and composes leaves. */
+/** Assembled dumb Rapid Fire screen: feeds status-keyed slots to the shared GameShell. */
 
 import type { MutableRefObject } from "react";
 
+import { GameHeader } from "@/components/game/GameHeader";
+import { GameShell } from "@/components/game/GameShell";
+import { ScoreReadout } from "@/components/game/ScoreReadout";
 import { TimerBar } from "@/components/game/TimerBar";
 
-import { FeedbackOverlay } from "./FeedbackOverlay";
+import { FeedbackBand } from "./FeedbackBand";
 import { QuestionCard } from "./QuestionCard";
 import { RapidFireErrorState } from "./RapidFireErrorState";
 import { ResultCard } from "./ResultCard";
@@ -30,50 +33,23 @@ function progressLabelFor(viewState: RapidFireViewState): string | null {
 export function RapidFireView(props: RapidFireViewProps) {
   const { viewState, onSelectOption, onBackToLobby, questionEnteredAtRef } = props;
 
-  if (viewState.status === "error") {
-    return (
-      <div className="mx-auto max-w-lg p-6">
-        <RapidFireErrorState message={viewState.message} onBackToLobby={onBackToLobby} />
-      </div>
-    );
-  }
-
-  if (viewState.status === "result") {
-    const r = viewState.result;
-    return (
-      <div className="mx-auto max-w-lg space-y-6 p-6">
-        <ResultCard
-          score={r.score}
-          correctCount={r.correct_count}
-          wrongCount={r.wrong_count}
-          skippedCount={r.skipped_count}
-          timeTakenSeconds={r.time_taken_seconds}
-          onBackToLobby={onBackToLobby}
+  /** loading / question / feedback share the stage: header + (notice | card). */
+  const stage = (
+    <div className="space-y-5">
+      <GameHeader gameId="rapid_fire" progress={progressLabelFor(viewState)}>
+        <ScoreReadout
+          score={
+            viewState.status === "loading" ||
+            viewState.status === "question" ||
+            viewState.status === "feedback"
+              ? viewState.currentScore
+              : 0
+          }
         />
-      </div>
-    );
-  }
-
-  const progressLabel = progressLabelFor(viewState);
-  const currentScore =
-    viewState.status === "loading" ||
-    viewState.status === "question" ||
-    viewState.status === "feedback"
-      ? viewState.currentScore
-      : 0;
-
-  return (
-    <div className="mx-auto max-w-lg space-y-4 p-6">
-      <header className="flex flex-col gap-1">
-        <h1 className="font-semibold text-lg">Rapid Fire</h1>
-        {progressLabel ? (
-          <p className="text-muted-foreground text-sm">{progressLabel}</p>
-        ) : null}
-        <p className="font-medium text-sm tabular-nums">Score: {currentScore}</p>
-      </header>
+      </GameHeader>
 
       {viewState.status === "loading" ? (
-        <p className="text-muted-foreground text-sm">No question loaded.</p>
+        <p className="text-sm text-ink-faint">No question loaded.</p>
       ) : viewState.status === "question" ? (
         <QuestionCard
           question={viewState.question}
@@ -83,12 +59,11 @@ export function RapidFireView(props: RapidFireViewProps) {
           correctOption={viewState.lastCorrectOption}
           lastCorrect={viewState.lastCorrect}
           locked={viewState.locked}
-          currentScore={viewState.currentScore}
           timerBar={!viewState.locked ? <TimerBar percentage={viewState.timerBarPct} /> : undefined}
           questionEnteredAtRef={questionEnteredAtRef}
           onSelectOption={onSelectOption}
         />
-      ) : (
+      ) : viewState.status === "feedback" ? (
         <QuestionCard
           question={viewState.question}
           options={viewState.question.options}
@@ -97,14 +72,46 @@ export function RapidFireView(props: RapidFireViewProps) {
           correctOption={viewState.lastCorrectOption}
           lastCorrect={viewState.lastCorrect}
           locked={false}
-          currentScore={viewState.currentScore}
           feedbackOverlay={
-            <FeedbackOverlay lastCorrect={viewState.lastCorrect} currentScore={viewState.currentScore} />
+            <FeedbackBand lastCorrect={viewState.lastCorrect} scoreDelta={viewState.scoreDelta} />
           }
           questionEnteredAtRef={questionEnteredAtRef}
           onSelectOption={onSelectOption}
         />
-      )}
+      ) : null}
     </div>
+  );
+
+  return (
+    <GameShell
+      gameId="rapid_fire"
+      state={viewState.status}
+      size="xl"
+      bleedStates={["result", "error"]}
+      slots={{
+        loading: stage,
+        question: stage,
+        feedback: stage,
+        result:
+          viewState.status === "result" ? (
+            <div className="mx-auto max-w-lg space-y-6 p-6">
+              <ResultCard
+                score={viewState.result.score}
+                correctCount={viewState.result.correct_count}
+                wrongCount={viewState.result.wrong_count}
+                skippedCount={viewState.result.skipped_count}
+                timeTakenSeconds={viewState.result.time_taken_seconds}
+                onBackToLobby={onBackToLobby}
+              />
+            </div>
+          ) : null,
+        error:
+          viewState.status === "error" ? (
+            <div className="mx-auto max-w-lg p-6">
+              <RapidFireErrorState message={viewState.message} onBackToLobby={onBackToLobby} />
+            </div>
+          ) : null,
+      }}
+    />
   );
 }

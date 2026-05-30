@@ -39,7 +39,9 @@ export function WikiView(props: WikiViewProps) {
   if (viewState.status === "error") {
     return (
       <div className="mx-auto max-w-2xl p-6">
-        <p className="text-destructive">{viewState.message}</p>
+        <p className="rounded-[var(--radius)] border-2 border-cross bg-cross/12 px-3.5 py-3 text-[14px] text-ink">
+          {viewState.message}
+        </p>
       </div>
     );
   }

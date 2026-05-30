@@ -14,7 +14,8 @@ function optionButtonClass(
     lastCorrect: boolean | null;
   },
 ): string {
-  const base = "h-auto min-h-10 w-full justify-start whitespace-normal py-2 text-left";
+  const base =
+    "h-auto min-h-12 w-full justify-start whitespace-normal py-3 text-left text-[15px]";
 
   if (ctx.phase === "question") {
     return base;
@@ -24,10 +25,10 @@ function optionButtonClass(
   const isWrongPick = ctx.selected != null && !ctx.lastCorrect && optionIndex1 === ctx.selected;
 
   if (isCorrect) {
-    return `${base} border-green-600 bg-green-600/15 hover:bg-green-600/20`;
+    return `${base} border-four bg-four/15 text-ink hover:bg-four/20`;
   }
   if (isWrongPick) {
-    return `${base} border-red-600 bg-red-600/15 hover:bg-red-600/20`;
+    return `${base} border-cross bg-cross/15 text-ink hover:bg-cross/20`;
   }
   return `${base} opacity-60`;
 }
@@ -40,21 +41,19 @@ export function QuestionCard(props: {
   correctOption: number | null;
   lastCorrect: boolean | null;
   locked: boolean;
-  currentScore: number;
   timerBar?: ReactNode;
   feedbackOverlay?: ReactNode;
   questionEnteredAtRef: MutableRefObject<number>;
   onSelectOption: (optionIndex1: number, timeMs: number) => void;
 }) {
-  void props.currentScore;
   const showFeedback = props.phase === "feedback";
   const disabled = props.locked || showFeedback;
 
   return (
-    <div className="relative space-y-4 rounded-xl border border-border bg-card p-4 shadow-sm">
+    <div className="relative space-y-5 rounded-[var(--radius)] border-2 border-line bg-panel p-6 shadow-[var(--shadow-cabinet)]">
       {props.timerBar}
       {props.feedbackOverlay}
-      <p className="pr-2 font-medium leading-snug">{props.question.question}</p>
+      <p className="pr-2 text-[20px] font-semibold leading-snug text-ink">{props.question.question}</p>
 
       <div className="flex flex-col gap-2">
         {props.options.map((label, idx) => {
@@ -80,7 +79,7 @@ export function QuestionCard(props: {
                 );
               }}
             >
-              <span className="mr-2 font-mono text-muted-foreground text-xs">{optionIndex1}.</span>
+              <span className="mr-2 font-mono text-xs text-ink-faint">{optionIndex1}.</span>
               {label}
             </Button>
           );

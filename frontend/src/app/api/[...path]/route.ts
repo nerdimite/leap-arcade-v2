@@ -1,7 +1,11 @@
 import type { NextRequest } from "next/server";
-
-import { handleAuthLogin, isAuthLoginPath } from "@/lib/server/auth-login-handler";
 import { forwardApiToBackend } from "@/lib/server/api-catch-all-proxy";
+import {
+  handleAuthLogin,
+  handleAuthLogout,
+  isAuthLoginPath,
+  isAuthLogoutPath,
+} from "@/lib/server/auth-login-handler";
 
 type RouteParams = Promise<{ path: string[] }>;
 
@@ -10,6 +14,10 @@ async function handle(request: NextRequest, params: RouteParams) {
 
   if (request.method === "POST" && isAuthLoginPath(segments)) {
     return handleAuthLogin(request);
+  }
+
+  if (request.method === "POST" && isAuthLogoutPath(segments)) {
+    return handleAuthLogout();
   }
 
   return forwardApiToBackend(request, segments);

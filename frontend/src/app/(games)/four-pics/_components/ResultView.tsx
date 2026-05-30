@@ -12,20 +12,11 @@ export type ResultViewProps = {
 function statusBadge(status: ResultQuestion["status"]): { label: string; className: string } {
   switch (status) {
     case "correct":
-      return {
-        label: "Correct",
-        className: "border-emerald-600/25 bg-emerald-600/10 text-emerald-900 dark:text-emerald-100",
-      };
+      return { label: "Correct", className: "border-four/40 bg-four/12 text-four" };
     case "wrong":
-      return {
-        label: "Wrong",
-        className: "border-destructive/30 bg-destructive/10 text-destructive",
-      };
+      return { label: "Wrong", className: "border-cross/40 bg-cross/12 text-cross" };
     case "not_reached":
-      return {
-        label: "Not reached",
-        className: "border-muted-foreground/25 bg-muted text-muted-foreground",
-      };
+      return { label: "Not reached", className: "border-line bg-bg-2 text-ink-faint" };
   }
 }
 
@@ -34,61 +25,75 @@ export function ResultView({ result, onBackToLobby }: ResultViewProps) {
 
   return (
     <div className="mx-auto flex max-w-lg flex-col gap-6 p-6 pb-10">
-      <header className="space-y-1">
-        <h1 className="font-semibold text-xl tracking-tight">Four Pics, One Lie</h1>
-        <p className="text-muted-foreground text-sm">Session complete.</p>
-      </header>
-
-      <section className="rounded-2xl border bg-card p-6 shadow-sm">
-        <p className="text-muted-foreground text-xs font-medium uppercase tracking-wide">Total score</p>
-        <p className="mt-1 font-bold text-5xl tabular-nums tracking-tight text-primary">{result.score}</p>
-        <ul className="mt-4 flex flex-wrap gap-3 text-sm text-muted-foreground">
-          <li>
-            <span className="font-medium text-foreground tabular-nums">{result.questions_correct}</span>{" "}
-            correct
-          </li>
-          <li>
-            <span className="font-medium text-foreground tabular-nums">{result.questions_wrong}</span> wrong
-          </li>
-          <li>
-            <span className="font-medium text-foreground tabular-nums">
-              {result.questions_not_reached}
-            </span>{" "}
-            not reached
-          </li>
-        </ul>
-      </section>
+      <div className="overflow-hidden rounded-[var(--radius)] border-2 border-line bg-panel shadow-[var(--shadow-cabinet)]">
+        <div className="h-2 bg-[var(--accent,var(--four))]" style={{ boxShadow: "0 0 18px var(--accent, var(--four))" }} />
+        <div className="p-6">
+          <p className="font-pixel text-[9px] uppercase tracking-[2px] text-[var(--accent,var(--four))]">
+            ▸ Session complete
+          </p>
+          <p className="mt-4 font-pixel text-[26px] leading-none tabular-nums text-four">
+            {result.score}
+          </p>
+          <p className="mt-2 text-[11px] font-bold uppercase tracking-[1px] text-ink-faint">
+            Total score
+          </p>
+          <ul className="mt-5 flex flex-wrap gap-3 text-[14px] text-ink-dim">
+            <li>
+              <span className="font-pixel text-[11px] tabular-nums text-four">
+                {result.questions_correct}
+              </span>{" "}
+              correct
+            </li>
+            <li>
+              <span className="font-pixel text-[11px] tabular-nums text-cross">
+                {result.questions_wrong}
+              </span>{" "}
+              wrong
+            </li>
+            <li>
+              <span className="font-pixel text-[11px] tabular-nums text-ink-faint">
+                {result.questions_not_reached}
+              </span>{" "}
+              not reached
+            </li>
+          </ul>
+        </div>
+      </div>
 
       <section className="space-y-3">
-        <h2 className="text-sm font-semibold tracking-tight">Per question</h2>
-        <div className="overflow-hidden rounded-xl border">
-          <table className="w-full text-sm">
+        <h2 className="text-[10px] font-bold uppercase tracking-[1px] text-ink-faint">Per question</h2>
+        <div className="overflow-hidden rounded-[var(--radius)] border-2 border-line">
+          <table className="w-full text-[14px]">
             <thead>
-              <tr className="border-b bg-muted/50 text-left text-muted-foreground text-xs">
-                <th className="px-3 py-2 font-medium">#</th>
-                <th className="px-3 py-2 font-medium">Status</th>
-                <th className="px-3 py-2 text-right font-medium">Score</th>
-                <th className="px-3 py-2 text-right font-medium">Bonus</th>
+              <tr className="bg-bg-2 text-left text-[10px] font-bold uppercase tracking-[1px] text-ink-faint">
+                <th className="px-4 py-2.5 font-bold">#</th>
+                <th className="px-4 py-2.5 font-bold">Status</th>
+                <th className="px-4 py-2.5 text-right font-bold">Score</th>
+                <th className="px-4 py-2.5 text-right font-bold">Bonus</th>
               </tr>
             </thead>
             <tbody>
               {rows.map((row) => {
                 const badge = statusBadge(row.status);
                 return (
-                  <tr key={row.question_id} className="border-b last:border-b-0">
-                    <td className="px-3 py-2.5 font-mono tabular-nums">{row.questionNumber}</td>
-                    <td className="px-3 py-2.5">
+                  <tr key={row.question_id} className="border-t-[1.5px] border-line">
+                    <td className="px-4 py-3 font-pixel text-[11px] tabular-nums text-ink-faint">
+                      {row.questionNumber}
+                    </td>
+                    <td className="px-4 py-3">
                       <span
                         className={cn(
-                          "inline-flex rounded-full border px-2 py-0.5 text-xs font-medium",
+                          "inline-flex rounded-full border-2 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-[0.5px]",
                           badge.className,
                         )}
                       >
                         {badge.label}
                       </span>
                     </td>
-                    <td className="px-3 py-2.5 text-right font-mono tabular-nums">{row.score}</td>
-                    <td className="px-3 py-2.5 text-right font-mono tabular-nums">{row.time_bonus}</td>
+                    <td className="px-4 py-3 text-right font-pixel text-[11px] tabular-nums text-ink">
+                      {row.score}
+                    </td>
+                    <td className="px-4 py-3 text-right tabular-nums text-ink-dim">{row.time_bonus}</td>
                   </tr>
                 );
               })}

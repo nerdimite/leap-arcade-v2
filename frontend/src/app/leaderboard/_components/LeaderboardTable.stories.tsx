@@ -15,6 +15,14 @@ const mockEntries: LeaderboardTableRow[] = [
 
 const meta = {
   component: LeaderboardTable,
+  parameters: { layout: "padded" },
+  decorators: [
+    (Story) => (
+      <div className="mx-auto max-w-3xl">
+        <Story />
+      </div>
+    ),
+  ],
   args: {
     entries: mockEntries,
   },
@@ -25,6 +33,12 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
+
+export const WithCurrentPlayer: Story = {
+  args: {
+    currentCorpId: "c05",
+  },
+};
 
 export const Empty: Story = {
   args: {

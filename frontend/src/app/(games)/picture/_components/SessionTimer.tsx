@@ -53,8 +53,8 @@ export function SessionTimer({ sessionStartedAt, timeLimitMs, onExpired }: Props
     <div
       className={
         urgent
-          ? "animate-pulse text-lg font-semibold tabular-nums tracking-tight text-destructive"
-          : "text-muted-foreground text-sm font-medium tabular-nums tracking-tight"
+          ? "rounded-[var(--radius)] border-2 border-cross bg-panel px-3 py-1.5 font-pixel text-[13px] tabular-nums text-cross shadow-[var(--shadow-cabinet-sm)] animate-arcade-blink motion-reduce:animate-none"
+          : "rounded-[var(--radius)] border-2 border-line bg-panel px-3 py-1.5 font-pixel text-[13px] tabular-nums text-ink-dim shadow-[var(--shadow-cabinet-sm)]"
       }
       aria-live="polite"
     >

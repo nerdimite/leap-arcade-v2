@@ -14,7 +14,7 @@ export function ScoreIncrementChip({ visible }: Props) {
   return (
     <span
       aria-live="polite"
-      className="pointer-events-none absolute -right-2 -top-2 animate-bounce text-sm font-semibold text-green-600"
+      className="pointer-events-none absolute -right-3 -top-3 font-pixel text-[11px] text-four motion-safe:animate-bounce"
     >
       +{WORD_HUNT_BASE_PER_WORD}
     </span>

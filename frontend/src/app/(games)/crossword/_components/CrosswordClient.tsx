@@ -13,23 +13,19 @@ import {
   useCrosswordSubmit,
 } from "@/services/crossword/hooks";
 import type { Clue, PlayResponse, Result } from "@/services/crossword/schema";
-
-import {
-  cellKey,
-  collectEntryCellKeys,
-  entryLetters,
-  getActiveEntryCellKeys,
-} from "../_lib/crosswordGrid";
 import {
   crosswordPlayInitialState,
   crosswordPlayReducer,
   getActiveClueEntryId,
   getDisplayLetter,
 } from "../_hooks/crosswordPlayReducer";
-import { ClueListPanel } from "./ClueListPanel";
-import { CrosswordGrid } from "./CrosswordGrid";
-import { ResultView } from "./ResultView";
-import { ScoreIncrementChip } from "./ScoreIncrementChip";
+import {
+  cellKey,
+  collectEntryCellKeys,
+  entryLetters,
+  getActiveEntryCellKeys,
+} from "../_lib/crosswordGrid";
+import { CrosswordView } from "./CrosswordView";
 
 type Props = {
   initialPlay: PlayResponse;
@@ -322,7 +318,13 @@ export function CrosswordClient({ initialPlay }: Props) {
 
   if (result) {
     return (
-      <ResultView result={result} onBackToLobby={() => navigateSafe("/lobby")} />
+      <CrosswordView
+        viewState={{ status: "result", result }}
+        onCellClick={() => {}}
+        onClueClick={() => {}}
+        onSubmit={() => {}}
+        onBackToLobby={() => navigateSafe("/lobby")}
+      />
     );
   }
 
@@ -331,48 +333,26 @@ export function CrosswordClient({ initialPlay }: Props) {
   }
 
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-6 p-4 lg:flex-row">
-      <div className="space-y-4">
-        <div className="flex items-center justify-between gap-4">
-          <p className="relative text-sm text-neutral-600">
-            Score: {play.session_score} · Solved {puzzle.solved_count}/{puzzle.total_entries}
-            <ScoreIncrementChip visible={playState.showScoreIncrement} />
-          </p>
-          <button
-            type="button"
-            className="rounded-md bg-neutral-900 px-4 py-2 text-sm text-white disabled:opacity-50"
-            disabled={isSubmitPending}
-            onClick={() => void handleSubmit()}
-          >
-            Submit
-          </button>
-        </div>
-        <CrosswordGrid
-          gridRef={gridRef}
-          puzzle={puzzle}
-          displayLetter={displayLetter}
-          lockedCells={lockedCells}
-          selectedCell={playState.cursor}
-          activeEntryCells={activeEntryCells}
-          missFlashCells={missFlashCells}
-          onCellClick={handleCellClick}
-          data-testid="crossword-grid"
-        />
-        <input
-          ref={hiddenInputRef}
-          aria-hidden
-          tabIndex={-1}
-          className="sr-only"
-          onChange={() => {}}
-        />
-      </div>
-      <div className="min-w-[16rem] flex-1">
-        <ClueListPanel
-          clues={puzzle.clues}
-          activeEntryId={getActiveClueEntryId(playState)}
-          onClueClick={handleClueClick}
-        />
-      </div>
-    </div>
+    <CrosswordView
+      viewState={{
+        status: "playing",
+        puzzle,
+        sessionScore: play.session_score,
+        displayLetter,
+        lockedCells,
+        selectedCell: playState.cursor,
+        activeEntryCells,
+        missFlashCells,
+        activeEntryId: getActiveClueEntryId(playState),
+        showScoreIncrement: playState.showScoreIncrement,
+        submitDisabled: isSubmitPending,
+      }}
+      onCellClick={handleCellClick}
+      onClueClick={handleClueClick}
+      onSubmit={() => void handleSubmit()}
+      onBackToLobby={() => navigateSafe("/lobby")}
+      gridRef={gridRef}
+      hiddenInputRef={hiddenInputRef}
+    />
   );
 }

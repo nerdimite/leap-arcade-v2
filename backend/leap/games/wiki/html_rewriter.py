@@ -184,6 +184,48 @@ def _internal_wiki_title_from_href(href: str) -> Optional[Tuple[str, str]]:
     return None
 
 
+# Inline style declarations that would fight the frontend light-island skin.
+# Wikimedia/Parsoid markup ships navbox/sidebar/infobox cells with their own
+# background + text colours; on the dark app surface those render as black
+# boxes. We strip colour-bearing declarations (and the legacy `bgcolor` attr)
+# so the scoped `.leap-wiki-skin` CSS fully owns the palette.
+_COLOR_STYLE_PROPS = frozenset(
+    {
+        "background",
+        "background-color",
+        "background-image",
+        "color",
+        "border-color",
+        "box-shadow",
+        "filter",
+    }
+)
+
+
+def _neutralize_inline_colors(tag: Tag) -> int:
+    """Drop colour-related inline styles/attrs so the light skin controls them."""
+    removed = 0
+    if tag.has_attr("bgcolor"):
+        del tag["bgcolor"]
+        removed += 1
+    raw_style = tag.get("style")
+    if isinstance(raw_style, str) and raw_style.strip():
+        kept: List[str] = []
+        for decl in raw_style.split(";"):
+            if not decl.strip():
+                continue
+            prop, sep, _value = decl.partition(":")
+            if sep and prop.strip().lower() in _COLOR_STYLE_PROPS:
+                removed += 1
+                continue
+            kept.append(decl.strip())
+        if kept:
+            tag["style"] = "; ".join(kept)
+        else:
+            del tag["style"]
+    return removed
+
+
 def _strip_untrusted_img(tag: Tag) -> None:
     raw_src = tag.get("src")
     raw_srcset = tag.get("srcset")
@@ -235,6 +277,7 @@ class WikiHtmlRewriter:
                 if attr.startswith("on"):
                     del tag[attr]
                     removed += 1
+            removed += _neutralize_inline_colors(tag)
 
         for img in soup.find_all("img"):
             _strip_untrusted_img(img)

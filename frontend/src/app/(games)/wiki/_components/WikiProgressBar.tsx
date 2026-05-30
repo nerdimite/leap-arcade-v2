@@ -28,9 +28,11 @@ export function WikiProgressBar(props: WikiProgressBarProps) {
             key={idx}
             className={cn(
               "h-2 min-w-[1.5rem] flex-1 rounded-full transition-colors",
-              done && "bg-primary",
-              !done && current && "bg-primary/35 ring-2 ring-primary ring-offset-2 ring-offset-background",
-              !done && !current && "bg-muted",
+              done && "bg-[var(--accent,var(--wiki))]",
+              !done &&
+                current &&
+                "bg-[var(--accent,var(--wiki))]/35 ring-2 ring-[var(--accent,var(--wiki))] ring-offset-2 ring-offset-bg",
+              !done && !current && "bg-line",
             )}
           />
         );

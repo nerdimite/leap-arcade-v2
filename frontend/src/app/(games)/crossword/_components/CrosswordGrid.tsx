@@ -33,7 +33,7 @@ export function CrosswordGrid({
     <div
       ref={gridRef}
       data-testid={dataTestId}
-      className="inline-grid gap-0.5 border border-border p-2 outline-none"
+      className="inline-grid gap-0.5 rounded-[var(--radius)] border-2 border-line bg-panel p-2 outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
       style={{
         gridTemplateColumns: `repeat(${puzzle.cols}, minmax(2rem, 2.5rem))`,
         gridTemplateRows: `repeat(${puzzle.rows}, minmax(2rem, 2.5rem))`,
@@ -54,15 +54,15 @@ export function CrosswordGrid({
           const isMissFlash = missFlashCells.has(key);
           const letter = displayLetter(cell.row, cell.col);
 
-          let cellClass = "border-neutral-300 bg-white";
+          let cellClass = "border-line bg-bg-2 text-ink";
           if (isLocked) {
-            cellClass = "border-green-600 bg-green-100 text-green-900";
+            cellClass = "border-four bg-four/15 text-four";
           } else if (isMissFlash) {
-            cellClass = "border-red-500 bg-red-100 text-red-900";
+            cellClass = "border-cross bg-cross/25 text-ink";
           } else if (isSelected) {
-            cellClass = "border-blue-500 bg-blue-50";
+            cellClass = "border-wiki bg-wiki/20 text-ink";
           } else if (isActive) {
-            cellClass = "border-amber-400 bg-amber-50";
+            cellClass = "border-rapid bg-rapid/15 text-ink";
           }
 
           return (
@@ -79,7 +79,7 @@ export function CrosswordGrid({
               className={`relative aspect-square border text-center text-sm font-semibold uppercase transition-colors duration-150 ${cellClass}`}
             >
               {cell.number != null ? (
-                <span className="absolute left-0.5 top-0 text-[0.55rem] font-normal leading-none text-neutral-500">
+                <span className="absolute left-0.5 top-0 text-[0.55rem] font-normal leading-none text-ink-faint">
                   {cell.number}
                 </span>
               ) : null}

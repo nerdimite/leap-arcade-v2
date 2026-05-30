@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>LEAP Arcade — Lobby (Windows XP desktop)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Tahoma&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  /* ============================================================
+     LEAP ARCADE — "Windows XP desktop" exploration prototype
+     The whole platform as an XP desktop: the lobby is the desktop,
+     each game is a desktop icon, the leaderboard is a floating
+     Luna window, and the taskbar carries the wordmark + clock.
+     This extends the diegetic-framing principle across the whole app.
+     ============================================================ */
+  :root {
+    --luna-blue:    #245edb;
+    --luna-blue-2:  #3f8cf3;
+    --luna-title-1: #0058ee;
+    --luna-title-2: #3593ff;
+    --luna-face:    #ece9d8;   /* classic XP dialog beige */
+    --luna-face-2:  #f5f4ea;
+    --luna-line:    #aca899;
+    --green-start-1:#3c8d34;
+    --green-start-2:#1c5e0e;
+    --ink:          #14213d;
+    --tahoma: Tahoma, "Segoe UI", Inter, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    font-family: var(--tahoma);
+    /* Bliss wallpaper, with the hill-and-sky gradient as fallback */
+    background:
+      url("https://images2.alphacoders.com/941/thumb-1920-941898.jpg") center / cover no-repeat,
+      linear-gradient(to bottom,
+        #2a6fd6 0%, #3f8cf3 28%, #74b5f7 45%,
+        #bfe07a 60%, #6fae3a 78%, #4f8c2b 100%);
+    height: 100vh; overflow: hidden;
+    position: relative;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---------------- desktop icons (the games) ---------------- */
+  /* Authentic XP: icons stack in a vertical column down the left edge,
+     so floating windows open clear of them. */
+  .desktop {
+    position: absolute; inset: 0 0 44px 0;
+    padding: 16px 12px;
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-columns: 92px;
+    grid-template-rows: repeat(7, 96px);
+    gap: 4px;
+    align-content: start;
+  }
+  .icon {
+    width: 92px; text-align: center; cursor: pointer;
+    padding: 6px 4px; border: 1px solid transparent; border-radius: 2px;
+    user-select: none;
+  }
+  .icon:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.25); }
+  .icon:focus-within, .icon.sel { background: rgba(11,79,191,0.45); border: 1px dotted rgba(255,255,255,0.85); }
+  .icon .glyph {
+    width: 50px; height: 50px; margin: 0 auto 6px;
+    display: grid; place-items: center; font-size: 30px;
+    background: linear-gradient(160deg, #fff, #dfe7f5);
+    border: 1px solid #5a78b0;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.35), inset 0 1px 0 #fff;
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,0.3));
+  }
+  .icon .label {
+    font-size: 11.5px; line-height: 1.25; color: #fff;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.9), 1px 0 1px rgba(0,0,0,0.6);
+  }
+  .icon .badge {
+    display: inline-block; margin-top: 3px; font-size: 10px;
+    color: #ffe; background: rgba(0,0,0,0.35);
+    padding: 0 5px; border-radius: 7px;
+  }
+  .icon.done .glyph { filter: grayscale(0.7) opacity(0.7); }
+
+  /* ---------------- floating XP windows ---------------- */
+  .window {
+    position: absolute;
+    background: var(--luna-face);
+    border: 1px solid #0831d9;
+    border-radius: 8px 8px 0 0;
+    box-shadow: 0 12px 34px rgba(0,0,0,0.45);
+    overflow: hidden;
+  }
+  .titlebar {
+    height: 30px; display: flex; align-items: center; gap: 8px;
+    padding: 0 6px 0 8px;
+    background: linear-gradient(to bottom, var(--luna-title-2) 0%, var(--luna-title-1) 8%, #0653ee 40%, #1666ff 88%, #0058ee 100%);
+    color: #fff; font-weight: 700; font-size: 13px;
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.5);
+    border-radius: 7px 7px 0 0;
+  }
+  .titlebar .ticon { font-size: 14px; }
+  .titlebar .ttext { flex: 1; }
+  .winbtns { display: flex; gap: 3px; }
+  .winbtns b {
+    width: 21px; height: 21px; display: grid; place-items: center;
+    font-family: var(--tahoma); font-weight: 700; font-size: 12px; color: #fff;
+    border: 1px solid rgba(255,255,255,0.7); border-radius: 3px;
+    background: linear-gradient(to bottom, #4f9bff, #1257d6);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
+  }
+  .winbtns b.close { background: linear-gradient(to bottom, #f08e6c, #d4451d); }
+
+  /* welcome / lobby intro window */
+  #welcome { left: 150px; top: 80px; width: 430px; }
+  #welcome .content { padding: 16px 18px 18px; }
+  #welcome h1 { margin: 0 0 6px; font-size: 17px; color: #0a246a; }
+  #welcome p { margin: 0 0 12px; font-size: 12.5px; line-height: 1.55; max-width: 60ch; }
+  .scorebox {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--luna-face-2); border: 1px solid var(--luna-line);
+    border-radius: 4px; padding: 10px 12px; margin-bottom: 12px;
+  }
+  .scorebox .v { font-size: 20px; font-weight: 700; color: #1a6e1a; }
+  .scorebox .l { font-size: 11px; color: #555; }
+  .xpbtn {
+    font-family: var(--tahoma); font-size: 12px; padding: 5px 16px;
+    background: linear-gradient(to bottom, #fdfdfd, #e3e3d4);
+    border: 1px solid #8a8674; border-radius: 4px; cursor: pointer;
+    box-shadow: inset 0 1px 0 #fff;
+  }
+  .xpbtn.primary {
+    font-weight: 700; color: #14213d;
+    background: linear-gradient(to bottom, #f6fbff, #cfe6c2);
+    border-color: #4f8c2b;
+  }
+  .xpbtn:active { box-shadow: inset 0 1px 2px rgba(0,0,0,0.3); }
+
+  /* leaderboard window */
+  #board { right: 36px; top: 56px; width: 300px; }
+  #board .titlebar { background: linear-gradient(to bottom, #ff9d5b 0%, #f3791f 10%, #e2620c 45%, #ff8a2e 90%, #e2620c 100%); }
+  #board .listhdr {
+    display: grid; grid-template-columns: 26px 1fr auto; gap: 8px;
+    padding: 6px 12px; font-size: 11px; color: #555;
+    background: var(--luna-face-2); border-bottom: 1px solid var(--luna-line);
+  }
+  #board .lrow {
+    display: grid; grid-template-columns: 26px 1fr auto; gap: 8px; align-items: center;
+    padding: 7px 12px; font-size: 12.5px;
+    border-bottom: 1px solid #e3e0d2;
+  }
+  #board .lrow .rk { font-weight: 700; color: #888; }
+  #board .lrow.t1 .rk { color: #d4a017; }
+  #board .lrow .sc { font-weight: 700; color: #1a6e1a; }
+  #board .lrow.you { background: #fff7d6; }
+  #board .lrow.you .nm { color: #0a246a; font-weight: 700; }
+  #board .lrow small { color: #999; }
+  .blink { color: #1a6e1a; }
+
+  /* status bar inside windows */
+  .statusbar {
+    border-top: 1px solid var(--luna-line);
+    background: var(--luna-face-2);
+    padding: 3px 10px; font-size: 11px; color: #555;
+    display: flex; justify-content: space-between;
+  }
+
+  /* ---------------- taskbar ---------------- */
+  .taskbar {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 44px;
+    display: flex; align-items: center;
+    background: linear-gradient(to bottom, #3168d5, #2461da 50%, #1c4dc0);
+    border-top: 1px solid #5b94f0;
+    box-shadow: inset 0 1px 0 #6aa0f5;
+  }
+  .start {
+    display: flex; align-items: center; gap: 8px;
+    height: 44px; padding: 0 26px 4px 14px;
+    font-style: italic; font-weight: 700; font-size: 17px; color: #fff;
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.45);
+    background: linear-gradient(to bottom, #5bb14a 0%, #449a36 8%, #2f8121 45%, #3c8d34 88%, #1c5e0e 100%);
+    border-radius: 0 12px 12px 0 / 0 18px 18px 0;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.5);
+    cursor: pointer;
+  }
+  .start .orb {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #fff, #cde 40%, #69f 70%, #14b 100%);
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.3);
+  }
+  .tasks { display: flex; gap: 4px; padding: 0 8px; flex: 1; }
+  .task {
+    display: flex; align-items: center; gap: 7px;
+    height: 30px; padding: 0 12px; min-width: 150px;
+    color: #fff; font-size: 12px;
+    background: linear-gradient(to bottom, #3f86e8, #1d54c9);
+    border: 1px solid #1c4dc0; border-radius: 4px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.35);
+  }
+  .task.active {
+    background: linear-gradient(to bottom, #1b48af, #2a68d8);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.35);
+  }
+  .tray {
+    display: flex; align-items: center; gap: 12px;
+    height: 44px; padding: 0 14px;
+    background: linear-gradient(to bottom, #1290e9, #0d80d6 50%, #0b6fc2);
+    border-left: 1px solid #5b94f0; color: #fff; font-size: 12px;
+  }
+  .tray .pixel-mark { font-weight: 700; letter-spacing: 1px; }
+
+  @media (prefers-reduced-motion: reduce) { .blink { animation: none; } }
+</style>
+</head>
+<body>
+  <!-- ============ DESKTOP: each game is an icon ============ -->
+  <div class="desktop">
+    <div class="icon" tabindex="0"><div class="glyph">🌐</div><div class="label">Wikipedia Speed Run</div><span class="badge">800 pts</span></div>
+    <div class="icon done" tabindex="0"><div class="glyph">⚡</div><div class="label">Rapid Fire Quiz</div><span class="badge">✓ 950</span></div>
+    <div class="icon" tabindex="0"><div class="glyph">🎯</div><div class="label">Pinpoint</div><span class="badge">600 pts</span></div>
+    <div class="icon" tabindex="0"><div class="glyph">🖼️</div><div class="label">Picture Illustration</div><span class="badge">1300 pts</span></div>
+    <div class="icon done" tabindex="0"><div class="glyph">🃏</div><div class="label">Four Pics, One Lie</div><span class="badge">✓ 300</span></div>
+    <div class="icon" tabindex="0"><div class="glyph">🔤</div><div class="label">Word Hunt</div><span class="badge">900 pts</span></div>
+    <div class="icon" tabindex="0"><div class="glyph">📝</div><div class="label">Crossword</div><span class="badge">1000 pts</span></div>
+  </div>
+
+  <!-- ============ WELCOME / LOBBY WINDOW ============ -->
+  <section class="window" id="welcome">
+    <div class="titlebar">
+      <span class="ticon">🕹️</span>
+      <span class="ttext">LEAP Arcade — My Games</span>
+      <span class="winbtns"><b>_</b><b>▢</b><b class="close">✕</b></span>
+    </div>
+    <div class="content">
+      <h1>Welcome back, A. Mehta</h1>
+      <p>Double-click any cabinet on the desktop to start. Play in any order, but once you open a game you finish it — no replays. The clock's running.</p>
+      <div class="scorebox">
+        <div><div class="l">Your total score</div><div class="v">1,250 pts</div></div>
+        <div><div class="l">Games done</div><div class="v" style="color:#0a246a">2 / 7</div></div>
+      </div>
+      <div style="display:flex; gap:8px; justify-content:flex-end">
+        <button class="xpbtn">View full leaderboard</button>
+        <button class="xpbtn primary">Pick a game ▸</button>
+      </div>
+    </div>
+    <div class="statusbar"><span>7 cabinets</span><span>Signed in: am2026</span></div>
+  </section>
+
+  <!-- ============ LEADERBOARD WINDOW ============ -->
+  <section class="window" id="board">
+    <div class="titlebar">
+      <span class="ticon">🏆</span>
+      <span class="ttext">High Scores — Live</span>
+      <span class="winbtns"><b>_</b><b>▢</b><b class="close">✕</b></span>
+    </div>
+    <div class="listhdr"><span>#</span><span>Player</span><span>Score</span></div>
+    <div class="lrow t1"><span class="rk">1</span><span class="nm">R. Iyer <small>ri2026</small></span><span class="sc">3,420</span></div>
+    <div class="lrow"><span class="rk">2</span><span class="nm">S. Khan <small>sk2026</small></span><span class="sc">3,180</span></div>
+    <div class="lrow"><span class="rk">3</span><span class="nm">P. Das <small>pd2026</small></span><span class="sc">2,960</span></div>
+    <div class="lrow"><span class="rk">4</span><span class="nm">N. Roy <small>nr2026</small></span><span class="sc">2,510</span></div>
+    <div class="lrow"><span class="rk">5</span><span class="nm">V. Nair <small>vn2026</small></span><span class="sc">2,300</span></div>
+    <div class="lrow you"><span class="rk">9</span><span class="nm">A. Mehta <small>you</small></span><span class="sc">1,250</span></div>
+    <div class="statusbar"><span><span class="blink">●</span> Updating every 5s</span><span>198 players</span></div>
+  </section>
+
+  <!-- ============ TASKBAR ============ -->
+  <div class="taskbar">
+    <div class="start"><span class="orb"></span> start</div>
+    <div class="tasks">
+      <div class="task active">🕹️ LEAP Arcade — My Games</div>
+      <div class="task">🏆 High Scores</div>
+    </div>
+    <div class="tray">
+      <span class="pixel-mark">LEAP&nbsp;ARCADE</span>
+      <span>🔊</span>
+      <span>54:09 left</span>
+    </div>
+  </div>
+</body>
+</html>

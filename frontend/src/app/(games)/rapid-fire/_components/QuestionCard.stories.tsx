@@ -19,7 +19,6 @@ const meta = {
   args: {
     question: sampleQuestion,
     options: sampleQuestion.options,
-    currentScore: 5,
     questionEnteredAtRef: timingRef,
     onSelectOption: fn(),
   },

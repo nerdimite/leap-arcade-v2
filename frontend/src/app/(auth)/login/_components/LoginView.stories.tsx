@@ -5,6 +5,7 @@ import { LoginView } from "./LoginView";
 
 const meta = {
   component: LoginView,
+  parameters: { layout: "fullscreen" },
   args: {
     corpId: "",
     eventCode: "",
@@ -29,10 +30,19 @@ export const Idle: Story = {
   },
 };
 
+export const Filled: Story = {
+  args: {
+    corpId: "am2026",
+    eventCode: "LEAP-2026",
+    isPending: false,
+    showInvalidCreds: false,
+  },
+};
+
 export const Pending: Story = {
   args: {
-    corpId: "alice",
-    eventCode: "event-99",
+    corpId: "am2026",
+    eventCode: "LEAP-2026",
     isPending: true,
     showInvalidCreds: false,
   },
@@ -40,8 +50,8 @@ export const Pending: Story = {
 
 export const InvalidCredentials: Story = {
   args: {
-    corpId: "alice",
-    eventCode: "bad-code",
+    corpId: "am2026",
+    eventCode: "WRONG-CODE",
     isPending: false,
     showInvalidCreds: true,
   },

@@ -9,6 +9,33 @@ export type GameTileDefinition = {
   maxPoints: (typeof GAME_MAX_POINTS)[LobbyGameId];
 };
 
+/**
+ * Per-game marquee identity: one accent color, one pixel sprite, and the header
+ * cabinet plate (`label` kicker + `tagline`) each, so the lobby and every game
+ * screen read as seven distinct lit cabinets sharing one chrome. `accent` is a
+ * CSS var reference set on the local `--accent` channel; `sprite` is an emoji
+ * placeholder (image-rendering: pixelated) swappable for real pixel art. The
+ * shared `GameHeader` reads `label`/`tagline` so the marquee copy lives once.
+ */
+export type GameVisual = {
+  accent: string;
+  sprite: string;
+  /** Kicker text rendered after the `▸` marquee arrow. */
+  label: string;
+  /** Pixel-font tagline shown as the screen's `<h1>`. */
+  tagline: string;
+};
+
+export const GAME_VISUALS: Record<LobbyGameId, GameVisual> = {
+  wiki: { accent: "var(--wiki)", sprite: "🌐", label: "Wikipedia", tagline: "SPEED RUN" },
+  rapid_fire: { accent: "var(--rapid)", sprite: "⚡", label: "Rapid Fire", tagline: "QUICK DRAW" },
+  pinpoint: { accent: "var(--pin)", sprite: "🎯", label: "Pinpoint", tagline: "NAME IT" },
+  picture: { accent: "var(--pic)", sprite: "🖼️", label: "Picture Illustration", tagline: "DECODE IT" },
+  four_pics: { accent: "var(--four)", sprite: "🃏", label: "Four Pics, One Lie", tagline: "ODD ONE OUT" },
+  word_hunt: { accent: "var(--word)", sprite: "🔤", label: "Word Hunt", tagline: "TRACE IT" },
+  crossword: { accent: "var(--cross)", sprite: "📝", label: "Crossword", tagline: "FILL IT IN" },
+};
+
 /** Static lobby copy and routes — session status comes from `GET /players/me/sessions`. */
 export const GAME_TILES: readonly GameTileDefinition[] = [
   {

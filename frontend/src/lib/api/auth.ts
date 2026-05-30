@@ -15,11 +15,15 @@ export class LoginApiError extends Error {
   }
 }
 
-function loginRequestUrl(): string {
+function authRequestUrl(path: string): string {
   if (typeof window !== "undefined" && window.location?.origin) {
-    return new URL("/api/auth/login", window.location.origin).href;
+    return new URL(path, window.location.origin).href;
   }
-  return "http://localhost:3000/api/auth/login";
+  return `http://localhost:3000${path}`;
+}
+
+function loginRequestUrl(): string {
+  return authRequestUrl("/api/auth/login");
 }
 
 /** POST `/api/auth/login`; sets httpOnly cookie without exposing the JWT body. */
@@ -41,4 +45,16 @@ export async function postLogin(input: LoginPayload): Promise<LoginOkResponse> {
 
   const json: unknown = await res.json();
   return LoginOkResponseSchema.parse(json);
+}
+
+/** POST `/api/auth/logout`; clears the httpOnly session cookie. */
+export async function postLogout(): Promise<void> {
+  const res = await fetch(authRequestUrl("/api/auth/logout"), {
+    method: "POST",
+    headers: { accept: "application/json" },
+  });
+
+  if (!res.ok) {
+    throw new LoginApiError(res.status, "Logout failed");
+  }
 }

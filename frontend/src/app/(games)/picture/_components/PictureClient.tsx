@@ -1,16 +1,13 @@
 "use client";
 
-import Image from "next/image";
 import { type FormEvent, useCallback, useEffect, useRef, useState } from "react";
 
 import { useNavigationGuard } from "@/hooks/use-navigation-guard";
 import { postPictureAbandon } from "@/lib/api/picture";
-import { cn } from "@/lib/utils";
 import { useSubmitPictureAnswer } from "@/services/picture/hooks";
 import type { AnswerResponse, PlayResponse, Puzzle, Result } from "@/services/picture/schema";
 
-import { ResultScreen } from "./ResultScreen";
-import { SessionTimer } from "./SessionTimer";
+import { PictureView } from "./PictureView";
 
 type Props = {
   initialPlay: PlayResponse;
@@ -111,18 +108,32 @@ export function PictureClient({ initialPlay }: Props) {
   }, [puzzle, result, setIsDirty]);
 
   if (result !== null) {
-    return <ResultScreen result={result} onBackToLobby={() => navigateSafe("/lobby")} />;
+    return (
+      <PictureView
+        viewState={{ status: "result", result }}
+        onAnswerChange={() => {}}
+        onSubmit={(e) => e.preventDefault()}
+        onSkip={() => {}}
+        onInputAnimationEnd={() => {}}
+        onSessionExpired={() => {}}
+        onBackToLobby={() => navigateSafe("/lobby")}
+      />
+    );
   }
 
   if (puzzle === null) {
     return (
-      <div className="p-6">
-        <p className="text-muted-foreground text-sm">No puzzle available.</p>
-      </div>
+      <PictureView
+        viewState={{ status: "empty" }}
+        onAnswerChange={() => {}}
+        onSubmit={(e) => e.preventDefault()}
+        onSkip={() => {}}
+        onInputAnimationEnd={() => {}}
+        onSessionExpired={() => {}}
+        onBackToLobby={() => navigateSafe("/lobby")}
+      />
     );
   }
-
-  const imgSrc = `/games/picture/${puzzle.image_filename}`;
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -184,65 +195,30 @@ export function PictureClient({ initialPlay }: Props) {
   }
 
   return (
-    <div className="mx-auto flex max-w-xl flex-col gap-4 p-6">
-      <header className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-xl font-semibold tracking-tight">Picture Illustration</h1>
-        <div className="flex flex-wrap items-center justify-end gap-4">
-          {timerStartedAt !== null && timerLimitMs !== null ? (
-            <SessionTimer
-              sessionStartedAt={timerStartedAt}
-              timeLimitMs={timerLimitMs}
-              onExpired={handleSessionExpired}
-            />
-          ) : null}
-          <div className="text-muted-foreground text-sm tabular-nums">{currentScore} pts</div>
-        </div>
-      </header>
-      <p className="text-muted-foreground text-sm">
-        {puzzle.puzzles_answered} / {puzzle.puzzles_total} puzzles solved — decode the image below.
-      </p>
-      <div className="relative aspect-video w-full overflow-hidden rounded-lg border bg-muted">
-        <Image src={imgSrc} alt="Picture puzzle clue" fill className="object-contain" sizes="100vw" priority />
-      </div>
-      <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
-        <label className="text-sm font-medium" htmlFor="picture-answer">
-          Your answer
-        </label>
-        <input
-          id="picture-answer"
-          className={cn(
-            "rounded-md border bg-background px-3 py-2 text-sm outline-none ring-offset-background focus-visible:ring-2 focus-visible:ring-ring",
-            inputShakeActive && "animate-picture-input-shake",
-          )}
-          value={answer}
-          onChange={(e) => setAnswer(e.target.value)}
-          onAnimationEnd={(e) => {
-            if (e.animationName === "picture-input-shake") {
-              setInputShakeActive(false);
-            }
-          }}
-          autoComplete="off"
-          disabled={isPending}
-        />
-        {wrongMessage ? <p className="text-sm text-destructive">{wrongMessage}</p> : null}
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="submit"
-            disabled={isPending || answer.trim().length === 0}
-            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:pointer-events-none disabled:opacity-50"
-          >
-            Submit
-          </button>
-          <button
-            type="button"
-            disabled={isPending}
-            className="border-border text-muted-foreground rounded-md border bg-transparent px-4 py-2 text-sm font-medium hover:bg-accent/60 disabled:pointer-events-none disabled:opacity-50"
-            onClick={() => void handleSkip()}
-          >
-            Skip →
-          </button>
-        </div>
-      </form>
-    </div>
+    <PictureView
+      viewState={{
+        status: "playing",
+        puzzle,
+        currentScore,
+        answer,
+        wrongMessage,
+        inputShakeActive,
+        isPending,
+        timer:
+          timerStartedAt !== null && timerLimitMs !== null
+            ? { startedAt: timerStartedAt, limitMs: timerLimitMs }
+            : null,
+      }}
+      onAnswerChange={setAnswer}
+      onSubmit={handleSubmit}
+      onSkip={() => void handleSkip()}
+      onInputAnimationEnd={(e) => {
+        if (e.animationName === "picture-input-shake") {
+          setInputShakeActive(false);
+        }
+      }}
+      onSessionExpired={handleSessionExpired}
+      onBackToLobby={() => navigateSafe("/lobby")}
+    />
   );
 }

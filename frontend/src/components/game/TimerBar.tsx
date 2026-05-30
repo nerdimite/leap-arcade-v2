@@ -3,7 +3,7 @@ export function TimerBar(props: { percentage: number }) {
 
   return (
     <div
-      className="h-2 overflow-hidden rounded-full bg-muted"
+      className="h-2 overflow-hidden rounded-full bg-line"
       role="progressbar"
       aria-valuemin={0}
       aria-valuemax={100}
@@ -11,8 +11,8 @@ export function TimerBar(props: { percentage: number }) {
       aria-label="Time remaining"
     >
       <div
-        className="h-full rounded-full bg-primary transition-[width] duration-75 ease-linear"
-        style={{ width: `${pct}%` }}
+        className="h-full rounded-full transition-[width] duration-75 ease-linear"
+        style={{ width: `${pct}%`, background: "var(--accent, var(--primary))" }}
       />
     </div>
   );

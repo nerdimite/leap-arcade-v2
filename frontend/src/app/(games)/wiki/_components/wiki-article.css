@@ -35,6 +35,15 @@
   clear: both;
 }
 
+/* Light-island safety net: the injected wiki HTML brings its own markup
+   (navboxes, sidebars, "Part of a series" rails) that must NEVER inherit or
+   compute the dark app background. Default every descendant to transparent so
+   it shows the light paper, then re-tint the surfaces that want one below.
+   Placed before the surface rules so equal-specificity rules win by order. */
+.leap-wiki-skin :where(*) {
+  background-color: transparent;
+}
+
 .leap-wiki-skin :where(p) {
   margin-top: 0.5rem;
   margin-bottom: 0.6rem;
@@ -70,12 +79,31 @@
   vertical-align: top;
 }
 
-.leap-wiki-skin :where(table.infobox, table.sidebar, table.vertical-navbox) {
+/* Header cells get a faint tint instead of the dark default they may carry. */
+.leap-wiki-skin :where(table th, .navbox-title, .sidebar-title) {
+  background: color-mix(in oklch, var(--wiki-paper) 88%, var(--wiki-line));
+}
+
+/* Boxed surfaces (table OR div variants) sit on light paper. */
+.leap-wiki-skin :where(.infobox, .sidebar, .navbox, .vertical-navbox) {
+  background: color-mix(in oklch, var(--wiki-paper) 96%, white);
+  border: 1px solid var(--wiki-line);
+  color: var(--wiki-ink);
+}
+
+/* The right-rail boxes ("Part of a series", infoboxes) float beside the body. */
+.leap-wiki-skin :where(table.infobox, table.sidebar, table.vertical-navbox, aside.sidebar, .infobox, .sidebar, .vertical-navbox) {
   float: right;
   clear: right;
   width: min(22rem, 38%);
   margin: 0.1rem 0 1rem 1.5rem;
-  background: color-mix(in oklch, var(--wiki-paper) 96%, white);
+}
+
+/* Bottom navboxes are full-width, not floated. */
+.leap-wiki-skin :where(.navbox) {
+  float: none;
+  width: auto;
+  margin: 1rem 0;
 }
 
 .leap-wiki-skin :where(#toc, .toc, .vector-toc) {
@@ -118,7 +146,19 @@
 }
 
 @media (max-width: 960px) {
-  .leap-wiki-skin :where(table.infobox, table.sidebar, table.vertical-navbox, #toc, .toc, .vector-toc) {
+  .leap-wiki-skin
+    :where(
+      table.infobox,
+      table.sidebar,
+      table.vertical-navbox,
+      aside.sidebar,
+      .infobox,
+      .sidebar,
+      .vertical-navbox,
+      #toc,
+      .toc,
+      .vector-toc
+    ) {
     float: none;
     width: 100%;
     margin: 0.75rem 0;

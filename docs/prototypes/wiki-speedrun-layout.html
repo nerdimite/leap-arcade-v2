@@ -1,0 +1,886 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>LEAP Arcade — Wikipedia Speed Run (Layout pass)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;500;600;700;800&family=Georgia&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* ============================================================
+     WIKIPEDIA SPEED RUN — layout rearrangement pass
+     Fixes three things seen in the live screen:
+       1. HUD: timer + clicks + rounds + score were a lone pill plus
+          run-on text. Now one consistent cluster of framed stat
+          blocks, evenly spaced, with the riddle promoted to its own
+          ribbon and a full-width segmented progress bar.
+       2. WINDOW: the article floated flat in the dark page. It now
+          lives inside a real window (window bar + controls + browser
+          chrome) — the single lit screen in the dark cabinet.
+       3. LIGHT ISLAND: the "Part of a series" navbox rendered BLACK
+          because only the article <p>/<h1> were styled light; the
+          real Wikipedia navbox sat on the transparent (dark) page.
+          The fix is structural — see the .viewport scope note below.
+     ============================================================ */
+      :root {
+        --bg: oklch(0.16 0.035 280);
+        --bg-2: oklch(0.19 0.04 282);
+        --panel: oklch(0.225 0.04 283);
+        --panel-2: oklch(0.265 0.045 284);
+        --line: oklch(0.34 0.05 285);
+        --ink: oklch(0.97 0.01 280);
+        --ink-dim: oklch(0.72 0.03 285);
+        --ink-faint: oklch(0.58 0.03 285);
+
+        --wiki: oklch(0.78 0.16 220); /* this game's accent: cyan-blue */
+        --rapid: oklch(0.8 0.17 65); /* amber  — timer running        */
+        --four: oklch(0.82 0.19 135); /* lime   — score / success      */
+        --cross: oklch(0.72 0.19 25); /* coral  — danger / low time    */
+
+        --shadow: 6px 6px 0 oklch(0.1 0.03 280 / 0.85);
+        --shadow-sm: 4px 4px 0 oklch(0.1 0.03 280 / 0.85);
+        --radius: 4px;
+        --ease: cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Inter", system-ui, sans-serif;
+        background: radial-gradient(
+          120% 90% at 50% -10%,
+          var(--bg-2),
+          var(--bg) 60%
+        );
+        color: var(--ink);
+        min-height: 100vh;
+        -webkit-font-smoothing: antialiased;
+        position: relative;
+        overflow-x: hidden;
+      }
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        pointer-events: none;
+        background: repeating-linear-gradient(
+          to bottom,
+          transparent 0 2px,
+          oklch(0 0 0 / 0.05) 2px 3px
+        );
+        mix-blend-mode: multiply;
+      }
+      body::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 9998;
+        pointer-events: none;
+        background: radial-gradient(
+          130% 110% at 50% 40%,
+          transparent 55%,
+          oklch(0 0 0 / 0.45)
+        );
+      }
+      .pixel {
+        font-family: "Press Start 2P", monospace;
+        line-height: 1.5;
+      }
+
+      /* ============================================================
+     1 · APP BAR  — brand on the left, the HUD stat cluster on the
+     right. One row, evenly framed; no more run-on text stats.
+     ============================================================ */
+      /* header + puzzle progress travel together as one sticky shell */
+      .topshell {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        backdrop-filter: blur(6px);
+      }
+      header.appbar {
+        display: flex;
+        align-items: center;
+        gap: 28px;
+        padding: 14px 28px;
+        background: oklch(0.16 0.035 280 / 0.86);
+        border-bottom: 2px solid var(--line);
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+      }
+      .brand .ico {
+        width: 42px;
+        height: 42px;
+        border-radius: var(--radius);
+        display: grid;
+        place-items: center;
+        font-size: 22px;
+        background: oklch(0.16 0.035 280);
+        border: 2px solid var(--wiki);
+        box-shadow: inset 0 0 12px oklch(0 0 0 / 0.6);
+      }
+      /* plate matches the shared GameHeader: ▸ {label} kicker over {tagline} */
+      .brand .t .kicker {
+        font-size: 8px;
+        letter-spacing: 2px;
+        color: var(--wiki);
+        text-transform: uppercase;
+      }
+      .brand .t .tag {
+        display: block;
+        font-size: 12px;
+        color: var(--ink);
+        margin-top: 7px;
+      }
+      .brand .t small {
+        display: block;
+        color: var(--ink-faint);
+        font-size: 11px;
+        margin-top: 5px;
+        letter-spacing: 0.3px;
+      }
+      .spacer {
+        flex: 1;
+      }
+
+      /* HUD stat cluster — every stat is the same framed block. */
+      .hud {
+        display: flex;
+        align-items: stretch;
+        gap: 10px;
+      }
+      .stat {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 7px 16px;
+        min-width: 86px;
+        background: var(--panel);
+        border: 2px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-sm);
+      }
+      .stat .l {
+        font-size: 9px;
+        letter-spacing: 1px;
+        color: var(--ink-faint);
+        text-transform: uppercase;
+      }
+      .stat .v {
+        font-family: "Press Start 2P", monospace;
+        font-size: 14px;
+        margin-top: 8px;
+        color: var(--ink);
+      }
+      .stat.time .v {
+        color: var(--rapid);
+      }
+      .stat.time.low {
+        border-color: var(--cross);
+      }
+      .stat.time.low .v {
+        color: var(--cross);
+        animation: tick 1s steps(2) infinite;
+      }
+      .stat.score .v {
+        color: var(--four);
+      }
+      @keyframes tick {
+        50% {
+          opacity: 0.35;
+        }
+      }
+
+      /* ============================================================
+     2 · PROGRESS  — full-width segmented bar = puzzles in the run.
+     ============================================================ */
+      .progress {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        padding: 13px 28px;
+        border-bottom: 2px solid var(--line);
+        background: oklch(0.17 0.035 281 / 0.86);
+      }
+      .segs {
+        flex: 1;
+        display: flex;
+        gap: 6px;
+      }
+      .seg {
+        flex: 1;
+        height: 9px;
+        border-radius: 2px;
+        background: var(--panel-2);
+        border: 1px solid var(--line);
+      }
+      .seg.done {
+        background: var(--four);
+        border-color: var(--four);
+      }
+      .seg.active {
+        background: var(--wiki);
+        border-color: var(--wiki);
+        box-shadow: 0 0 14px var(--wiki);
+      }
+      .progress .count {
+        font-family: "Press Start 2P", monospace;
+        font-size: 11px;
+        color: var(--ink-dim);
+        white-space: nowrap;
+      }
+      .progress .count b {
+        color: var(--wiki);
+      }
+
+      /* ============================================================
+     RIDDLE RIBBON  — the clue, promoted out of the run-on header.
+     ============================================================ */
+      .stage {
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 26px 28px 56px;
+      }
+      .riddle {
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        padding: 18px 22px;
+        margin-bottom: 22px;
+        background: var(--panel);
+        border: 2px solid var(--line);
+        border-left: 2px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-sm);
+      }
+      .riddle .badge {
+        flex-shrink: 0;
+        align-self: flex-start;
+        font-family: "Press Start 2P", monospace;
+        font-size: 9px;
+        letter-spacing: 1px;
+        color: var(--bg);
+        background: var(--wiki);
+        padding: 8px 11px;
+        border-radius: var(--radius);
+      }
+      .riddle .clue {
+        font-size: 18px;
+        line-height: 1.55;
+        color: var(--ink);
+        font-weight: 500;
+        max-width: 64ch;
+        font-style: italic;
+      }
+
+      /* ============================================================
+     2 · THE WINDOW  — window bar + controls, then browser chrome,
+     then the lit viewport. The single bright screen in the dark.
+     ============================================================ */
+      .window {
+        border-radius: var(--radius);
+        border: 2px solid var(--wiki);
+        box-shadow:
+          0 0 0 1px oklch(0 0 0 / 0.4),
+          0 0 40px oklch(0.78 0.16 220 / 0.26),
+          var(--shadow);
+        overflow: hidden;
+      }
+      /* window title bar (the new "window-like" frame) */
+      .winbar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 12px;
+        background: linear-gradient(
+          to bottom,
+          oklch(0.3 0.045 284),
+          oklch(0.225 0.04 283)
+        );
+        border-bottom: 1px solid oklch(0.12 0.03 280);
+      }
+      .winbar .wtitle {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        color: var(--ink-dim);
+        font-weight: 600;
+      }
+      .winbar .wtitle .fav {
+        color: var(--wiki);
+      }
+      .winbar .wtitle b {
+        color: var(--ink);
+        font-weight: 700;
+      }
+      .wbtns {
+        display: flex;
+        gap: 6px;
+      }
+      .wbtns b {
+        width: 22px;
+        height: 18px;
+        display: grid;
+        place-items: center;
+        border-radius: 2px;
+        font-size: 11px;
+        color: var(--ink-dim);
+        background: oklch(0.2 0.04 283);
+        border: 1px solid var(--line);
+      }
+      .wbtns b.close {
+        color: var(--cross);
+      }
+
+      /* browser chrome row: traffic dots + nav + address bar */
+      .chrome {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 12px;
+        background: linear-gradient(
+          to bottom,
+          oklch(0.24 0.04 283),
+          oklch(0.205 0.04 283)
+        );
+        border-bottom: 2px solid oklch(0.12 0.03 280);
+      }
+      .dots {
+        display: flex;
+        gap: 6px;
+      }
+      .dots i {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        display: block;
+        border: 1px solid oklch(0 0 0 / 0.4);
+      }
+      .dots .r {
+        background: var(--cross);
+      }
+      .dots .y {
+        background: var(--rapid);
+      }
+      .dots .g {
+        background: var(--four);
+      }
+      .navbtns {
+        display: flex;
+        gap: 4px;
+      }
+      .navbtns b {
+        width: 28px;
+        height: 26px;
+        display: grid;
+        place-items: center;
+        background: oklch(0.2 0.04 283);
+        border: 1px solid var(--line);
+        border-radius: 3px;
+        color: var(--ink-dim);
+        cursor: pointer;
+        transition:
+          color 0.12s var(--ease),
+          border-color 0.12s var(--ease);
+      }
+      /* inline Lucide icons (production uses lucide-react: ArrowLeft,
+         ArrowRight, RotateCw) */
+      .navbtns b svg {
+        width: 15px;
+        height: 15px;
+      }
+      .navbtns b:not(.disabled):hover {
+        color: var(--wiki);
+        border-color: var(--wiki);
+      }
+      .navbtns b.disabled {
+        opacity: 0.3;
+        cursor: default;
+      }
+      .addr {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 3px;
+        padding: 7px 11px;
+        font-size: 13px;
+        color: #333;
+      }
+      .addr .lock {
+        color: #1a9d4b;
+        font-size: 12px;
+      }
+      .addr .url {
+        color: #555;
+      }
+      .addr .url b {
+        color: #111;
+      }
+
+      /* ============================================================
+     3 · THE LIGHT ISLAND  (scoped light mode)
+     ROOT-CAUSE FIX for the black sidebar: in production the proxied
+     Wikipedia HTML brings its OWN markup (`.infobox`, `.navbox`,
+     `.vertical-navbox`, `.sidebar`, tables, captions). The live bug
+     styled only <p>/<h1>, so every other block stayed transparent
+     and showed the dark app behind it. The fix is to make `.viewport`
+     a hard light boundary: set an opaque white background + dark ink
+     here, and give every wiki block its own light surface. Nothing
+     inside may rely on inheriting a background.
+     ============================================================ */
+      .viewport {
+        background: #fff; /* opaque — dark app never shows through */
+        color: #202122;
+        max-height: 600px;
+        overflow-y: auto;
+      }
+      /* Safety net: any unstyled proxied block defaults to the light island,
+     never the transparent (dark) page. */
+      .viewport * {
+        background-color: transparent;
+      }
+      .viewport .infobox,
+      .viewport .navbox,
+      .viewport .series {
+        background-color: #f8f9fa;
+      }
+
+      .article {
+        padding: 30px 44px 44px;
+        font-family: Georgia, "Times New Roman", serif;
+      }
+      .article h1 {
+        font-family: Georgia, serif;
+        font-weight: 400;
+        font-size: 30px;
+        margin: 0 0 4px;
+        border-bottom: 1px solid #a2a9b1;
+        padding-bottom: 8px;
+        color: #000;
+      }
+      .article .from {
+        font-family: "Inter", sans-serif;
+        font-size: 12px;
+        color: #54595d;
+        margin: 0 0 20px;
+      }
+      .article p {
+        font-size: 15px;
+        line-height: 1.7;
+        margin: 0 0 16px;
+        max-width: 70ch;
+      }
+      .article h2 {
+        font-family: Georgia, serif;
+        font-weight: 400;
+        font-size: 21px;
+        border-bottom: 1px solid #a2a9b1;
+        padding-bottom: 6px;
+        margin: 26px 0 12px;
+        color: #000;
+      }
+      .article a.wl {
+        color: #3366cc;
+        text-decoration: none;
+        border-bottom: 1px solid transparent;
+        cursor: pointer;
+      }
+      .article a.wl:hover {
+        border-bottom-color: #3366cc;
+        background: #eaf0ff;
+      }
+      .article sup {
+        font-size: 11px;
+        color: #3366cc;
+      }
+
+      /* right-rail "Part of a series on ..." navbox — the element that
+     used to render BLACK. Fully light, scoped to the island. */
+      .series {
+        float: right;
+        width: 270px;
+        margin: 0 0 18px 24px;
+        border: 1px solid #a2a9b1;
+        background: #f8f9fa;
+        font-family: "Inter", sans-serif;
+        font-size: 13px;
+        color: #202122;
+      }
+      .series .s-cap {
+        text-align: center;
+        font-size: 12px;
+        color: #54595d;
+        padding: 8px 10px 2px;
+      }
+      .series .s-title {
+        text-align: center;
+        padding: 0 10px 10px;
+      }
+      .series .s-title a {
+        font-size: 19px;
+        font-weight: 700;
+        color: #3366cc;
+        text-decoration: none;
+      }
+      .series .s-img {
+        padding: 14px;
+        text-align: center;
+        font-size: 42px;
+        background: #eaf3fb;
+        border-top: 1px solid #c8d3e0;
+        border-bottom: 1px solid #c8d3e0;
+      }
+      .series .s-links {
+        padding: 10px 14px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px 12px;
+        justify-content: center;
+      }
+      .series .s-links a {
+        color: #3366cc;
+        text-decoration: none;
+      }
+      .series .s-links a:hover {
+        text-decoration: underline;
+      }
+      .series .s-section {
+        margin: 0;
+        padding: 6px 10px;
+        text-align: center;
+        font-weight: 700;
+        font-size: 12px;
+        color: #14532d;
+        background: #c7ecd0;
+        border-top: 1px solid #a2a9b1;
+      }
+      .series ul {
+        list-style: none;
+        margin: 0;
+        padding: 9px 18px 12px;
+        columns: 2;
+        column-gap: 16px;
+      }
+      .series ul li {
+        margin: 0 0 5px;
+      }
+      .series ul li a {
+        color: #3366cc;
+        text-decoration: none;
+      }
+      .series ul li a:hover {
+        text-decoration: underline;
+      }
+
+      /* infobox (unchanged light treatment, kept for completeness) */
+      .infobox {
+        float: right;
+        width: 260px;
+        margin: 0 0 16px 24px;
+        clear: right;
+        border: 1px solid #a2a9b1;
+        background: #f8f9fa;
+        font-family: "Inter", sans-serif;
+        font-size: 12.5px;
+      }
+      .infobox .ib-title {
+        background: #ccd;
+        text-align: center;
+        font-weight: 700;
+        padding: 7px;
+      }
+      .infobox table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .infobox td {
+        padding: 5px 8px;
+        border-top: 1px solid #eaecf0;
+        vertical-align: top;
+      }
+      .infobox td.k {
+        color: #54595d;
+        width: 40%;
+      }
+
+      /* ============================================================
+     PATH BREADCRUMB  — below the riddle, above the window: the trail
+     the player has taken so far this puzzle.
+     ============================================================ */
+      .pathbar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin: 0 0 22px;
+        font-size: 12px;
+        color: var(--ink-faint);
+      }
+      .pathbar .label {
+        font-size: 9px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin-right: 4px;
+      }
+      .pathbar .step {
+        color: var(--ink-dim);
+        background: var(--panel);
+        border: 1.5px solid var(--line);
+        border-radius: 999px;
+        padding: 4px 11px;
+      }
+      .pathbar .step.cur {
+        color: var(--wiki);
+        border-color: var(--wiki);
+      }
+      .pathbar .sep {
+        color: var(--ink-faint);
+      }
+
+      @media (max-width: 720px) {
+        header.appbar {
+          flex-wrap: wrap;
+          gap: 14px;
+        }
+        .hud {
+          width: 100%;
+        }
+        .stat {
+          flex: 1;
+          min-width: 0;
+        }
+        .riddle {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 14px;
+        }
+        .series,
+        .infobox {
+          float: none;
+          width: auto;
+          margin: 0 0 16px;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .stat.time.low .v {
+          animation: none;
+        }
+        .seg.active {
+          box-shadow: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- header + puzzle progress are one sticky shell -->
+    <div class="topshell">
+      <!-- 1 · APP BAR : brand + framed HUD stat cluster -->
+      <header class="appbar">
+        <div class="brand">
+          <div class="ico">🌐</div>
+          <div class="t">
+            <span class="kicker pixel">▸ WIKIPEDIA</span>
+            <span class="tag pixel">SPEED RUN</span>
+            <small>Links only · no search · back counts as a click</small>
+          </div>
+        </div>
+        <div class="spacer"></div>
+        <div class="hud">
+          <div class="stat clicks">
+            <span class="l">Clicks</span><span class="v">04</span>
+          </div>
+          <div class="stat rounds">
+            <span class="l">Rounds</span><span class="v">0/5</span>
+          </div>
+          <div class="stat time low">
+            <span class="l">Time left</span><span class="v">2:50</span>
+          </div>
+          <div class="stat score">
+            <span class="l">Score</span><span class="v">620</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- segmented progress : one segment per puzzle -->
+      <div class="progress">
+        <div class="segs">
+          <div class="seg active"></div>
+          <div class="seg"></div>
+          <div class="seg"></div>
+          <div class="seg"></div>
+          <div class="seg"></div>
+        </div>
+        <span class="count">PUZZLE <b>01</b> / 05</span>
+      </div>
+    </div>
+
+    <main class="stage">
+      <!-- the riddle, promoted to its own ribbon -->
+      <div class="riddle">
+        <span class="badge">RIDDLE</span>
+        <p class="clue">
+          I let the model peek around, to find which words truly count — what am
+          I?
+        </p>
+      </div>
+
+      <!-- path breadcrumb : where the player has been (above the window) -->
+      <div class="pathbar">
+        <span class="label">Path</span>
+        <span class="step">Fidelity Investments</span><span class="sep">›</span>
+        <span class="step">Science</span><span class="sep">›</span>
+        <span class="step">Natural science</span><span class="sep">›</span>
+        <span class="step cur">Biology</span>
+      </div>
+
+      <!-- 2 · THE WINDOW -->
+      <section class="window">
+        <div class="winbar">
+          <div class="wtitle">
+            <span class="fav">🌐</span> Biology — Wikipedia ·
+            <b>LEAP&nbsp;Browser</b>
+          </div>
+          <div class="wbtns"><b>—</b><b>▢</b><b class="close">✕</b></div>
+        </div>
+
+        <div class="chrome">
+          <div class="dots">
+            <i class="r"></i><i class="y"></i><i class="g"></i>
+          </div>
+          <div class="navbtns">
+            <b title="Back (counts as a click)">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="m12 19-7-7 7-7" />
+                <path d="M19 12H5" />
+              </svg>
+            </b>
+            <b class="disabled" title="No forward history yet">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M5 12h14" />
+                <path d="m12 5 7 7-7 7" />
+              </svg>
+            </b>
+            <b title="Reload">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                <path d="M3 3v5h5" />
+              </svg>
+            </b>
+          </div>
+          <div class="addr">
+            <span class="lock">🔒</span>
+            <span class="url">en.wikipedia.org/wiki/<b>Biology</b></span>
+          </div>
+        </div>
+
+        <div class="viewport">
+          <div class="article">
+            <h1>Biology</h1>
+            <p class="from">
+              From Wikipedia, the free encyclopedia · rendered through the LEAP
+              proxy
+            </p>
+
+            <!-- the "Part of a series" navbox that used to render BLACK -->
+            <aside class="series">
+              <div class="s-cap">Part of a series on</div>
+              <div class="s-title"><a href="#">Biology</a></div>
+              <div class="s-img">🧬</div>
+              <div class="s-links">
+                <a href="#">Index</a><a href="#">Outline</a
+                ><a href="#">Glossary</a><a href="#">History</a>
+              </div>
+              <p class="s-section">Key components</p>
+              <ul>
+                <li><a href="#">Cell theory</a></li>
+                <li><a href="#">Ecosystem</a></li>
+                <li><a href="#">Evolution</a></li>
+                <li><a href="#">Genetics</a></li>
+                <li><a href="#">Homeostasis</a></li>
+                <li><a href="#">Heredity</a></li>
+              </ul>
+            </aside>
+
+            <p>
+              <b>Biology</b> is the <a class="wl">scientific study</a> of
+              <a class="wl">life</a> and living <a class="wl">organisms</a>. It
+              is a broad <a class="wl">natural science</a> that encompasses a
+              wide range of fields and unifying principles that explain the
+              structure, function, growth, <a class="wl">origin</a>,
+              <a class="wl">evolution</a>, and distribution of life.
+            </p>
+
+            <p>
+              Central to biology are five fundamental themes: the
+              <a class="wl">cell</a> as the basic unit of life,
+              <a class="wl">genes</a> and <a class="wl">heredity</a> as the
+              basis of inheritance, evolution as the driver of
+              <a class="wl">biological diversity</a>,
+              <a class="wl">energy</a> transformation for sustaining life
+              processes, and <a class="wl">homeostasis</a>, the maintenance of
+              internal stability.<sup>[1][2]</sup>
+            </p>
+
+            <h2>Levels of organization</h2>
+            <p>
+              Biology examines life across multiple
+              <a class="wl">levels of organization</a>, from
+              <a class="wl">molecules</a> and cells to organisms,
+              <a class="wl">populations</a>, and <a class="wl">ecosystems</a>.
+              Subdisciplines include <a class="wl">molecular biology</a>,
+              <a class="wl">physiology</a>, <a class="wl">ecology</a>, and
+              <a class="wl">systematics</a>, among others.
+            </p>
+
+            <p>
+              Modern biology is grounded in the theory of evolution by
+              <a class="wl">natural selection</a>, first articulated by
+              <a class="wl">Charles Darwin</a>, and in the molecular
+              understanding of genes encoded in <a class="wl">DNA</a>.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

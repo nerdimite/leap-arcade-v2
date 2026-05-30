@@ -26,11 +26,11 @@ export function ClueBadgeRow(props: ClueBadgeRowProps) {
             data-testid="clue-badge-slot"
             data-shake={isShaking ? "true" : undefined}
             className={cn(
-              "flex min-h-16 items-center justify-center rounded-lg border px-2 py-3 text-center text-sm font-medium transition-all duration-300",
+              "flex min-h-16 items-center justify-center rounded-[var(--radius)] border-2 px-2 py-3 text-center text-[13px] font-medium transition-all duration-300",
               isRevealed
-                ? "border-primary/30 bg-primary/10 text-foreground animate-pinpoint-badge-reveal"
-                : "border-muted bg-muted/40 text-muted-foreground blur-[1px]",
-              isShaking && "animate-pinpoint-badge-shake bg-destructive/20 text-destructive",
+                ? "border-[var(--accent)]/40 bg-[var(--accent)]/12 text-ink animate-pinpoint-badge-reveal"
+                : "border-line bg-bg-2 text-ink-faint blur-[1px]",
+              isShaking && "animate-pinpoint-badge-shake border-cross bg-cross/20 text-cross",
             )}
           >
             {isRevealed ? clues[index] : "Locked"}

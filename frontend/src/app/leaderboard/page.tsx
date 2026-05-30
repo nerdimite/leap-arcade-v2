@@ -3,8 +3,9 @@ import {
   HydrationBoundary,
   QueryClient,
 } from "@tanstack/react-query";
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { decodeJwtSub } from "@/lib/server/jwt-sub";
 import { getLeaderboardQueryOptions } from "@/services/leaderboard/query-options";
 import LeaderboardClient from "./_components/LeaderboardClient";
 
@@ -23,9 +24,12 @@ export default async function LeaderboardPage() {
     redirect("/login");
   }
 
+  const token = (await cookies()).get("token")?.value ?? "";
+  const currentCorpId = token ? decodeJwtSub(token) : null;
+
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <LeaderboardClient />
+      <LeaderboardClient currentCorpId={currentCorpId} />
     </HydrationBoundary>
   );
 }

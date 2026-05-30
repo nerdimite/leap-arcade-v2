@@ -29,6 +29,8 @@ export type RapidFireState = {
   pendingTimeMs: number | null;
   lastCorrect: boolean | null;
   lastCorrectOption: number | null;
+  /** Points earned on the most recent answer (current_score delta); drives the +N feedback. */
+  lastScoreDelta: number;
   pendingNextQuestion: Question | null;
   pendingResult: Result | null;
   result: Result | null;
@@ -68,6 +70,7 @@ export const rapidFireInitialState: RapidFireState = {
   pendingTimeMs: null,
   lastCorrect: null,
   lastCorrectOption: null,
+  lastScoreDelta: 0,
   pendingNextQuestion: null,
   pendingResult: null,
   result: null,
@@ -158,6 +161,7 @@ export function rapidFireReducer(state: RapidFireState, action: RapidFireAction)
         lastCorrect: action.payload.correct,
         lastCorrectOption: action.payload.correct_option,
         currentScore: action.payload.current_score,
+        lastScoreDelta: action.payload.current_score - state.currentScore,
         questionsAnswered: action.payload.questions_answered,
         pendingNextQuestion: action.payload.next_question,
         pendingResult: action.payload.result,
@@ -190,6 +194,7 @@ export function rapidFireReducer(state: RapidFireState, action: RapidFireAction)
           pendingTimeMs: null,
           lastCorrect: null,
           lastCorrectOption: null,
+          lastScoreDelta: 0,
         };
       }
       if (state.pendingResult) {

@@ -1,0 +1,32 @@
+[
+  {
+    "id": "aaaaaaaa-aaaa-aaaa-aaaa-000000000001",
+    "image_filename": "huggingface.png",
+    "canonical_answer": "Hugging Face",
+    "accepted_answers": ["hugging face", "huggingface"]
+  },
+  {
+    "id": "aaaaaaaa-aaaa-aaaa-aaaa-000000000002",
+    "image_filename": "large_language_model.png",
+    "canonical_answer": "Large Language Model",
+    "accepted_answers": ["large language model", "llm", "large language models"]
+  },
+  {
+    "id": "aaaaaaaa-aaaa-aaaa-aaaa-000000000003",
+    "image_filename": "nlp.png",
+    "canonical_answer": "Natural Language Processing",
+    "accepted_answers": ["nlp", "natural language processing", "natural language models"]
+  },
+  {
+    "id": "aaaaaaaa-aaaa-aaaa-aaaa-000000000004",
+    "image_filename": "neural_network.png",
+    "canonical_answer": "Neural Network",
+    "accepted_answers": ["neural network", "neural net", "nn"]
+  },
+  {
+    "id": "aaaaaaaa-aaaa-aaaa-aaaa-000000000005",
+    "image_filename": "gradient_descent.png",
+    "canonical_answer": "Gradient Descent",
+    "accepted_answers": ["gradient descent", "sgd", "stochastic gradient descent"]
+  }
+]

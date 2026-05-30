@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>LEAP Arcade — Wikipedia Speed Run (Windows XP)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Tahoma&family=Georgia&display=swap" rel="stylesheet" />
+<style>
+  /* ============================================================
+     WIKIPEDIA SPEED RUN — "Windows XP" exploration
+     The game IS Internet Explorer 6 running on the XP desktop.
+     The HUD (start/target, timer, clicks) lives in a small XP
+     dialog docked top-right; the article renders inside the IE
+     window's content area. The metaphor needs almost no invention
+     here, the real game is literally "browse Wikipedia".
+     ============================================================ */
+  :root {
+    --luna-title-1: #0058ee;
+    --luna-title-2: #3593ff;
+    --luna-face:    #ece9d8;
+    --luna-face-2:  #f5f4ea;
+    --luna-line:    #aca899;
+    --ie-toolbar:   #f1efe2;
+    --ink:          #14213d;
+    --tahoma: Tahoma, "Segoe UI", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    font-family: var(--tahoma);
+    background:
+      url("https://images2.alphacoders.com/941/thumb-1920-941898.jpg") center / cover no-repeat,
+      linear-gradient(to bottom, #2a6fd6, #74b5f7 45%, #6fae3a 100%);
+    height: 100vh; overflow: hidden; position: relative; color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* shared XP window chrome */
+  .window {
+    position: absolute;
+    background: var(--luna-face);
+    border: 1px solid #0831d9;
+    border-radius: 8px 8px 0 0;
+    box-shadow: 0 14px 38px rgba(0,0,0,0.48);
+    overflow: hidden;
+  }
+  .titlebar {
+    height: 30px; display: flex; align-items: center; gap: 8px;
+    padding: 0 6px 0 8px;
+    background: linear-gradient(to bottom, var(--luna-title-2) 0%, var(--luna-title-1) 8%, #0653ee 40%, #1666ff 88%, #0058ee 100%);
+    color: #fff; font-weight: 700; font-size: 13px;
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.5);
+  }
+  .titlebar .ticon { font-size: 14px; }
+  .titlebar .ttext { flex: 1; }
+  .winbtns { display: flex; gap: 3px; }
+  .winbtns b {
+    width: 21px; height: 21px; display: grid; place-items: center;
+    font-family: var(--tahoma); font-weight: 700; font-size: 12px; color: #fff;
+    border: 1px solid rgba(255,255,255,0.7); border-radius: 3px;
+    background: linear-gradient(to bottom, #4f9bff, #1257d6);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
+  }
+  .winbtns b.close { background: linear-gradient(to bottom, #f08e6c, #d4451d); }
+
+  /* ---------------- Internet Explorer window ---------------- */
+  #ie { left: 40px; top: 28px; width: 960px; height: 660px; display: flex; flex-direction: column; }
+  #ie .titlebar .ticon { color: #fff; }
+
+  .menustrip {
+    display: flex; gap: 14px; padding: 3px 10px; font-size: 12px;
+    background: var(--ie-toolbar); border-bottom: 1px solid #d6d2c2;
+  }
+  .menustrip span:first-child { text-decoration: underline; text-underline-offset: 2px; }
+
+  .ie-toolbar {
+    display: flex; align-items: center; gap: 4px; padding: 5px 8px;
+    background: linear-gradient(to bottom, #faf9f2, #e7e4d4);
+    border-bottom: 1px solid #cfcab3;
+  }
+  .tbtn {
+    display: flex; align-items: center; gap: 5px;
+    padding: 5px 9px; border-radius: 3px; font-size: 12px; color: #2a2a2a;
+    border: 1px solid transparent;
+  }
+  .tbtn:hover { border-color: #b5c6e0; background: #eaf1fb; }
+  .tbtn.disabled { color: #aaa; }
+  .tbtn.disabled .gl { opacity: 0.4; }
+  .tbtn .gl { font-size: 14px; }
+  .tbtn.back .gl { color: #2a7d2a; }
+  .tbtn.fwd .gl { color: #2a7d2a; }
+  .tb-sep { width: 1px; align-self: stretch; margin: 3px 4px; background: #cfcab3; }
+
+  .addr-row {
+    display: flex; align-items: center; gap: 8px; padding: 4px 8px 7px;
+    background: linear-gradient(to bottom, #e7e4d4, #ded9c6);
+    border-bottom: 1px solid #b8b39c;
+  }
+  .addr-row .lbl { font-size: 12px; color: #555; }
+  .addr-input {
+    flex: 1; display: flex; align-items: center; gap: 7px;
+    background: #fff; border: 1px solid #7f9db9; border-radius: 1px;
+    padding: 4px 8px; font-size: 12.5px; color: #222;
+    box-shadow: inset 1px 1px 1px rgba(0,0,0,0.12);
+  }
+  .addr-input .fav { color: #1a6; }
+  .addr-input b { color: #000; }
+  .addr-go {
+    display: flex; align-items: center; gap: 5px; font-size: 12px; color: #2a2a2a;
+    padding: 4px 9px; border: 1px solid #b8b39c; border-radius: 3px;
+    background: linear-gradient(to bottom, #fff, #e7e4d4);
+  }
+  .nosearch { font-size: 11px; color: #b00; border: 1px solid #b00; border-radius: 2px; padding: 1px 6px; margin-left: 4px; }
+
+  /* the article viewport (light) */
+  .viewport { flex: 1; background: #fff; overflow-y: auto; }
+  .article { padding: 26px 40px 40px; color: #202122; font-family: Georgia, serif; }
+  .article h1 {
+    font-weight: 400; font-size: 28px; margin: 0 0 4px;
+    border-bottom: 1px solid #a2a9b1; padding-bottom: 7px; color: #000;
+  }
+  .article .from { font-family: var(--tahoma); font-size: 12px; color: #54595d; margin: 0 0 18px; }
+  .article p { font-size: 15px; line-height: 1.7; margin: 0 0 15px; max-width: 72ch; }
+  .article a.wl { color: #0b41cd; text-decoration: none; cursor: pointer; }
+  .article a.wl:hover { text-decoration: underline; }
+  .article a.target { color: #1a7f37; font-weight: 700; background: #d8f5e0; border-radius: 2px; padding: 0 2px; }
+  .article h2 { font-weight: 400; font-size: 20px; border-bottom: 1px solid #a2a9b1; padding-bottom: 5px; margin: 24px 0 11px; color: #000; }
+  .infobox {
+    float: right; width: 244px; margin: 0 0 16px 22px;
+    border: 1px solid #a2a9b1; background: #f8f9fa;
+    font-family: var(--tahoma); font-size: 12.5px;
+  }
+  .infobox .ib-title { background: #cedff2; text-align: center; font-weight: 700; padding: 7px; }
+  .infobox .ib-img { padding: 14px; text-align: center; font-size: 40px; }
+  .infobox table { width: 100%; border-collapse: collapse; }
+  .infobox td { padding: 5px 8px; border-top: 1px solid #eaecf0; vertical-align: top; }
+  .infobox td.k { color: #54595d; width: 42%; }
+
+  .ie-statusbar {
+    display: flex; align-items: center; gap: 10px;
+    padding: 3px 10px; font-size: 11px; color: #333;
+    background: var(--luna-face); border-top: 1px solid #d6d2c2;
+  }
+  .ie-statusbar .zone { margin-left: auto; display: flex; align-items: center; gap: 5px; color: #555; }
+
+  /* ---------------- HUD dialog (the game layer) ---------------- */
+  #hud { right: 36px; top: 60px; width: 280px; }
+  #hud .titlebar { background: linear-gradient(to bottom, #ff9d5b 0%, #f3791f 10%, #e2620c 45%, #ff8a2e 90%, #e2620c 100%); }
+  #hud .content { padding: 12px 14px 14px; }
+  .obj { margin-bottom: 12px; }
+  .obj .node {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--luna-face-2); border: 1px solid var(--luna-line);
+    border-radius: 4px; padding: 8px 11px; margin-bottom: 6px;
+  }
+  .obj .node .cap { font-size: 10px; color: #777; text-transform: uppercase; letter-spacing: 0.5px; }
+  .obj .node strong { font-size: 13px; color: #14213d; }
+  .obj .node.target { border-color: #2a9d2a; background: #eefaee; }
+  .obj .arrow { text-align: center; color: #999; font-size: 12px; margin: 2px 0; }
+  .meters { display: flex; gap: 8px; }
+  .meter {
+    flex: 1; text-align: center; background: var(--luna-face-2);
+    border: 1px solid var(--luna-line); border-radius: 4px; padding: 8px 4px;
+  }
+  .meter .l { font-size: 10px; color: #777; text-transform: uppercase; }
+  .meter .v { font-size: 18px; font-weight: 700; margin-top: 4px; }
+  .meter.time .v { color: #c0392b; }
+  .meter.clicks .v { color: #14213d; }
+  .meter.pts .v { color: #1a6e1a; }
+  .hint { margin-top: 11px; font-size: 11.5px; color: #2a7d2a; text-align: center; }
+
+  /* ---------------- taskbar ---------------- */
+  .taskbar {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 44px;
+    display: flex; align-items: center;
+    background: linear-gradient(to bottom, #3168d5, #2461da 50%, #1c4dc0);
+    border-top: 1px solid #5b94f0; box-shadow: inset 0 1px 0 #6aa0f5;
+  }
+  .start {
+    display: flex; align-items: center; gap: 8px;
+    height: 44px; padding: 0 26px 4px 14px;
+    font-style: italic; font-weight: 700; font-size: 17px; color: #fff;
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.45);
+    background: linear-gradient(to bottom, #5bb14a 0%, #449a36 8%, #2f8121 45%, #3c8d34 88%, #1c5e0e 100%);
+    border-radius: 0 12px 12px 0 / 0 18px 18px 0;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.5); cursor: pointer;
+  }
+  .start .orb {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #fff, #cde 40%, #69f 70%, #14b 100%);
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.3);
+  }
+  .tasks { display: flex; gap: 4px; padding: 0 8px; flex: 1; }
+  .task {
+    display: flex; align-items: center; gap: 7px;
+    height: 30px; padding: 0 12px; min-width: 200px; color: #fff; font-size: 12px;
+    background: linear-gradient(to bottom, #1b48af, #2a68d8);
+    border: 1px solid #1c4dc0; border-radius: 4px;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.35);
+  }
+  .tray {
+    display: flex; align-items: center; gap: 12px; height: 44px; padding: 0 14px;
+    background: linear-gradient(to bottom, #1290e9, #0d80d6 50%, #0b6fc2);
+    border-left: 1px solid #5b94f0; color: #fff; font-size: 12px;
+  }
+  .tray .mark { font-weight: 700; letter-spacing: 1px; }
+</style>
+</head>
+<body>
+  <!-- ============ INTERNET EXPLORER ============ -->
+  <section class="window" id="ie">
+    <div class="titlebar">
+      <span class="ticon">🌐</span>
+      <span class="ttext">Geography of Nepal - Wikipedia - Microsoft Internet Explorer</span>
+      <span class="winbtns"><b>_</b><b>▢</b><b class="close">✕</b></span>
+    </div>
+
+    <div class="menustrip">
+      <span>File</span><span>Edit</span><span>View</span><span>Favorites</span><span>Tools</span><span>Help</span>
+    </div>
+
+    <div class="ie-toolbar">
+      <span class="tbtn back disabled" title="Back is blocked"><span class="gl">←</span> Back</span>
+      <span class="tbtn fwd disabled"><span class="gl">→</span></span>
+      <span class="tb-sep"></span>
+      <span class="tbtn"><span class="gl">✖</span></span>
+      <span class="tbtn"><span class="gl">⟳</span></span>
+      <span class="tbtn"><span class="gl">🏠</span></span>
+      <span class="tb-sep"></span>
+      <span class="tbtn disabled"><span class="gl">🔍</span> Search</span>
+      <span class="tbtn"><span class="gl">⭐</span> Favorites</span>
+    </div>
+
+    <div class="addr-row">
+      <span class="lbl">Address</span>
+      <div class="addr-input">
+        <span class="fav">📄</span>
+        <span>http://en.wikipedia.org/wiki/<b>Geography_of_Nepal</b></span>
+        <span class="nosearch">Search disabled</span>
+      </div>
+      <span class="addr-go"><span style="color:#2a7d2a">▸</span> Go</span>
+    </div>
+
+    <div class="viewport">
+      <div class="article">
+        <h1>Geography of Nepal</h1>
+        <p class="from">From Wikipedia, the free encyclopedia · rendered through the LEAP proxy</p>
+
+        <div class="infobox">
+          <div class="ib-title">Nepal</div>
+          <div class="ib-img">🏔️</div>
+          <table>
+            <tr><td class="k">Highest point</td><td><a class="wl target">Mount Everest</a></td></tr>
+            <tr><td class="k">Region</td><td><a class="wl">South Asia</a></td></tr>
+            <tr><td class="k">Borders</td><td><a class="wl">China</a>, <a class="wl">India</a></td></tr>
+            <tr><td class="k">Range</td><td><a class="wl">Himalayas</a></td></tr>
+          </table>
+        </div>
+
+        <p>Nepal is a landlocked country in <a class="wl">South Asia</a>, situated mainly in the <a class="wl">Himalayas</a> but also including parts of the <a class="wl">Indo-Gangetic Plain</a>. It borders <a class="wl">China</a> to the north and <a class="wl">India</a> to the south, east, and west.</p>
+
+        <p>The country's geography is dominated by the <a class="wl">Himalayas</a>, the highest mountain range in the world. Eight of the world's ten tallest peaks lie within Nepal or on its border, including <a class="wl target">Mount Everest</a>, the highest point on Earth above sea level.</p>
+
+        <h2>Physiographic regions</h2>
+        <p>Nepal is commonly divided into three physiographic belts: the <a class="wl">Terai</a> lowlands, the <a class="wl">Hill region</a>, and the high <a class="wl">Mountain region</a>. Each runs roughly east to west across the country.</p>
+
+        <p>The <a class="wl">Koshi River</a>, <a class="wl">Gandaki River</a>, and <a class="wl">Karnali River</a> systems drain the slopes, feeding eventually into the <a class="wl">Ganges</a>.</p>
+      </div>
+    </div>
+
+    <div class="ie-statusbar">
+      <span>Done</span>
+      <span class="zone">🔒 Internet | Protected Mode: Off</span>
+    </div>
+  </section>
+
+  <!-- ============ HUD DIALOG (the game layer) ============ -->
+  <section class="window" id="hud">
+    <div class="titlebar">
+      <span class="ticon">🎮</span>
+      <span class="ttext">Speed Run — Objective</span>
+      <span class="winbtns"><b>_</b><b class="close">✕</b></span>
+    </div>
+    <div class="content">
+      <div class="obj">
+        <div class="node start"><span class="cap">Start</span><strong>Fidelity Investments</strong></div>
+        <div class="arrow">▼</div>
+        <div class="node target"><span class="cap">Target</span><strong>Mount Everest</strong></div>
+      </div>
+      <div class="meters">
+        <div class="meter clicks"><div class="l">Clicks</div><div class="v">4</div></div>
+        <div class="meter time"><div class="l">Time</div><div class="v">1:12</div></div>
+        <div class="meter pts"><div class="l">Pts</div><div class="v">620</div></div>
+      </div>
+      <div class="hint">🎯 Target link is on this page!</div>
+    </div>
+  </section>
+
+  <!-- ============ TASKBAR ============ -->
+  <div class="taskbar">
+    <div class="start"><span class="orb"></span> start</div>
+    <div class="tasks">
+      <div class="task">🌐 Geography of Nepal - Wikipe...</div>
+    </div>
+    <div class="tray">
+      <span class="mark">LEAP&nbsp;ARCADE</span>
+      <span>🔊</span>
+      <span>54:09 left</span>
+    </div>
+  </div>
+</body>
+</html>

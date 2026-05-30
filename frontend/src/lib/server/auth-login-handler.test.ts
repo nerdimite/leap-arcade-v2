@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { handleAuthLogin } from "./auth-login-handler";
+import { handleAuthLogin, handleAuthLogout } from "./auth-login-handler";
 
 describe("handleAuthLogin", () => {
   const originalFetch = globalThis.fetch;
@@ -76,5 +76,20 @@ describe("handleAuthLogin", () => {
     expect(res.headers.get("set-cookie")).toBeNull();
     const body = await res.json();
     expect(body).toEqual(expect.objectContaining({ message: expect.any(String) as string }));
+  });
+});
+
+describe("handleAuthLogout", () => {
+  it("clears the token cookie and returns { ok: true }", async () => {
+    const res = handleAuthLogout();
+
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({ ok: true });
+
+    const setCookie = res.headers.get("set-cookie");
+    expect(setCookie).toContain("token=;");
+    expect(setCookie?.toLowerCase()).toContain("httponly");
+    expect(setCookie).toContain("Path=/");
+    expect(setCookie).toContain("Max-Age=0");
   });
 });

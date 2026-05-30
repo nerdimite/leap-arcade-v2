@@ -1,0 +1,633 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>LEAP Arcade — Lobby (Clean Retro Arcade)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* ============================================================
+     LEAP ARCADE — "Clean retro arcade" exploration prototype
+     The screen is the light source: dark tinted base, lit tiles.
+     Pixel type is an ACCENT (wordmark / scores / titles); body is sans.
+     Depth from hard offset shadows ("cabinet press"), not glow bloom.
+     ============================================================ */
+      :root {
+        /* deep midnight indigo base — tinted, never #000 */
+        --bg: oklch(0.16 0.035 280);
+        --bg-2: oklch(0.19 0.04 282);
+        --panel: oklch(0.225 0.04 283);
+        --panel-2: oklch(0.265 0.045 284);
+        --line: oklch(0.34 0.05 285);
+        --ink: oklch(0.97 0.01 280);
+        --ink-dim: oklch(0.72 0.03 285);
+        --ink-faint: oklch(0.58 0.03 285);
+
+        /* per-game marquee accents — each game gets an identity */
+        --wiki: oklch(0.78 0.16 220); /* electric cyan-blue */
+        --rapid: oklch(0.8 0.17 65); /* amber             */
+        --pin: oklch(0.74 0.2 350); /* magenta           */
+        --pic: oklch(0.72 0.18 300); /* violet            */
+        --four: oklch(0.82 0.19 135); /* lime              */
+        --word: oklch(0.78 0.13 185); /* teal              */
+        --cross: oklch(0.72 0.19 25); /* coral red         */
+
+        --shadow: 6px 6px 0 oklch(0.1 0.03 280 / 0.85);
+        --shadow-sm: 4px 4px 0 oklch(0.1 0.03 280 / 0.85);
+        --radius: 4px;
+        --ease: cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Inter", system-ui, sans-serif;
+        background: radial-gradient(
+          120% 90% at 50% -10%,
+          var(--bg-2),
+          var(--bg) 60%
+        );
+        color: var(--ink);
+        min-height: 100vh;
+        -webkit-font-smoothing: antialiased;
+        position: relative;
+        overflow-x: hidden;
+      }
+
+      /* faint scanline + vignette — texture, not gimmick */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        pointer-events: none;
+        background: repeating-linear-gradient(
+          to bottom,
+          transparent 0 2px,
+          oklch(0 0 0 / 0.05) 2px 3px
+        );
+        mix-blend-mode: multiply;
+      }
+      body::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 9998;
+        pointer-events: none;
+        background: radial-gradient(
+          130% 110% at 50% 40%,
+          transparent 55%,
+          oklch(0 0 0 / 0.45)
+        );
+      }
+
+      .pixel {
+        font-family: "Press Start 2P", monospace;
+        line-height: 1.5;
+      }
+
+      /* ---------- top marquee bar ---------- */
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        padding: 18px 32px;
+        background: oklch(0.16 0.035 280 / 0.82);
+        backdrop-filter: blur(6px);
+        border-bottom: 2px solid var(--line);
+      }
+      .wordmark {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+      }
+      .wordmark .leap {
+        font-size: 18px;
+        color: var(--ink);
+        text-shadow: 3px 3px 0 var(--pin);
+      }
+      .wordmark .arcade {
+        font-size: 18px;
+        color: var(--rapid);
+        text-shadow: 3px 3px 0 oklch(0.1 0.03 280);
+      }
+      .spacer {
+        flex: 1;
+      }
+
+      .scorecard {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 8px 16px;
+        background: var(--panel);
+        border: 2px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-sm);
+      }
+      .scorecard .label {
+        font-size: 10px;
+        letter-spacing: 1px;
+        color: var(--ink-faint);
+        text-transform: uppercase;
+      }
+      .scorecard .value {
+        font-size: 16px;
+        color: var(--four);
+      }
+
+      .player {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 13px;
+        color: var(--ink-dim);
+      }
+      .avatar {
+        width: 34px;
+        height: 34px;
+        border-radius: var(--radius);
+        background: linear-gradient(135deg, var(--pic), var(--wiki));
+        display: grid;
+        place-items: center;
+        font-size: 14px;
+        border: 2px solid var(--line);
+        box-shadow: var(--shadow-sm);
+      }
+
+      /* ---------- layout ---------- */
+      .wrap {
+        max-width: 1240px;
+        margin: 0 auto;
+        padding: 32px;
+        display: grid;
+        grid-template-columns: 1fr 320px;
+        gap: 32px;
+      }
+      @media (max-width: 980px) {
+        .wrap {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .lobby-head {
+        margin: 4px 0 24px;
+      }
+      .lobby-head .kicker {
+        font-size: 10px;
+        letter-spacing: 2px;
+        color: var(--rapid);
+        text-transform: uppercase;
+      }
+      .lobby-head h1 {
+        font-size: 15px;
+        margin: 14px 0 0;
+      }
+      .lobby-head p {
+        margin: 14px 0 0;
+        max-width: 60ch;
+        color: var(--ink-dim);
+        font-size: 15px;
+        line-height: 1.6;
+      }
+
+      /* ---------- game tiles ---------- */
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 22px;
+      }
+      @media (max-width: 620px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .tile {
+        --accent: var(--wiki);
+        position: relative;
+        background: var(--panel);
+        border: 2px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        transition:
+          transform 0.16s var(--ease),
+          box-shadow 0.16s var(--ease);
+        cursor: pointer;
+      }
+      .tile:hover {
+        transform: translate(-3px, -3px);
+        box-shadow: 9px 9px 0 oklch(0.1 0.03 280 / 0.85);
+      }
+      .tile:active {
+        transform: translate(2px, 2px);
+        box-shadow: var(--shadow-sm);
+      }
+
+      /* lit marquee strip */
+      .tile .marquee {
+        height: 8px;
+        background: var(--accent);
+        box-shadow: 0 0 18px var(--accent);
+      }
+      .tile .body {
+        padding: 18px 18px 16px;
+        display: flex;
+        gap: 16px;
+      }
+      .sprite {
+        flex: none;
+        width: 58px;
+        height: 58px;
+        border-radius: var(--radius);
+        display: grid;
+        place-items: center;
+        font-size: 30px;
+        background: oklch(0.16 0.035 280);
+        border: 2px solid var(--accent);
+        box-shadow: inset 0 0 12px oklch(0 0 0 / 0.6);
+        /* crisp-edged emoji-as-sprite */
+        image-rendering: pixelated;
+      }
+      .tile h3 {
+        font-family: "Press Start 2P", monospace;
+        font-size: 11px;
+        line-height: 1.5;
+        margin: 4px 0 0;
+        color: var(--ink);
+      }
+      .tile p {
+        margin: 10px 0 0;
+        font-size: 13px;
+        line-height: 1.55;
+        color: var(--ink-dim);
+      }
+
+      .tile .foot {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 18px 18px;
+        margin-top: 2px;
+      }
+      .pts {
+        font-family: "Press Start 2P", monospace;
+        font-size: 10px;
+        color: var(--accent);
+      }
+      .pts span {
+        color: var(--ink-faint);
+      }
+
+      .status {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        padding: 6px 12px;
+        border-radius: 999px;
+        text-transform: uppercase;
+      }
+      .status.play {
+        color: oklch(0.16 0.035 280);
+        background: var(--accent);
+        box-shadow: var(--shadow-sm);
+      }
+      .status.done {
+        color: var(--ink-faint);
+        background: transparent;
+        border: 1.5px solid var(--line);
+      }
+
+      /* completed tiles are dimmed + locked */
+      .tile.completed {
+        opacity: 0.72;
+      }
+      .tile.completed .marquee {
+        box-shadow: none;
+        filter: saturate(0.5);
+      }
+      .tile.completed .lock {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        font-size: 14px;
+        color: var(--ink-faint);
+      }
+
+      /* ---------- leaderboard sidebar ---------- */
+      aside {
+        align-self: start;
+        position: sticky;
+        top: 96px;
+        background: var(--panel);
+        border: 2px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+      aside .bar {
+        background: var(--pin);
+        color: oklch(0.16 0.035 280);
+        padding: 12px 16px;
+        font-family: "Press Start 2P", monospace;
+        font-size: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .live {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 9px;
+      }
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: oklch(0.16 0.035 280);
+        animation: blink 1.1s steps(2) infinite;
+      }
+      @keyframes blink {
+        50% {
+          opacity: 0.25;
+        }
+      }
+
+      .row {
+        display: grid;
+        grid-template-columns: 28px 1fr auto;
+        gap: 12px;
+        align-items: center;
+        padding: 12px 16px;
+        border-top: 1.5px solid var(--line);
+      }
+      .row .rank {
+        font-family: "Press Start 2P", monospace;
+        font-size: 11px;
+        color: var(--ink-faint);
+      }
+      .row .who {
+        font-size: 14px;
+        font-weight: 600;
+      }
+      .row .who small {
+        display: block;
+        font-weight: 400;
+        color: var(--ink-faint);
+        font-size: 11px;
+      }
+      .row .sc {
+        font-family: "Press Start 2P", monospace;
+        font-size: 11px;
+        color: var(--four);
+      }
+      .row.top1 .rank {
+        color: var(--rapid);
+      }
+      .row.top1 .sc {
+        color: var(--rapid);
+      }
+      .row.you {
+        background: oklch(0.265 0.045 284);
+      }
+      .row.you .who {
+        color: var(--wiki);
+      }
+
+      footer {
+        text-align: center;
+        padding: 28px;
+        color: var(--ink-faint);
+        font-size: 12px;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .dot {
+          animation: none;
+        }
+        .tile {
+          transition: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="wordmark">
+        <span class="pixel leap">LEAP</span>
+        <span class="pixel arcade">ARCADE</span>
+      </div>
+      <div class="spacer"></div>
+      <div class="scorecard">
+        <span class="label">Your score</span>
+        <span class="pixel value">1,250</span>
+      </div>
+      <div class="player">
+        <div class="avatar">🕹️</div>
+        <div>
+          <div style="font-weight: 600">A. Mehta</div>
+          <div style="color: var(--ink-faint); font-size: 11px">
+            corp_id · am2026
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <main>
+        <div class="lobby-head">
+          <h1 class="pixel">PICK A GAME</h1>
+          <p>Play all seven in any order. Finish each before you move on.</p>
+        </div>
+
+        <div class="grid">
+          <!-- Wikipedia Speed Run -->
+          <article class="tile" style="--accent: var(--wiki)">
+            <div class="marquee"></div>
+            <div class="body">
+              <div class="sprite">🌐</div>
+              <div>
+                <h3>Wikipedia<br />Speed Run</h3>
+                <p>
+                  Navigate Wikipedia by links only — reach the target page as
+                  fast as you can.
+                </p>
+              </div>
+            </div>
+            <div class="foot">
+              <span class="pts">800 <span>PTS</span></span>
+              <span class="status play">Play</span>
+            </div>
+          </article>
+
+          <!-- Rapid Fire -->
+          <article class="tile completed" style="--accent: var(--rapid)">
+            <div class="lock">🔒</div>
+            <div class="marquee"></div>
+            <div class="body">
+              <div class="sprite">⚡</div>
+              <div>
+                <h3>Rapid Fire<br />Quiz</h3>
+                <p>
+                  Fast multiple-choice with a countdown — answer quickly for
+                  speed bonuses.
+                </p>
+              </div>
+            </div>
+            <div class="foot">
+              <span class="pts">1,150 <span>PTS</span></span>
+              <span class="status done">✓ Done · 950</span>
+            </div>
+          </article>
+
+          <!-- Pinpoint -->
+          <article class="tile" style="--accent: var(--pin)">
+            <div class="marquee"></div>
+            <div class="body">
+              <div class="sprite">🎯</div>
+              <div>
+                <h3>Pinpoint</h3>
+                <p>
+                  Guess the hidden category from thematic clues, revealed one at
+                  a time.
+                </p>
+              </div>
+            </div>
+            <div class="foot">
+              <span class="pts">600 <span>PTS</span></span>
+              <span class="status play">Play</span>
+            </div>
+          </article>
+
+          <!-- Picture Illustration -->
+          <article class="tile" style="--accent: var(--pic)">
+            <div class="marquee"></div>
+            <div class="body">
+              <div class="sprite">🖼️</div>
+              <div>
+                <h3>Picture<br />Illustration</h3>
+                <p>
+                  Images reveal a concept step by step — type the answer early
+                  for more points.
+                </p>
+              </div>
+            </div>
+            <div class="foot">
+              <span class="pts">1,300 <span>PTS</span></span>
+              <span class="status play">Play</span>
+            </div>
+          </article>
+
+          <!-- Four Pics One Lie -->
+          <article class="tile completed" style="--accent: var(--four)">
+            <div class="lock">🔒</div>
+            <div class="marquee"></div>
+            <div class="body">
+              <div class="sprite">🃏</div>
+              <div>
+                <h3>Four Pics,<br />One Lie</h3>
+                <p>Spot the image that does not belong with the other three.</p>
+              </div>
+            </div>
+            <div class="foot">
+              <span class="pts">700 <span>PTS</span></span>
+              <span class="status done">✓ Done · 300</span>
+            </div>
+          </article>
+
+          <!-- Word Hunt -->
+          <article class="tile" style="--accent: var(--word)">
+            <div class="marquee"></div>
+            <div class="body">
+              <div class="sprite">🔤</div>
+              <div>
+                <h3>Word Hunt</h3>
+                <p>Trace hidden words in a letter grid using riddle clues.</p>
+              </div>
+            </div>
+            <div class="foot">
+              <span class="pts">900 <span>PTS</span></span>
+              <span class="status play">Play</span>
+            </div>
+          </article>
+
+          <!-- Crossword -->
+          <article class="tile" style="--accent: var(--cross)">
+            <div class="marquee"></div>
+            <div class="body">
+              <div class="sprite">📝</div>
+              <div>
+                <h3>Crossword</h3>
+                <p>
+                  Fill a classic intersecting-word grid from Across and Down
+                  clues.
+                </p>
+              </div>
+            </div>
+            <div class="foot">
+              <span class="pts">1,000 <span>PTS</span></span>
+              <span class="status play">Play</span>
+            </div>
+          </article>
+        </div>
+      </main>
+
+      <aside>
+        <div class="bar">
+          <span>HIGH SCORES</span>
+          <span class="live"><span class="dot"></span>LIVE</span>
+        </div>
+        <div class="row top1">
+          <span class="rank">1</span
+          ><span class="who">R. Iyer <small>ri2026</small></span
+          ><span class="sc">3,420</span>
+        </div>
+        <div class="row">
+          <span class="rank">2</span
+          ><span class="who">S. Khan <small>sk2026</small></span
+          ><span class="sc">3,180</span>
+        </div>
+        <div class="row">
+          <span class="rank">3</span
+          ><span class="who">P. Das <small>pd2026</small></span
+          ><span class="sc">2,960</span>
+        </div>
+        <div class="row">
+          <span class="rank">4</span
+          ><span class="who">N. Roy <small>nr2026</small></span
+          ><span class="sc">2,510</span>
+        </div>
+        <div class="row">
+          <span class="rank">5</span
+          ><span class="who">V. Nair <small>vn2026</small></span
+          ><span class="sc">2,300</span>
+        </div>
+        <div class="row you">
+          <span class="rank">9</span
+          ><span class="who">A. Mehta <small>you</small></span
+          ><span class="sc">1,250</span>
+        </div>
+      </aside>
+    </div>
+
+    <footer>
+      Prototype · "Clean retro arcade" direction · LEAP Arcade lobby
+    </footer>
+  </body>
+</html>

@@ -18,10 +18,7 @@ import {
   wordHuntDragInitialState,
   wordHuntDragReducer,
 } from "../_hooks/useWordHuntDragReducer";
-import { ClueListPanel } from "./ClueListPanel";
-import { LetterGrid } from "./LetterGrid";
-import { ResultView } from "./ResultView";
-import { ScoreIncrementChip } from "./ScoreIncrementChip";
+import { WordHuntView } from "./WordHuntView";
 
 type Props = {
   initialPlay: PlayResponse;
@@ -199,7 +196,16 @@ export function WordHuntClient({ initialPlay }: Props) {
   }, [puzzle]);
 
   if (result) {
-    return <ResultView result={result} onBackToLobby={() => navigateSafe("/lobby")} />;
+    return (
+      <WordHuntView
+        viewState={{ status: "result", result }}
+        onDragStart={() => {}}
+        onDragMove={() => {}}
+        onDragEnd={() => {}}
+        onSubmit={() => {}}
+        onBackToLobby={() => navigateSafe("/lobby")}
+      />
+    );
   }
 
   if (!puzzle) {
@@ -207,39 +213,23 @@ export function WordHuntClient({ initialPlay }: Props) {
   }
 
   return (
-    <div className="mx-auto flex max-w-5xl flex-col gap-6 p-6 lg:flex-row">
-      <div>
-        <h1 className="mb-4 text-2xl font-semibold">Word Hunt</h1>
-        <p className="relative mb-4 inline-block text-sm text-muted-foreground">
-          Score: {play.session_score} · Found {puzzle.found_count} / {puzzle.total_words}
-          <ScoreIncrementChip visible={dragState.showScoreIncrement} />
-        </p>
-        <LetterGrid
-          rows={puzzle.rows}
-          cols={puzzle.cols}
-          grid={puzzle.grid}
-          highlighted={highlights}
-          preview={dragState.dragPreview}
-          missFlash={dragState.missFlash}
-          landAnimation={dragState.landAnimation}
-          onDragStart={handleDragStart}
-          onDragMove={handleDragMove}
-          onDragEnd={handleDragEnd}
-          disabled={isFindPending || isSubmitPending}
-        />
-      </div>
-      <div className="flex-1">
-        <h2 className="mb-3 text-lg font-medium">Clues</h2>
-        <ClueListPanel clues={puzzle.clues} />
-        <button
-          type="button"
-          className="mt-6 rounded-md bg-primary px-4 py-2 text-primary-foreground disabled:opacity-50"
-          disabled={isSubmitPending || isFindPending}
-          onClick={() => void handleSubmit()}
-        >
-          Submit
-        </button>
-      </div>
-    </div>
+    <WordHuntView
+      viewState={{
+        status: "playing",
+        puzzle,
+        sessionScore: play.session_score,
+        highlights,
+        dragPreview: dragState.dragPreview,
+        missFlash: dragState.missFlash,
+        landAnimation: dragState.landAnimation,
+        showScoreIncrement: dragState.showScoreIncrement,
+        disabled: isFindPending || isSubmitPending,
+      }}
+      onDragStart={handleDragStart}
+      onDragMove={handleDragMove}
+      onDragEnd={handleDragEnd}
+      onSubmit={() => void handleSubmit()}
+      onBackToLobby={() => navigateSafe("/lobby")}
+    />
   );
 }
