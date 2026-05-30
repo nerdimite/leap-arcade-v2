@@ -1,7 +1,7 @@
 # Sub-2: Crossword Keyboard UX Polish
 
 **Type:** AFK
-**Status:** todo
+**Status:** done
 **Depends on:** Sub-1
 **Blocks:** Sub-5 (e2e tests assume polished UX is present)
 

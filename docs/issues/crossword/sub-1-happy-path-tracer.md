@@ -1,7 +1,7 @@
 # Sub-1: Happy-Path Tracer Bullet
 
 **Type:** AFK
-**Status:** todo
+**Status:** done
 **Depends on:** nothing
 **Blocks:** Sub-2, Sub-3, Sub-4
 

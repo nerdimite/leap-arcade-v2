@@ -16,7 +16,7 @@ from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from leap.api.routes import auth, health, leaderboard, lobby, players
-from leap.api.routes.games import four_pics, picture, pinpoint, rapid_fire, wiki, word_hunt
+from leap.api.routes.games import crossword, four_pics, picture, pinpoint, rapid_fire, wiki, word_hunt
 from leap.config.settings import get_settings
 from leap.core.common.logger import configure_json_logging, get_logger
 from leap.core.context_manager import ContextManager
@@ -51,6 +51,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         await app.state.container.four_pics.initialize(session)
         await app.state.container.pinpoint.initialize(session)
         await app.state.container.word_hunt.initialize(session)
+        await app.state.container.crossword.initialize(session)
 
     logger.info("LEAP backend ready")
 
@@ -172,3 +173,4 @@ app.include_router(picture.router, prefix="/games/picture", tags=["Picture Illus
 app.include_router(four_pics.router, prefix="/games/four-pics", tags=["Four Pics, One Lie"])
 app.include_router(pinpoint.router, prefix="/games/pinpoint", tags=["Pinpoint"])
 app.include_router(word_hunt.router, prefix="/games/word-hunt", tags=["Word Hunt"])
+app.include_router(crossword.router, prefix="/games/crossword", tags=["Crossword"])

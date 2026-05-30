@@ -29,6 +29,15 @@ export const WORD_HUNT_MISS_FLASH_MS = 250;
 /** Score increment chip visibility after a successful find. */
 export const WORD_HUNT_SCORE_INCREMENT_MS = 800;
 
+/** Matches backend `CROSSWORD_BASE_PER_ENTRY` — shown in solve hit feedback. */
+export const CROSSWORD_BASE_PER_ENTRY = 100;
+
+/** Miss flash duration on wrong completed entries (PRD). */
+export const CROSSWORD_MISS_FLASH_MS = 250;
+
+/** Score increment chip visibility after a successful solve. */
+export const CROSSWORD_SCORE_INCREMENT_MS = 800;
+
 /** React Query stale time for lobby session prefetch/hydration (avoid instant refetch flash). */
 export const PLAYER_SESSIONS_STALE_TIME_MS = 30_000;
 
@@ -44,6 +53,7 @@ export const GAME_MAX_POINTS = {
   picture: 800,
   four_pics: 600,
   word_hunt: 1000,
+  crossword: 1500,
 } as const;
 
 export type LobbyGameId = keyof typeof GAME_MAX_POINTS;

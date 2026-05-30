@@ -779,6 +779,53 @@ class FakeWordHuntFindDAO:
         return len([f for f in self._finds if f.session_id == session_id])
 
 
+class FakeCrosswordPuzzleDAO:
+    """In-memory crossword puzzle store."""
+
+    def __init__(self, puzzles: Optional[List[Any]] = None) -> None:
+        self._puzzles = puzzles or []
+
+    async def get_all_with_entries(self, session: Any) -> List[Any]:
+        _ = session
+        return list(self._puzzles)
+
+
+class FakeCrosswordSolveDAO:
+    """In-memory crossword solve store."""
+
+    def __init__(self, solves: Optional[List[Any]] = None) -> None:
+        self._solves: List[Any] = solves or []
+
+    async def create(
+        self,
+        session: Any,
+        session_id: str,
+        entry_id: str,
+    ) -> Any:
+        _ = session
+        from leap.types.crossword import CrosswordSolveDTO
+
+        dto = CrosswordSolveDTO(
+            id=str(uuid.uuid4()),
+            session_id=session_id,
+            entry_id=entry_id,
+            solved_at=leap_time.utc_now(),
+        )
+        self._solves.append(dto)
+        return dto
+
+    async def get_for_session(self, session: Any, session_id: str) -> List[Any]:
+        _ = session
+        return sorted(
+            [s for s in self._solves if s.session_id == session_id],
+            key=lambda s: s.solved_at,
+        )
+
+    async def count_for_session(self, session: Any, session_id: str) -> int:
+        _ = session
+        return len([s for s in self._solves if s.session_id == session_id])
+
+
 class FakeServiceContainer:
     """Wires real services to fake DAOs for HTTP-level unit tests."""
 

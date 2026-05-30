@@ -1,7 +1,7 @@
 # Sub-3: Time Bonus and Stopwatch
 
 **Type:** AFK
-**Status:** todo
+**Status:** done
 **Depends on:** Sub-1
 **Blocks:** Sub-5 (e2e tests assert on time-bonus values)
 

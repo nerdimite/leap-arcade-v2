@@ -1,5 +1,7 @@
 # Crossword Game — Full Implementation
 
+**Status:** done
+
 ## Intent
 
 Implement Crossword end-to-end as the seventh game (`game_id: crossword`, player-facing name "Crossword"): a server-authoritative classic intersecting-word puzzle. The player sees a blank Crossword Grid (open and blocked cells, corner numbers) alongside a two-section Across/Down clue panel. The grid starts completely blank — no letters are pre-revealed. The player clicks a cell and types from the keyboard; each open cell belongs to one Across and/or one Down Crossword Entry. The instant an entry's cells are all filled, the client auto-checks it against the server: a correct entry locks green and scores, a wrong entry flashes red, keeps the player's letters, and stays editable. Scoring is `100 × solved_count + time_bonus`, where the time bonus is a single session-level value that decays from session start. The game ends when every entry is solved, when the player presses Submit, or when the navigation guard fires — all three terminal paths are scored identically. There is no abandon endpoint and no resume of in-progress (unsolved) letters; only solved entries survive a refresh. The solution never leaves the server: the client only ever receives letters for entries the player has already solved.
@@ -26,9 +28,9 @@ This game reuses the `crossword` identifier that Word Hunt vacated. It mirrors W
 ## Execution Plan
 
 ```
-Batch 1 (solo):     Sub-1 (happy-path tracer)
-Batch 2 (parallel): Sub-2 (keyboard UX polish) ∥ Sub-3 (time bonus + stopwatch) ∥ Sub-4 (nav guard + result screen)
-Batch 3 (solo):     Sub-5 (e2e api journey tests)
+Batch 1 (solo):     Sub-1 (happy-path tracer) ✓
+Batch 2 (parallel): Sub-2 (keyboard UX polish) ✓ ∥ Sub-3 (time bonus + stopwatch) ✓ ∥ Sub-4 (nav guard + result screen) ✓
+Batch 3 (solo):     Sub-5 (e2e api journey tests) ✓
 ```
 
 ## Puzzle Content (launch seed)

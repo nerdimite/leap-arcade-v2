@@ -53,4 +53,11 @@ export const GAME_TILES: readonly GameTileDefinition[] = [
     href: "/word-hunt",
     maxPoints: GAME_MAX_POINTS.word_hunt,
   },
+  {
+    id: "crossword",
+    name: "Crossword",
+    description: "Fill in a classic intersecting-word grid from Across and Down clues.",
+    href: "/crossword",
+    maxPoints: GAME_MAX_POINTS.crossword,
+  },
 ];

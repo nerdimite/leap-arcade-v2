@@ -36,10 +36,11 @@ class TestLobbyServiceGetLobby:
     @pytest.mark.asyncio
     async def test_returns_all_games_when_player_has_not_played_any(self):
         """Fresh player → all games returned with has_played=False and no score."""
+        from leap.config.constants import GAMES
         svc = _make_service()
         result = await svc.get_lobby(_make_player())
 
-        assert len(result.games) == 5
+        assert len(result.games) == len(GAMES)
         assert all(not g.has_played for g in result.games)
         assert all(g.score is None for g in result.games)
 
@@ -55,12 +56,13 @@ class TestLobbyServiceGetLobby:
 
     @pytest.mark.asyncio
     async def test_unplayed_games_still_present_when_some_played(self):
-        """Played one game → the other 4 still appear with has_played=False."""
+        """Played one game → the other games still appear with has_played=False."""
+        from leap.config.constants import GAMES
         svc = _make_service(sessions=[_completed_session("rapid_fire", 80)])
         result = await svc.get_lobby(_make_player())
 
         unplayed = [g for g in result.games if g.game_id != "rapid_fire"]
-        assert len(unplayed) == 4
+        assert len(unplayed) == len(GAMES) - 1
         assert all(not g.has_played for g in unplayed)
 
     @pytest.mark.asyncio

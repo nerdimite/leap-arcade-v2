@@ -203,3 +203,23 @@ class WordHuntSessionAlreadyCompletedException(BaseServiceException):
             message=error.message,
             http_status=error.http_status,
         )
+
+
+class NoCrosswordPuzzleAvailableException(BaseServiceException):
+    def __init__(self) -> None:
+        error = ERRORS["NO_CROSSWORD_PUZZLE_AVAILABLE"]
+        super().__init__(
+            error_code=error.code,
+            message=error.message,
+            http_status=error.http_status,
+        )
+
+
+class CrosswordSessionAlreadyCompletedException(BaseServiceException):
+    def __init__(self) -> None:
+        error = ERRORS["CROSSWORD_SESSION_ALREADY_COMPLETED"]
+        super().__init__(
+            error_code=error.code,
+            message=error.message,
+            http_status=error.http_status,
+        )

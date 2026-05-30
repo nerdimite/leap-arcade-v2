@@ -1,0 +1,259 @@
+{
+  "puzzle": {
+    "id": "22222222-2222-2222-2222-222222222222",
+    "rows": 12,
+    "cols": 12,
+    "grid": [
+      [
+        "M",
+        "I",
+        "C",
+        "R",
+        "O",
+        "S",
+        "E",
+        "R",
+        "V",
+        "I",
+        "C",
+        "E"
+      ],
+      [
+        "O",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "V"
+      ],
+      [
+        "C",
+        null,
+        null,
+        null,
+        null,
+        "D",
+        null,
+        null,
+        null,
+        null,
+        null,
+        "E"
+      ],
+      [
+        "K",
+        "U",
+        "B",
+        "E",
+        "R",
+        "N",
+        "E",
+        "T",
+        "E",
+        "S",
+        null,
+        "N"
+      ],
+      [
+        null,
+        null,
+        null,
+        null,
+        null,
+        "S",
+        null,
+        null,
+        null,
+        null,
+        null,
+        "T"
+      ],
+      [
+        "C",
+        null,
+        null,
+        null,
+        "G",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "D"
+      ],
+      [
+        "A",
+        "T",
+        "O",
+        "M",
+        "I",
+        "C",
+        "I",
+        "T",
+        "Y",
+        null,
+        null,
+        "R"
+      ],
+      [
+        "C",
+        null,
+        null,
+        null,
+        "T",
+        null,
+        null,
+        null,
+        null,
+        "D",
+        null,
+        "I"
+      ],
+      [
+        "H",
+        null,
+        null,
+        null,
+        "O",
+        null,
+        null,
+        null,
+        null,
+        "R",
+        null,
+        "V"
+      ],
+      [
+        "I",
+        null,
+        null,
+        null,
+        "P",
+        "I",
+        "P",
+        "E",
+        "L",
+        "I",
+        "N",
+        "E"
+      ],
+      [
+        "N",
+        null,
+        null,
+        null,
+        "S",
+        null,
+        null,
+        null,
+        null,
+        "F",
+        null,
+        "N"
+      ],
+      [
+        "G",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "T",
+        null,
+        null
+      ]
+    ]
+  },
+  "entries": [
+    {
+      "number": 1,
+      "direction": "across",
+      "start_row": 0,
+      "start_col": 0,
+      "answer": "MICROSERVICE",
+      "clue": "Small, independently deployable unit in modern cloud architecture (12)"
+    },
+    {
+      "number": 1,
+      "direction": "down",
+      "start_row": 0,
+      "start_col": 0,
+      "answer": "MOCK",
+      "clue": "Simulated object used in testing to replace a real dependency (4)"
+    },
+    {
+      "number": 2,
+      "direction": "down",
+      "start_row": 0,
+      "start_col": 11,
+      "answer": "EVENTDRIVEN",
+      "clue": "Communication style where services interact through events rather than direct calls (11)"
+    },
+    {
+      "number": 3,
+      "direction": "down",
+      "start_row": 2,
+      "start_col": 5,
+      "answer": "DNS",
+      "clue": "Protocol that assigns a readable name to a numerical server address (3)"
+    },
+    {
+      "number": 4,
+      "direction": "across",
+      "start_row": 3,
+      "start_col": 0,
+      "answer": "KUBERNETES",
+      "clue": "Container orchestration platform originally built at Google (10)"
+    },
+    {
+      "number": 5,
+      "direction": "down",
+      "start_row": 5,
+      "start_col": 4,
+      "answer": "GITOPS",
+      "clue": "Philosophy of treating infrastructure setup the same way as application code (6)"
+    },
+    {
+      "number": 6,
+      "direction": "down",
+      "start_row": 5,
+      "start_col": 0,
+      "answer": "CACHING",
+      "clue": "Technique of storing frequently accessed data closer to the user for faster retrieval (7)"
+    },
+    {
+      "number": 7,
+      "direction": "across",
+      "start_row": 6,
+      "start_col": 0,
+      "answer": "ATOMICITY",
+      "clue": "ACID property that ensures a transaction is all-or-nothing (10)"
+    },
+    {
+      "number": 8,
+      "direction": "down",
+      "start_row": 7,
+      "start_col": 9,
+      "answer": "DRIFT",
+      "clue": "When a deployed model's accuracy degrades over time (5)"
+    },
+    {
+      "number": 9,
+      "direction": "across",
+      "start_row": 9,
+      "start_col": 4,
+      "answer": "PIPELINE",
+      "clue": "Automated workflow from code commit to deployment (8)"
+    }
+  ]
+}

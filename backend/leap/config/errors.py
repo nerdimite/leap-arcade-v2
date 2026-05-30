@@ -95,10 +95,20 @@ ERRORS: Dict[str, ErrorDefinition] = {
         http_status=HTTPStatus.SERVICE_UNAVAILABLE,
         message="No word hunt puzzle is configured for this event",
     ),
+    "NO_CROSSWORD_PUZZLE_AVAILABLE": ErrorDefinition(
+        code=3016,
+        http_status=HTTPStatus.SERVICE_UNAVAILABLE,
+        message="No crossword puzzle is configured for this event",
+    ),
     "WORD_HUNT_SESSION_ALREADY_COMPLETED": ErrorDefinition(
         code=2010,
         http_status=HTTPStatus.CONFLICT,
         message="Word Hunt session is already completed",
+    ),
+    "CROSSWORD_SESSION_ALREADY_COMPLETED": ErrorDefinition(
+        code=2011,
+        http_status=HTTPStatus.CONFLICT,
+        message="Crossword session is already completed",
     ),
     "WIKI_PUZZLE_NOT_ACTIVE": ErrorDefinition(
         code=2005,

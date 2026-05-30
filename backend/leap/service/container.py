@@ -8,6 +8,8 @@ from leap.dao.four_pics_question_attempt_dao import FourPicsQuestionAttemptDAO
 from leap.dao.four_pics_question_dao import FourPicsQuestionDAO
 from leap.dao.pinpoint_puzzle_attempt_dao import PinpointPuzzleAttemptDAO
 from leap.dao.pinpoint_puzzle_dao import PinpointPuzzleDAO
+from leap.dao.crossword_puzzle_dao import CrosswordPuzzleDAO
+from leap.dao.crossword_solve_dao import CrosswordSolveDAO
 from leap.dao.word_hunt_find_dao import WordHuntFindDAO
 from leap.dao.word_hunt_puzzle_dao import WordHuntPuzzleDAO
 from leap.dao.picture_puzzle_attempt_dao import PicturePuzzleAttemptDAO
@@ -16,6 +18,7 @@ from leap.dao.wiki_puzzle_attempt_dao import WikiPuzzleAttemptDAO
 from leap.dao.wiki_round_dao import WikiRoundDAO
 from leap.games.four_pics.service import FourPicsService
 from leap.games.pinpoint.service import PinpointService
+from leap.games.crossword.service import CrosswordService
 from leap.games.word_hunt.service import WordHuntService
 from leap.games.picture.service import PictureService
 from leap.games.rapid_fire.service import RapidFireService
@@ -51,6 +54,8 @@ class ServiceContainer:
         pinpoint_attempt_dao = PinpointPuzzleAttemptDAO()
         word_hunt_puzzle_dao = WordHuntPuzzleDAO()
         word_hunt_find_dao = WordHuntFindDAO()
+        crossword_puzzle_dao = CrosswordPuzzleDAO()
+        crossword_solve_dao = CrosswordSolveDAO()
 
         self.wikipedia_client = WikipediaClient()
         self.wiki_html_rewriter = WikiHtmlRewriter()
@@ -96,5 +101,11 @@ class ServiceContainer:
             game_session_dao,
             word_hunt_puzzle_dao,
             word_hunt_find_dao,
+        )
+        self.crossword = CrosswordService(
+            context_manager,
+            game_session_dao,
+            crossword_puzzle_dao,
+            crossword_solve_dao,
         )
         self.leaderboard = LeaderboardService(context_manager, game_session_dao)

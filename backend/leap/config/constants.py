@@ -14,6 +14,7 @@ GAMES: List[Dict[str, str]] = [
     {"id": "picture", "display_name": "Picture Illustration"},
     {"id": "four_pics", "display_name": "Four Pics One Lie"},
     {"id": "word_hunt", "display_name": "Word Hunt"},
+    {"id": "crossword", "display_name": "Crossword"},
 ]
 
 GAME_IDS: List[str] = [game["id"] for game in GAMES]

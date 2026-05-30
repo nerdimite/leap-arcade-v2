@@ -11,6 +11,7 @@ from leap.dao.models.pinpoint_puzzle import PinpointPuzzle, PinpointPuzzleAttemp
 from leap.dao.models.word_hunt import WordHuntFind, WordHuntPuzzle, WordHuntWord
 from leap.dao.models.wiki_puzzle_attempt import WikiPuzzleAttempt
 from leap.dao.models.wiki_round import WikiRound
+from leap.dao.models.crossword import CrosswordPuzzle, CrosswordEntry, CrosswordSolve
 
 __all__ = [
     "Base",
@@ -29,4 +30,7 @@ __all__ = [
     "WordHuntPuzzle",
     "WordHuntWord",
     "WordHuntFind",
+    "CrosswordPuzzle",
+    "CrosswordEntry",
+    "CrosswordSolve",
 ]

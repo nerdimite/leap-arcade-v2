@@ -10,6 +10,7 @@ from pathlib import Path
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from leap.games.crossword.grid import validate_grid_consistency, validate_seeded_entry
 from leap.games.word_hunt.grid import validate_seeded_word
 
 logger = structlog.get_logger(__name__)
@@ -26,6 +27,7 @@ async def seed_all(session: AsyncSession) -> None:
     await _seed_four_pics(session)
     await _seed_pinpoint(session)
     await _seed_word_hunt(session)
+    await _seed_crossword(session)
 
 
 async def _seed_players(session: AsyncSession) -> None:
@@ -359,4 +361,93 @@ async def _seed_word_hunt(session: AsyncSession) -> None:
 
     await session.commit()
     logger.info("seed.word_hunt.done", puzzle_id=puzzle_id, word_count=len(words))
+
+
+async def _seed_crossword(session: AsyncSession) -> None:
+    path = DATA_DIR / "crossword.json"
+    if not path.exists():
+        logger.warning("seed.crossword.missing", path=str(path))
+        return
+
+    payload = json.loads(path.read_text())
+    puzzle = payload["puzzle"]
+    entries = payload["entries"]
+    grid = puzzle["grid"]
+
+    for entry in entries:
+        if not validate_seeded_entry(
+            grid,
+            entry["answer"],
+            entry["start_row"],
+            entry["start_col"],
+            entry["direction"],
+        ):
+            raise ValueError(
+                f"crossword seed validation failed for entry {entry['answer']!r}"
+            )
+
+    validate_grid_consistency(grid, entries)
+
+    puzzle_id = puzzle.get("id", "22222222-2222-2222-2222-222222222222")
+    await session.execute(
+        text(
+            """
+            INSERT INTO crossword_puzzles (id, rows, cols, grid)
+            VALUES (:id, :rows, :cols, CAST(:grid AS jsonb))
+            ON CONFLICT (id) DO UPDATE SET
+                rows = EXCLUDED.rows,
+                cols = EXCLUDED.cols,
+                grid = EXCLUDED.grid
+            """
+        ),
+        {
+            "id": puzzle_id,
+            "rows": puzzle["rows"],
+            "cols": puzzle["cols"],
+            "grid": json.dumps(grid),
+        },
+    )
+
+    for entry in entries:
+        await session.execute(
+            text(
+                """
+                INSERT INTO crossword_entries (
+                    puzzle_id,
+                    number,
+                    direction,
+                    start_row,
+                    start_col,
+                    answer,
+                    clue
+                )
+                VALUES (
+                    :puzzle_id,
+                    :number,
+                    :direction,
+                    :start_row,
+                    :start_col,
+                    :answer,
+                    :clue
+                )
+                ON CONFLICT (puzzle_id, number, direction) DO UPDATE SET
+                    start_row = EXCLUDED.start_row,
+                    start_col = EXCLUDED.start_col,
+                    answer = EXCLUDED.answer,
+                    clue = EXCLUDED.clue
+                """
+            ),
+            {
+                "puzzle_id": puzzle_id,
+                "number": entry["number"],
+                "direction": entry["direction"],
+                "start_row": entry["start_row"],
+                "start_col": entry["start_col"],
+                "answer": entry["answer"],
+                "clue": entry["clue"],
+            },
+        )
+
+    await session.commit()
+    logger.info("seed.crossword.done", puzzle_id=puzzle_id, entry_count=len(entries))
 

@@ -1,7 +1,7 @@
 # Sub-5: E2E API Journey Tests
 
 **Type:** AFK
-**Status:** todo
+**Status:** done
 **Depends on:** Sub-1, Sub-2, Sub-3, Sub-4
 **Blocks:** nothing
 
