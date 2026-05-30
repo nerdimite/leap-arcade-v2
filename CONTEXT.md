@@ -64,6 +64,21 @@ A server-side record of one player successfully tracing a Hidden Word. Stores th
 ### Word Hunt Result
 The end-of-game screen for Word Hunt. Shows total score broken into `base_score` (100 × found_count) and `time_bonus`, the found-count over total, and a list of the Hidden Words the player found with their clues. Unfound words are deliberately omitted to prevent answer leaks during the event.
 
+### Crossword
+A classic intersecting-word puzzle. The player fills a blank grid of open cells with letters typed from the keyboard; each open cell belongs to one Across and/or one Down Crossword Entry. An entry auto-checks the moment all its cells are filled: a correct entry locks green and scores, a wrong one flashes red and stays editable (typed letters are kept, locked crossing letters untouched). Scoring: 100 pts per solved entry + a session-wide time bonus (max 500, decaying linearly to 0 over 10 minutes). The grid starts fully blank — no letters are pre-revealed — and answers never leave the server. The game ends when all entries are solved, when the player presses Submit, or when the Navigation Guard fires — all three paths score identically. Internal `game_id`: `crossword`.
+
+### Crossword Grid
+The seeded rectangular board hosting the Crossword Entries. The seed stores the full solution as a matrix of uppercase letters with `null` for blocked cells; this matrix is the server-side source of truth and is validated at startup against every entry. The client receives only a blank skeleton — which cells are open and the corner number of each entry start — never the solution letters.
+
+### Crossword Entry
+One Across or Down word in the Crossword Grid. Defined in the seed by its number, direction (`across` / `down`), start cell, answer, and clue. Open cells are shared between a crossing Across and Down entry; a shared cell's letter must agree across both, validated at startup. The answer text of an unsolved entry is never sent to the client.
+
+### Crossword Solve
+A server-side record of one player correctly completing one Crossword Entry within their Crossword Game Session. At most one per `(session, entry)`. On a mid-game refresh, solved entries are re-hydrated with their answer letters and lock green; all unsolved cells return blank (in-progress tentative letters are not persisted).
+
+### Crossword Result
+The end-of-game screen for Crossword. Shows total score split into `base_score` (100 × solved_count) and `time_bonus`, the solved-count over total, and the list of entries the player solved with their clues and answers. Unsolved entries are deliberately omitted to prevent answer leaks during the event.
+
 ### Wikipedia Speed Run
 A navigation game where the player works through all 5 Wiki Puzzles in a fixed order. Max score: 1000 pts (200 per puzzle).
 
