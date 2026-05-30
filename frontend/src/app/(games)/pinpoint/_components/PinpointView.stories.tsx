@@ -68,7 +68,7 @@ export const SolvedOverlay: Story = {
       puzzle: basePuzzle,
       guess: "dog",
       inputDisabled: true,
-      overlay: { kind: "solved", baseScore: 400, timeBonus: 66 },
+      overlay: { kind: "solved", baseScore: 400, timeBonus: 66, cluesUsed: 2 },
       shakeBadgeIndex: null,
       errorMessage: null,
     } satisfies PinpointViewState,

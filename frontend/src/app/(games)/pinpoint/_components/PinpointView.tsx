@@ -1,3 +1,4 @@
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 
@@ -74,8 +75,9 @@ export function PinpointView(props: PinpointViewProps) {
 
             <Link
               href="/lobby"
-              className="mt-6 inline-flex h-11 w-full items-center justify-center rounded-[var(--radius)] border-2 border-[var(--accent)] bg-[var(--accent)] text-[12px] font-extrabold uppercase tracking-[1.5px] text-bg shadow-[var(--shadow-cabinet-sm)]"
+              className="mt-6 inline-flex h-11 w-full items-center justify-center gap-1.5 rounded-[var(--radius)] border-2 border-[var(--accent)] bg-[var(--accent)] text-[12px] font-extrabold uppercase tracking-[1.5px] text-bg shadow-[var(--shadow-cabinet-sm)]"
             >
+              <ArrowLeft aria-hidden className="size-4" />
               Back to Lobby
             </Link>
           </div>
@@ -150,6 +152,7 @@ export function PinpointView(props: PinpointViewProps) {
             kind={overlay.kind}
             baseScore={overlay.baseScore}
             timeBonus={overlay.timeBonus}
+            cluesUsed={overlay.cluesUsed}
           />
         ) : null}
       </div>

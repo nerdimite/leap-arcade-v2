@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 
 import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { PuzzleState } from "@/services/pinpoint/schema";
 
@@ -20,8 +20,23 @@ const samplePuzzle: PuzzleState = {
 };
 
 describe("PinpointView", () => {
+  beforeEach(() => {
+    // Pin reduced-motion so the solved-overlay score count-up settles synchronously.
+    vi.stubGlobal("matchMedia", (query: string) => ({
+      matches: true,
+      media: query,
+      onchange: null,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    }));
+  });
+
   afterEach(() => {
     cleanup();
+    vi.unstubAllGlobals();
   });
 
   it("never renders answer or answer_aliases when leaked onto puzzle state", () => {
@@ -67,7 +82,7 @@ describe("PinpointView", () => {
           },
           guess: "",
           inputDisabled: true,
-          overlay: { kind: "solved", baseScore: 400, timeBonus: 66 },
+          overlay: { kind: "solved", baseScore: 400, timeBonus: 66, cluesUsed: 3 },
           shakeBadgeIndex: null,
           errorMessage: null,
         }}
@@ -78,6 +93,6 @@ describe("PinpointView", () => {
 
     expect(screen.getByRole("textbox")).toBeDisabled();
     expect(screen.getByRole("button", { name: "Guess" })).toBeDisabled();
-    expect(screen.getByRole("status")).toHaveTextContent("Correct! +400 + 66 = 466");
+    expect(screen.getByRole("status")).toHaveTextContent("+466");
   });
 });

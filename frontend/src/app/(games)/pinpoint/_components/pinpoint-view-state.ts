@@ -4,6 +4,7 @@ export type PinpointOverlayView = {
   kind: "solved" | "failed";
   baseScore: number;
   timeBonus: number;
+  cluesUsed: number;
 };
 
 export type PinpointPlayingViewState = {
@@ -52,6 +53,7 @@ export function toPinpointViewState(
           kind: state.flashKind,
           baseScore: state.flashBaseScore ?? 0,
           timeBonus: state.flashTimeBonus ?? 0,
+          cluesUsed: state.puzzle.clues_revealed,
         }
       : null;
 
