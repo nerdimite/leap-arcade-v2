@@ -15,9 +15,10 @@ from fastapi.exceptions import HTTPException, RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from leap.api.routes import auth, health, leaderboard, lobby, players
+from leap.api.routes import admin, auth, health, leaderboard, lobby, players
 from leap.api.routes.games import crossword, four_pics, picture, pinpoint, rapid_fire, wiki, word_hunt
 from leap.config.settings import get_settings
+from leap.core.cache_invalidation import CacheInvalidationListener
 from leap.core.common.logger import configure_json_logging, get_logger
 from leap.core.context_manager import ContextManager
 from leap.service.container import ServiceContainer
@@ -45,19 +46,22 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     app.state.container = ServiceContainer(context_manager)
 
     async with context_manager.session() as session:
-        await app.state.container.rapid_fire.initialize(session)
-        await app.state.container.wiki_speed_run.initialize(session)
-        await app.state.container.picture.initialize(session)
-        await app.state.container.four_pics.initialize(session)
-        await app.state.container.pinpoint.initialize(session)
-        await app.state.container.word_hunt.initialize(session)
-        await app.state.container.crossword.initialize(session)
+        await app.state.container.warm_caches(session)
+
+    cache_listener = CacheInvalidationListener(
+        context_manager,
+        app.state.container,
+        settings.POSTGRES_CONNECTION_STRING,
+    )
+    await cache_listener.start()
+    app.state.cache_listener = cache_listener
 
     logger.info("LEAP backend ready")
 
     yield
 
     logger.info("Shutting down LEAP backend")
+    await cache_listener.stop()
     await context_manager.close()
 
 
@@ -163,6 +167,7 @@ async def unhandled_exception_handler(request: Request, exc: Exception):
 
 
 app.include_router(health.router, tags=["Health"])
+app.include_router(admin.router, prefix="/admin", tags=["Admin"])
 app.include_router(auth.router, prefix="/auth", tags=["Auth"])
 app.include_router(lobby.router, prefix="/lobby", tags=["Lobby"])
 app.include_router(players.router, prefix="/players", tags=["Players"])

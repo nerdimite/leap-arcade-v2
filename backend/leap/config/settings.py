@@ -10,6 +10,8 @@ class Settings(BaseSettings):
     JWT_EXPIRE_HOURS: int = 24
     EVENT_CODE: str
 
+    ADMIN_API_KEY: str
+
     LOG_LEVEL: str = "INFO"
     ENVIRONMENT: str = "development"
 

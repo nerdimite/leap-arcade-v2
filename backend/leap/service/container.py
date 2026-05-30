@@ -1,3 +1,5 @@
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from leap.config.settings import get_settings
 from leap.core.context_manager import ContextManager
 from leap.dao.game_session_dao import GameSessionDAO
@@ -109,3 +111,18 @@ class ServiceContainer:
             crossword_solve_dao,
         )
         self.leaderboard = LeaderboardService(context_manager, game_session_dao)
+
+    async def warm_caches(self, session: AsyncSession) -> None:
+        """(Re)load every game service's in-memory content cache from the database.
+
+        Each ``initialize`` is an idempotent full-replace, so this is safe to call at
+        startup, after an admin reset, or in response to a cross-worker
+        cache-invalidation NOTIFY.
+        """
+        await self.rapid_fire.initialize(session)
+        await self.wiki_speed_run.initialize(session)
+        await self.picture.initialize(session)
+        await self.four_pics.initialize(session)
+        await self.pinpoint.initialize(session)
+        await self.word_hunt.initialize(session)
+        await self.crossword.initialize(session)
