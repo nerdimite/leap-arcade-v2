@@ -1,0 +1,83 @@
+[
+  {
+    "answer": "Git",
+    "clue1": "SHA-1",
+    "clue2": "Linus Torvalds",
+    "clue3": "branching",
+    "clue4": "version control",
+    "clue5": "repository"
+  },
+  {
+    "answer": "Load Balancer",
+    "clue1": "round-robin",
+    "clue2": "Layer 4 / Layer 7",
+    "clue3": "horizontal scaling",
+    "clue4": "traffic distribution",
+    "clue5": "high availability"
+  },
+  {
+    "answer": "Redis",
+    "clue1": "hyperloglogs",
+    "clue2": "pub/sub",
+    "clue3": "in-memory",
+    "clue4": "caching",
+    "clue5": "key-value store"
+  },
+  {
+    "answer": "Monorepo",
+    "clue1": "Turborepo",
+    "clue2": "Google scale",
+    "clue3": "polyrepo opposite",
+    "clue4": "shared tooling",
+    "clue5": "single repository"
+  },
+  {
+    "answer": "OAuth",
+    "clue1": "access token",
+    "clue2": "authorization code flow",
+    "clue3": "scopes",
+    "clue4": "third-party login",
+    "clue5": "sign in with Google"
+  },
+  {
+    "answer": "CDN",
+    "clue1": "edge locations",
+    "clue2": "latency reduction",
+    "clue3": "cached assets",
+    "clue4": "global delivery",
+    "clue5": "content distribution"
+  },
+  {
+    "answer": "JWT",
+    "clue1": "header.payload.signature",
+    "clue2": "Bearer token",
+    "clue3": "stateless authentication",
+    "clue4": "JSON-based token",
+    "clue5": "user sessions"
+  },
+  {
+    "answer": "Data Lake",
+    "clue1": "raw storage",
+    "clue2": "schema-on-read",
+    "clue3": "big data analytics",
+    "clue4": "structured and unstructured data",
+    "clue5": "centralized data repository"
+  },
+  {
+    "answer": "S3",
+    "clue1": "bucket",
+    "clue2": "object storage",
+    "clue3": "AWS",
+    "clue4": "high durability",
+    "clue5": "cloud file storage"
+  },
+  {
+    "answer": "TensorFlow",
+    "clue1": "Keras",
+    "clue2": "computational graph",
+    "clue3": "machine learning",
+    "clue4": "Google AI",
+    "clue5": "deep learning framework"
+  },
+
+]

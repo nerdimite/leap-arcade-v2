@@ -1,0 +1,122 @@
+[
+  {
+    "question": "Which cloud service model gives developers virtual machines and networking control?",
+    "option1": "SaaS",
+    "option2": "IaaS",
+    "option3": "FaaS",
+    "option4": "DaaS",
+    "correct_ans": 2
+  },
+  {
+    "question": "What is the purpose of unit testing?",
+    "option1": "To test the smallest parts of code independently",
+    "option2": "To deploy the app to production",
+    "option3": "To replace code reviews",
+    "option4": "To monitor cloud billing",
+    "correct_ans": 1
+  },
+  {
+    "question": "Docker is primarily known as a:",
+    "option1": "Container orchestration platform",
+    "option2": "Containerization and image packaging tool",
+    "option3": "Cloud infrastructure provider",
+    "option4": "Continuous deployment pipeline tool",
+    "correct_ans": 2
+  },
+  {
+    "question": "What does YAML stand for?",
+    "option1": "Yet Another Markup Language",
+    "option2": "YAML Ain't Markup Language",
+    "option3": "Your Application Manifest Language",
+    "option4": "Yottabyte Automated Memory Layer",
+    "correct_ans": 2
+  },
+  {
+    "question": "In a full-stack application, which layer usually handles business logic?",
+    "option1": "Backend service",
+    "option2": "CSS stylesheet",
+    "option3": "Browser cache only",
+    "option4": "DNS server",
+    "correct_ans": 1
+  },
+  {
+  "question": "Your serverless function takes 4 seconds to respond the first time, then 200ms on every subsequent call within minutes. What's the most precise explanation?",
+  "option1": "The function is rate-limited after exceeding the free tier quota",
+  "option2": "Cold start — a new execution environment was initialized for the first invocation",
+  "option3": "Your code has a memory leak that resolves after the first run",
+  "option4": "The DNS record for the function URL hadn't propagated yet",
+  "correct_ans": 2
+  },
+  {
+  "question": "What is the role of an API Gateway in a microservices architecture?",
+  "option1": "It stores API keys in a central database",
+  "option2": "It acts as a single entry point that routes requests to the right service",
+  "option3": "It replaces the need for authentication",
+  "option4": "It compiles backend code before deployment",
+  "correct_ans": 2
+  },
+  {
+  "question": "Your model performs great on training data but fails on real user inputs. What's the most likely cause?",
+  "option1": "The model was trained on too much data",
+  "option2": "Overfitting — the model memorized instead of generalizing",
+  "option3": "The learning rate was set too high during inference",
+  "option4": "The validation dataset was larger than the training set",
+  "correct_ans": 2
+  },
+  {
+    "question": "Your team pushes code every hour and it ships to production automatically with zero manual steps. What practice makes this possible?",
+    "option1": "Containerized Infrastructure / Cloud Deployment",
+    "option2": "Code Inspection / Continuous Debugging",
+    "option3": "Continuous Integration / Continuous Deployment",
+    "option4": "Component Integration / Container Delivery",
+    "correct_ans": 3
+  },
+  {
+    "question": "A junior dev stores the database password directly in source code and commits it to GitHub. What should they have used instead?",
+    "option1": "A stronger password",
+    "option2": "Environment variables",
+    "option3": "A longer variable name",
+    "option4": "A private Slack message",
+    "correct_ans": 2
+  },
+  {
+    "question": "In microservices architecture, what is the recommended approach to data management?",
+    "option1": "All services share one central database for consistency",
+    "option2": "Each microservice owns its own independent data store",
+    "option3": "Services use read replicas of a single master database",
+    "option4": "A shared ORM layer handles data access across all services",
+    "correct_ans": 2
+  },
+  {
+  "question": "An API returns 403 instead of 401 on a protected route. What is the server actually telling the client?",
+  "option1": "The request is missing credentials entirely",
+  "option2": "The credentials are recognized but access to this resource is denied",
+  "option3": "The token format is invalid and cannot be parsed",
+  "option4": "The server failed to reach the authentication service",
+  "correct_ans": 2
+  },
+  {
+    "question": "In an MLOps pipeline, what is the primary purpose of model drift detection?",
+    "option1": "To improve GPU utilization during training",
+    "option2": "To identify when a deployed model’s performance degrades due to changing data patterns",
+    "option3": "To automatically compress large datasets before inference",
+    "option4": "To synchronize feature engineering logic across development environments",
+    "correct_ans": 2
+  },
+  {
+    "question": "What remains one of the largest concerns regarding AI-generated code?",
+    "option1": "Lack of syntax correctness",
+    "option2": "Inability to generate APIs",
+    "option3": "Reliability, maintainability, and hidden logical flaws",
+    "option4": "Excessive memory allocation during compilation",
+    "correct_ans": 3
+  },
+  {
+    "question": "What is a major architectural advantage of serverless computing?",
+    "option1": "Dedicated hardware affinity for each request",
+    "option2": "Tight coupling between services and infrastructure",
+    "option3": "Event-driven scaling with reduced operational management",
+    "option4": "Elimination of distributed system failures",
+    "correct_ans": 3
+  }
+]

@@ -67,7 +67,12 @@ async def _seed_rapid_fire(session: AsyncSession) -> None:
                     (id, question, options, correct_option_index, category, time_limit_ms)
                 VALUES
                     (:id, :question, :options, :correct_option_index, :category, :time_limit_ms)
-                ON CONFLICT (id) DO NOTHING
+                ON CONFLICT (id) DO UPDATE SET
+                    question = EXCLUDED.question,
+                    options = EXCLUDED.options,
+                    correct_option_index = EXCLUDED.correct_option_index,
+                    category = EXCLUDED.category,
+                    time_limit_ms = EXCLUDED.time_limit_ms
                 """
             ),
             {

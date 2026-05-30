@@ -1,0 +1,13 @@
+
+The confidence level of an AI answering a question completely wrong - HALLUCINATION
+Container orchestration platform widely used in cloud-native systems - KUBERNETES
+Build automation and dependency management tool using pom.xml - MAVEN
+Angular feature used for navigating between views- ROUTING
+AI architecture inspired by interconnected biological neurons - NEURALNETWORK
+AI technique that converts human language into expensive API calls-PROMPTENGINEERING
+Machine learning problem where a model memorizes training data instead of generalizing- OVERFITTING
+The only place where you are “Thrilled to announce”  - LINKEDIN
+The day of deployment chosen by people who fear happiness - FRIDAY
+The place where code works perfectly and nowhere else - LOCALHOST
+An intern's favourite thing to delete accidentally - DATABASE
+

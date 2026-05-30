@@ -38,7 +38,7 @@ async def test_full_pool_mixed_outcomes_score_and_leaderboard(
     headers = auth_headers(token)
 
     pool_size = await fetch_pool_size()
-    assert pool_size == load_seed_puzzle_count() == 5
+    assert pool_size == load_seed_puzzle_count() == 10
 
     _, restore = install_pinpoint_deterministic_controls(elapsed_per_solve_ms=_ELAPSED_MS)
     try:
@@ -58,11 +58,16 @@ async def test_full_pool_mixed_outcomes_score_and_leaderboard(
         ordered_ids = await fetch_puzzle_ids_ordered()
         assert len(ordered_ids) == pool_size
 
-        # Mixed outcomes: clue 1, clue 3, fail, clue 1, clue 5 (last puzzle).
+        # Mixed outcomes across the full seeded pool (8 solves, 2 fails).
         outcome_plan: List[tuple[str, int | None]] = [
             ("solve", 1),
             ("solve", 3),
             ("fail", None),
+            ("solve", 1),
+            ("solve", 5),
+            ("solve", 2),
+            ("fail", None),
+            ("solve", 4),
             ("solve", 1),
             ("solve", 5),
         ]
@@ -123,8 +128,8 @@ async def test_full_pool_mixed_outcomes_score_and_leaderboard(
         result = last["result"]
         assert isinstance(result, dict)
         assert result["score"] == running_score
-        assert result["puzzles_solved"] == 4
-        assert result["puzzles_failed"] == 1
+        assert result["puzzles_solved"] == 8
+        assert result["puzzles_failed"] == 2
         assert result["puzzles_not_reached"] == 0
         assert len(result["puzzles"]) == pool_size
 

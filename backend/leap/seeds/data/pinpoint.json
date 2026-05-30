@@ -1,47 +1,149 @@
 [
   {
-    "answer": "Cloud Computing",
-    "answer_aliases": ["cloud", "cloud computing", "the cloud", "aws", "azure", "gcp"],
-    "clue1": "virtualization",
-    "clue2": "redundancy",
-    "clue3": "scalability",
-    "clue4": "load balancing",
-    "clue5": "instances"
+    "answer": "Git",
+    "answer_aliases": [
+      "git",
+      "version control",
+      "source control",
+      "vc",
+      "git version control"
+    ],
+    "clue1": "SHA-1",
+    "clue2": "Linus Torvalds",
+    "clue3": "branching",
+    "clue4": "version control",
+    "clue5": "repository"
   },
   {
-    "answer": "Machine Learning",
-    "answer_aliases": ["machine learning", "ml", "artificial intelligence", "ai"],
-    "clue1": "algorithms",
-    "clue2": "training data",
-    "clue3": "model",
-    "clue4": "prediction",
-    "clue5": "artificial intelligence"
+    "answer": "Load Balancer",
+    "answer_aliases": [
+      "load balancer",
+      "load balancing",
+      "lb",
+      "layer 4 load balancer",
+      "layer 7 load balancer",
+      "network load balancer"
+    ],
+    "clue1": "round-robin",
+    "clue2": "Layer 4 / Layer 7",
+    "clue3": "horizontal scaling",
+    "clue4": "traffic distribution",
+    "clue5": "high availability"
   },
   {
-    "answer": "Blockchain",
-    "answer_aliases": ["blockchain", "distributed ledger", "crypto ledger"],
-    "clue1": "decentralization",
-    "clue2": "cryptography",
-    "clue3": "ledger",
-    "clue4": "consensus",
-    "clue5": "smart contracts"
+    "answer": "Redis",
+    "answer_aliases": [
+      "redis",
+      "redis cache",
+      "redis database",
+      "in-memory database",
+      "in memory cache"
+    ],
+    "clue1": "hyperloglogs",
+    "clue2": "pub/sub",
+    "clue3": "in-memory",
+    "clue4": "caching",
+    "clue5": "key-value store"
   },
   {
-    "answer": "Large Language Model",
-    "answer_aliases": ["llm", "large language model", "large language models", "language model"],
-    "clue1": "tokens",
-    "clue2": "transformer",
-    "clue3": "prompt",
-    "clue4": "embeddings",
-    "clue5": "parameters"
+    "answer": "Monorepo",
+    "answer_aliases": [
+      "monorepo",
+      "mono repo",
+      "mono-repo",
+      "single repository",
+      "monolithic repo"
+    ],
+    "clue1": "Turborepo",
+    "clue2": "Google scale",
+    "clue3": "polyrepo opposite",
+    "clue4": "shared tooling",
+    "clue5": "single repository"
   },
   {
-    "answer": "Cybersecurity",
-    "answer_aliases": ["cybersecurity", "cyber security", "information security", "infosec"],
-    "clue1": "firewall",
-    "clue2": "encryption",
-    "clue3": "phishing",
-    "clue4": "authentication",
-    "clue5": "vulnerability"
+    "answer": "OAuth",
+    "answer_aliases": [
+      "oauth",
+      "oauth2",
+      "oauth 2",
+      "oauth 2.0",
+      "open authorization"
+    ],
+    "clue1": "access token",
+    "clue2": "authorization code flow",
+    "clue3": "scopes",
+    "clue4": "third-party login",
+    "clue5": "sign in with Google"
+  },
+  {
+    "answer": "CDN",
+    "answer_aliases": [
+      "cdn",
+      "content delivery network",
+      "content distribution network",
+      "edge network"
+    ],
+    "clue1": "edge locations",
+    "clue2": "latency reduction",
+    "clue3": "cached assets",
+    "clue4": "global delivery",
+    "clue5": "content distribution"
+  },
+  {
+    "answer": "JWT",
+    "answer_aliases": [
+      "jwt",
+      "json web token",
+      "json web tokens"
+    ],
+    "clue1": "header.payload.signature",
+    "clue2": "Bearer token",
+    "clue3": "stateless authentication",
+    "clue4": "JSON-based token",
+    "clue5": "user sessions"
+  },
+  {
+    "answer": "Data Lake",
+    "answer_aliases": [
+      "data lake",
+      "data lakes",
+      "datalake",
+      "enterprise data lake"
+    ],
+    "clue1": "raw storage",
+    "clue2": "schema-on-read",
+    "clue3": "big data analytics",
+    "clue4": "structured and unstructured data",
+    "clue5": "centralized data repository"
+  },
+  {
+    "answer": "S3",
+    "answer_aliases": [
+      "s3",
+      "amazon s3",
+      "aws s3",
+      "simple storage service",
+      "s3 bucket",
+      "s3 storage"
+    ],
+    "clue1": "bucket",
+    "clue2": "object storage",
+    "clue3": "AWS",
+    "clue4": "high durability",
+    "clue5": "cloud file storage"
+  },
+  {
+    "answer": "TensorFlow",
+    "answer_aliases": [
+      "tensorflow",
+      "tensor flow",
+      "tf",
+      "google tensorflow"
+    ],
+    "clue1": "Keras",
+    "clue2": "computational graph",
+    "clue3": "machine learning",
+    "clue4": "Google AI",
+    "clue5": "deep learning framework"
   }
 ]
