@@ -10,7 +10,9 @@ from leap.dao.models.picture_puzzle_attempt import PicturePuzzleAttempt
 from leap.types.picture import PicturePuzzleAttemptDTO
 
 
-class PicturePuzzleAttemptDAO(BaseReadPgDAO[PicturePuzzleAttempt], BaseWritePgDAO[PicturePuzzleAttempt]):
+class PicturePuzzleAttemptDAO(
+    BaseReadPgDAO[PicturePuzzleAttempt], BaseWritePgDAO[PicturePuzzleAttempt]
+):
     """Persists and reads per-submit attempt history for a Picture session."""
 
     def __init__(self) -> None:

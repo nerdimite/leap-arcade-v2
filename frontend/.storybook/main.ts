@@ -2,7 +2,9 @@ import { fileURLToPath } from "node:url"
 
 import type { StorybookConfig } from "@storybook/nextjs-vite"
 
-const nextImageMock = fileURLToPath(new URL("./next-image-mock.tsx", import.meta.url))
+const nextImageMock = fileURLToPath(
+  new URL("./next-image-mock.tsx", import.meta.url)
+)
 
 const config: StorybookConfig = {
   stories: ["../src/**/*.stories.@(ts|tsx)"],
@@ -23,7 +25,10 @@ const config: StorybookConfig = {
     if (Array.isArray(alias)) {
       alias.unshift({ find: /^next\/image$/, replacement: nextImageMock })
     } else {
-      viteConfig.resolve.alias = { "next/image": nextImageMock, ...(alias ?? {}) }
+      viteConfig.resolve.alias = {
+        "next/image": nextImageMock,
+        ...(alias ?? {}),
+      }
     }
     return viteConfig
   },

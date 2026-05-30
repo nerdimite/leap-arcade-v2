@@ -13,9 +13,7 @@ if TYPE_CHECKING:
 class PlayerSessionService:
     """Lists persisted game sessions for the authenticated player."""
 
-    def __init__(
-        self, context_manager: ContextManager, game_session_dao: "GameSessionDAO"
-    ) -> None:
+    def __init__(self, context_manager: ContextManager, game_session_dao: "GameSessionDAO") -> None:
         self.ctx = context_manager
         self.game_session_dao = game_session_dao
 

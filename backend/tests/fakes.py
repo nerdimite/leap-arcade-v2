@@ -19,18 +19,18 @@ from leap.service.auth_service import AuthService
 from leap.service.leaderboard_service import LeaderboardService
 from leap.service.lobby_service import LobbyService
 from leap.service.player_session_service import PlayerSessionService
+from leap.types.four_pics import FourPicsQuestionAttemptDTO, FourPicsQuestionDTO
 from leap.types.game import (
     GameSessionDTO,
     GameSessionStatus,
     LeaderboardEntryDTO,
 )
-from leap.types.player import PlayerDTO
-from leap.types.four_pics import FourPicsQuestionAttemptDTO, FourPicsQuestionDTO
 from leap.types.picture import PicturePuzzleAttemptDTO, PicturePuzzleDTO
 from leap.types.pinpoint import PinpointPuzzleAttemptDTO, PinpointPuzzleDTO
+from leap.types.player import PlayerDTO
 from leap.types.rapid_fire import RapidFireAnswerDTO, RapidFireQuestionDTO
-from leap.types.word_hunt import WordHuntFindDTO, WordHuntPuzzleDTO
 from leap.types.wiki import WikiArticleDTO, WikiPuzzleAttemptDTO, WikiRoundDTO
+from leap.types.word_hunt import WordHuntFindDTO, WordHuntPuzzleDTO
 
 
 class FakeAsyncSession:
@@ -94,9 +94,7 @@ class FakeGameSessionDAO:
                 return s
         return None
 
-    async def create(
-        self, session: Any, player_id: str, game_id: str
-    ) -> GameSessionDTO:
+    async def create(self, session: Any, player_id: str, game_id: str) -> GameSessionDTO:
         dto = GameSessionDTO(
             id=str(uuid.uuid4()),
             player_id=player_id,
@@ -132,9 +130,7 @@ class FakeGameSessionDAO:
                 return updated
         raise KeyError(f"session not found: {game_session_id}")
 
-    async def add_to_score(
-        self, session: Any, game_session_id: str, delta: int
-    ) -> GameSessionDTO:
+    async def add_to_score(self, session: Any, game_session_id: str, delta: int) -> GameSessionDTO:
         _ = session
         for i, s in enumerate(self._sessions):
             if s.id == game_session_id:
@@ -144,9 +140,7 @@ class FakeGameSessionDAO:
                 return updated
         raise KeyError(f"session not found: {game_session_id}")
 
-    async def get_all_for_player(
-        self, session: Any, player_id: str
-    ) -> List[GameSessionDTO]:
+    async def get_all_for_player(self, session: Any, player_id: str) -> List[GameSessionDTO]:
         return [s for s in self._sessions if s.player_id == player_id]
 
     def _aggregate_for_player(self, player_id: str) -> Dict[str, Any]:
@@ -442,7 +436,9 @@ class FakePicturePuzzleAttemptDAO:
         self._attempts.append(dto)
         return dto
 
-    async def get_all_for_session(self, session: Any, game_session_id: str) -> List[PicturePuzzleAttemptDTO]:
+    async def get_all_for_session(
+        self, session: Any, game_session_id: str
+    ) -> List[PicturePuzzleAttemptDTO]:
         _ = session
         return sorted(
             [a for a in self._attempts if a.game_session_id == game_session_id],
@@ -496,14 +492,8 @@ class FakeRapidFireAnswerDAO:
         self._answers.append(dto)
         return dto
 
-    async def get_asked_question_ids(
-        self, session: Any, game_session_id: str
-    ) -> List[str]:
-        return [
-            a.question_id
-            for a in self._answers
-            if a.game_session_id == game_session_id
-        ]
+    async def get_asked_question_ids(self, session: Any, game_session_id: str) -> List[str]:
+        return [a.question_id for a in self._answers if a.game_session_id == game_session_id]
 
     async def get_all_for_session(
         self, session: Any, game_session_id: str
@@ -660,7 +650,9 @@ class FakePinpointPuzzleAttemptDAO:
         self._attempts.append(dto)
         return dto
 
-    async def get_for_session(self, session: Any, game_session_id: str) -> List[PinpointPuzzleAttemptDTO]:
+    async def get_for_session(
+        self, session: Any, game_session_id: str
+    ) -> List[PinpointPuzzleAttemptDTO]:
         _ = session
         return sorted(
             [a for a in self._attempts if a.game_session_id == game_session_id],
@@ -945,9 +937,7 @@ def make_fake_container(
     rf_questions = rapid_fire_question_dao or FakeRapidFireQuestionDAO(
         questions=rapid_fire_questions
     )
-    fp_questions = four_pics_question_dao or FakeFourPicsQuestionDAO(
-        questions=four_pics_questions
-    )
+    fp_questions = four_pics_question_dao or FakeFourPicsQuestionDAO(questions=four_pics_questions)
     fp_attempts = four_pics_attempt_dao or FakeFourPicsQuestionAttemptDAO()
     gdao = game_session_dao or FakeGameSessionDAO(
         sessions=sessions,

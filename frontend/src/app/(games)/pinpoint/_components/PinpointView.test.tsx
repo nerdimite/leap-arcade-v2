@@ -1,11 +1,11 @@
 // @vitest-environment happy-dom
 
-import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { cleanup, render, screen } from "@testing-library/react"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
-import type { PuzzleState } from "@/services/pinpoint/schema";
+import type { PuzzleState } from "@/services/pinpoint/schema"
 
-import { PinpointView } from "./PinpointView";
+import { PinpointView } from "./PinpointView"
 
 const samplePuzzle: PuzzleState = {
   puzzle_id: "p1",
@@ -17,7 +17,7 @@ const samplePuzzle: PuzzleState = {
   score: 0,
   time_bonus: null,
   started_at: "2026-05-26T12:00:00.000Z",
-};
+}
 
 describe("PinpointView", () => {
   beforeEach(() => {
@@ -31,20 +31,20 @@ describe("PinpointView", () => {
       addListener: vi.fn(),
       removeListener: vi.fn(),
       dispatchEvent: vi.fn(),
-    }));
-  });
+    }))
+  })
 
   afterEach(() => {
-    cleanup();
-    vi.unstubAllGlobals();
-  });
+    cleanup()
+    vi.unstubAllGlobals()
+  })
 
   it("never renders answer or answer_aliases when leaked onto puzzle state", () => {
     const leakedPuzzle = {
       ...samplePuzzle,
       answer: "cloud computing",
       answer_aliases: ["cloud", "computing"],
-    } as PuzzleState & { answer: string; answer_aliases: string[] };
+    } as PuzzleState & { answer: string; answer_aliases: string[] }
 
     render(
       <PinpointView
@@ -60,13 +60,13 @@ describe("PinpointView", () => {
         }}
         onGuessChange={vi.fn()}
         onSubmitGuess={vi.fn()}
-      />,
-    );
+      />
+    )
 
-    expect(screen.queryByText("cloud computing")).toBeNull();
-    expect(screen.queryByText("cloud")).toBeNull();
-    expect(screen.queryByText("computing")).toBeNull();
-  });
+    expect(screen.queryByText("cloud computing")).toBeNull()
+    expect(screen.queryByText("cloud")).toBeNull()
+    expect(screen.queryByText("computing")).toBeNull()
+  })
 
   it("disables input while flashing overlay is visible", () => {
     render(
@@ -82,17 +82,22 @@ describe("PinpointView", () => {
           },
           guess: "",
           inputDisabled: true,
-          overlay: { kind: "solved", baseScore: 400, timeBonus: 66, cluesUsed: 3 },
+          overlay: {
+            kind: "solved",
+            baseScore: 400,
+            timeBonus: 66,
+            cluesUsed: 3,
+          },
           shakeBadgeIndex: null,
           errorMessage: null,
         }}
         onGuessChange={vi.fn()}
         onSubmitGuess={vi.fn()}
-      />,
-    );
+      />
+    )
 
-    expect(screen.getByRole("textbox")).toBeDisabled();
-    expect(screen.getByRole("button", { name: "Guess" })).toBeDisabled();
-    expect(screen.getByRole("status")).toHaveTextContent("+466");
-  });
-});
+    expect(screen.getByRole("textbox")).toBeDisabled()
+    expect(screen.getByRole("button", { name: "Guess" })).toBeDisabled()
+    expect(screen.getByRole("status")).toHaveTextContent("+466")
+  })
+})

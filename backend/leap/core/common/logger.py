@@ -3,12 +3,13 @@
 Configures both structlog and the stdlib root logger so that all log output —
 including from the OpenAI Agents SDK — shares the same formatter.
 """
+
+import logging
+import sys
 from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Any
-import logging
-import sys
 
 import structlog
 from structlog.stdlib import LoggerFactory, ProcessorFormatter
@@ -50,7 +51,9 @@ def configure_json_logging(log_level: str = "INFO", environment: str = "developm
         foreign_pre_chain=shared_processors,
         processors=[
             ProcessorFormatter.remove_processors_meta,
-            structlog.processors.JSONRenderer() if use_json else structlog.dev.ConsoleRenderer(colors=True),
+            structlog.processors.JSONRenderer()
+            if use_json
+            else structlog.dev.ConsoleRenderer(colors=True),
         ],
     )
 

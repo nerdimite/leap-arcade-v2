@@ -22,7 +22,6 @@ from leap.types.pinpoint import (
 )
 from leap.types.player import CurrentPlayer
 
-
 router = APIRouter()
 
 

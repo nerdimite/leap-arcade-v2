@@ -88,7 +88,9 @@ async def test_play_creates_active_session_first_puzzle(puzzles: list[PicturePuz
 
 
 @pytest.mark.asyncio
-async def test_submit_wrong_records_attempt_and_keeps_same_puzzle(puzzles: list[PicturePuzzleDTO]) -> None:
+async def test_submit_wrong_records_attempt_and_keeps_same_puzzle(
+    puzzles: list[PicturePuzzleDTO],
+) -> None:
     svc = _svc(puzzles)
     await _init(svc)
     with _CHOICE_PATCH:
@@ -112,7 +114,9 @@ async def test_submit_wrong_records_attempt_and_keeps_same_puzzle(puzzles: list[
 
 
 @pytest.mark.asyncio
-async def test_submit_correct_second_attempt_scores_150_and_advances(puzzles: list[PicturePuzzleDTO]) -> None:
+async def test_submit_correct_second_attempt_scores_150_and_advances(
+    puzzles: list[PicturePuzzleDTO],
+) -> None:
     svc = _svc(puzzles)
     await _init(svc)
     with _CHOICE_PATCH:
@@ -175,7 +179,9 @@ async def test_play_expired_active_session_completes_with_zero_time_bonus(
 
 
 @pytest.mark.asyncio
-async def test_last_correct_completes_session_adds_time_bonus(puzzles: list[PicturePuzzleDTO]) -> None:
+async def test_last_correct_completes_session_adds_time_bonus(
+    puzzles: list[PicturePuzzleDTO],
+) -> None:
     svc = _svc(puzzles)
     await _init(svc)
     with _CHOICE_PATCH:
@@ -184,7 +190,9 @@ async def test_last_correct_completes_session_adds_time_bonus(puzzles: list[Pict
     first_id = play.puzzle.id if play.puzzle is not None else ""
     await svc.submit_answer("emp001", first_id, "alpha")
 
-    sess_after = await svc.game_session_dao.get_by_player_and_game(FakeAsyncSession(), "emp001", "picture")
+    sess_after = await svc.game_session_dao.get_by_player_and_game(
+        FakeAsyncSession(), "emp001", "picture"
+    )
     assert sess_after is not None
     bonus_anchor = sess_after.started_at + timedelta(seconds=50)
     time_bonus = (PICTURE_TIME_LIMIT_MS - 50_000) // 1000
@@ -206,7 +214,9 @@ async def test_last_correct_completes_session_adds_time_bonus(puzzles: list[Pict
     assert finishing.result.score == 400 + time_bonus
     assert finishing.next_puzzle is None
 
-    sess = await svc.game_session_dao.get_by_player_and_game(FakeAsyncSession(), "emp001", "picture")
+    sess = await svc.game_session_dao.get_by_player_and_game(
+        FakeAsyncSession(), "emp001", "picture"
+    )
 
     assert sess is not None
     assert sess.status == GameSessionStatus.COMPLETED
@@ -214,7 +224,9 @@ async def test_last_correct_completes_session_adds_time_bonus(puzzles: list[Pict
 
 
 @pytest.mark.asyncio
-async def test_submit_after_time_limit_closes_with_zero_time_bonus(puzzles: list[PicturePuzzleDTO]) -> None:
+async def test_submit_after_time_limit_closes_with_zero_time_bonus(
+    puzzles: list[PicturePuzzleDTO],
+) -> None:
     sid = str(uuid.uuid4())
     old_started = leap_time.utc_now() - timedelta(seconds=PICTURE_TIME_LIMIT_MS // 1000 + 5)
     session_row = GameSessionDTO(
@@ -242,7 +254,9 @@ async def test_submit_after_time_limit_closes_with_zero_time_bonus(puzzles: list
     assert out.result.accuracy_score == 200
     assert out.result.score == 200
 
-    sess = await svc.game_session_dao.get_by_player_and_game(FakeAsyncSession(), "emp_late", "picture")
+    sess = await svc.game_session_dao.get_by_player_and_game(
+        FakeAsyncSession(), "emp_late", "picture"
+    )
     assert sess is not None
     assert sess.status == GameSessionStatus.COMPLETED
 
@@ -262,7 +276,9 @@ async def test_abandon_active_session_returns_result(puzzles: list[PicturePuzzle
     not_reached = [p for p in res.puzzles if p.status == "not_reached"]
     assert len(not_reached) == 2
 
-    sess = await svc.game_session_dao.get_by_player_and_game(FakeAsyncSession(), "emp_abandon", "picture")
+    sess = await svc.game_session_dao.get_by_player_and_game(
+        FakeAsyncSession(), "emp_abandon", "picture"
+    )
     assert sess is not None
     assert sess.status == GameSessionStatus.COMPLETED
 
@@ -336,7 +352,9 @@ async def test_skip_first_puzzle_advances_to_next(puzzles: list[PicturePuzzleDTO
 
 
 @pytest.mark.asyncio
-async def test_skip_final_puzzle_completes_and_returns_inline_result(puzzles: list[PicturePuzzleDTO]) -> None:
+async def test_skip_final_puzzle_completes_and_returns_inline_result(
+    puzzles: list[PicturePuzzleDTO],
+) -> None:
     svc = _svc(puzzles)
     await _init(svc)
     with _CHOICE_PATCH:
@@ -359,7 +377,9 @@ async def test_skip_final_puzzle_completes_and_returns_inline_result(puzzles: li
     assert skipped_line.status == "skipped"
     assert skipped_line.score_earned == 0
 
-    sess = await svc.game_session_dao.get_by_player_and_game(FakeAsyncSession(), "emp011", "picture")
+    sess = await svc.game_session_dao.get_by_player_and_game(
+        FakeAsyncSession(), "emp011", "picture"
+    )
     assert sess is not None
     assert sess.status == GameSessionStatus.COMPLETED
     assert sess.score == 200
@@ -423,7 +443,9 @@ async def test_skip_after_skip_raises_conflict(puzzles: list[PicturePuzzleDTO]) 
 
 
 @pytest.mark.asyncio
-async def test_resume_play_excludes_skipped_puzzle_from_pool(puzzles: list[PicturePuzzleDTO]) -> None:
+async def test_resume_play_excludes_skipped_puzzle_from_pool(
+    puzzles: list[PicturePuzzleDTO],
+) -> None:
     svc = _svc(puzzles)
     await _init(svc)
     with _CHOICE_PATCH:
@@ -440,7 +462,9 @@ async def test_resume_play_excludes_skipped_puzzle_from_pool(puzzles: list[Pictu
 
 
 @pytest.mark.asyncio
-async def test_submit_answer_after_completed_session_via_skips_raises(puzzles: list[PicturePuzzleDTO]) -> None:
+async def test_submit_answer_after_completed_session_via_skips_raises(
+    puzzles: list[PicturePuzzleDTO],
+) -> None:
     svc = _svc(puzzles)
     await _init(svc)
     with _CHOICE_PATCH:

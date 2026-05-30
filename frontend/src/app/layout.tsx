@@ -3,7 +3,7 @@ import { Geist_Mono, Inter, Press_Start_2P } from "next/font/google"
 import "./globals.css"
 import { QueryClientProviderWrapper } from "@/components/query-client-provider"
 import { ThemeProvider } from "@/components/theme-provider"
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils"
 
 // Inter carries everything a player must read; Press Start 2P is pixel punctuation.
 const fontSans = Inter({ subsets: ["latin"], variable: "--font-sans" })
@@ -33,7 +33,7 @@ export default function RootLayout({
         "font-sans",
         fontSans.variable,
         fontPixel.variable,
-        fontMono.variable,
+        fontMono.variable
       )}
     >
       <body>

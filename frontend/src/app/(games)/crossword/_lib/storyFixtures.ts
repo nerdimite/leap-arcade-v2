@@ -1,4 +1,4 @@
-import type { PuzzleState } from "@/services/crossword/schema";
+import type { PuzzleState } from "@/services/crossword/schema"
 
 export const emptyPuzzle: PuzzleState = {
   puzzle_id: "story-empty",
@@ -38,7 +38,7 @@ export const emptyPuzzle: PuzzleState = {
   solved_count: 0,
   total_entries: 2,
   started_at: "2026-05-26T12:00:00.000Z",
-};
+}
 
 export const inProgressPuzzle: PuzzleState = {
   ...emptyPuzzle,
@@ -56,7 +56,7 @@ export const inProgressPuzzle: PuzzleState = {
             { row: 0, col: 2 },
           ],
         }
-      : clue,
+      : clue
   ),
   cells: [
     [
@@ -67,7 +67,7 @@ export const inProgressPuzzle: PuzzleState = {
     [{ row: 1, col: 0 }, null, null],
     [{ row: 2, col: 0 }, null, null],
   ],
-};
+}
 
 export const allSolvedPuzzle: PuzzleState = {
   ...inProgressPuzzle,
@@ -99,33 +99,33 @@ export const allSolvedPuzzle: PuzzleState = {
     [{ row: 1, col: 0, letter: "O" }, null, null],
     [{ row: 2, col: 0, letter: "W" }, null, null],
   ],
-};
+}
 
-export const activeHighlightCells = new Set(["0,0", "0,1", "0,2"]);
+export const activeHighlightCells = new Set(["0,0", "0,1", "0,2"])
 
-export const missFlashCells = new Set(["1,0", "2,0"]);
+export const missFlashCells = new Set(["1,0", "2,0"])
 
 export const lockedCellsFromPuzzle = (puzzle: PuzzleState): Set<string> => {
-  const locked = new Set<string>();
+  const locked = new Set<string>()
   for (const clue of puzzle.clues) {
     if (!clue.solved || !clue.cells) {
-      continue;
+      continue
     }
     for (const cell of clue.cells) {
-      locked.add(`${cell.row},${cell.col}`);
+      locked.add(`${cell.row},${cell.col}`)
     }
   }
   for (const row of puzzle.cells) {
     for (const cell of row) {
       if (cell?.letter) {
-        locked.add(`${cell.row},${cell.col}`);
+        locked.add(`${cell.row},${cell.col}`)
       }
     }
   }
-  return locked;
-};
+  return locked
+}
 
 export const draftInProgress: Record<string, string> = {
   "1,0": "X",
   "2,0": "Z",
-};
+}

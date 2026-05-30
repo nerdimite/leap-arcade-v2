@@ -43,7 +43,7 @@ export function NavigationGuardProvider({ children }: { children: ReactNode }) {
   const router = useRouter()
   const [isDirty, setDirtyState] = useState(false)
   const [pendingRequest, setPendingRequest] = useState<PendingRequest | null>(
-    null,
+    null
   )
   const [dialogOpen, setDialogOpen] = useState(false)
 
@@ -70,7 +70,7 @@ export function NavigationGuardProvider({ children }: { children: ReactNode }) {
         }
       }
     },
-    [],
+    []
   )
 
   const armHistoryTrap = useCallback(() => {
@@ -93,7 +93,7 @@ export function NavigationGuardProvider({ children }: { children: ReactNode }) {
         __navigationGuard: guardStateIdRef.current,
       },
       "",
-      window.location.href,
+      window.location.href
     )
     historyTrapArmedRef.current = true
   }, [])
@@ -132,7 +132,7 @@ export function NavigationGuardProvider({ children }: { children: ReactNode }) {
       suppressNextPopRef.current = true
       window.history.back()
     },
-    [router],
+    [router]
   )
 
   const requestNavigation = useCallback(
@@ -145,7 +145,7 @@ export function NavigationGuardProvider({ children }: { children: ReactNode }) {
 
       executeRequest(request)
     },
-    [executeRequest],
+    [executeRequest]
   )
 
   const navigateSafe = useCallback(
@@ -156,14 +156,14 @@ export function NavigationGuardProvider({ children }: { children: ReactNode }) {
         replace: options?.replace,
       })
     },
-    [requestNavigation],
+    [requestNavigation]
   )
 
   const requestAction = useCallback(
     (action: NavigationAction) => {
       requestNavigation({ type: "action", action })
     },
-    [requestNavigation],
+    [requestNavigation]
   )
 
   const cancelNavigation = useCallback(() => {
@@ -248,14 +248,15 @@ export function NavigationGuardProvider({ children }: { children: ReactNode }) {
       cancelNavigation,
     }),
     [
-      cancelNavigation, 
-      confirmNavigation, 
-      dialogOpen, 
-      isDirty, 
-      navigateSafe, 
-      registerBeforeNavigateConfirm, 
-      requestAction, setIsDirty
-    ],
+      cancelNavigation,
+      confirmNavigation,
+      dialogOpen,
+      isDirty,
+      navigateSafe,
+      registerBeforeNavigateConfirm,
+      requestAction,
+      setIsDirty,
+    ]
   )
 
   return (
@@ -269,7 +270,7 @@ export function useNavigationGuard(): NavigationGuardContextValue {
   const ctx = useContext(NavigationGuardContext)
   if (!ctx) {
     throw new Error(
-      "useNavigationGuard must be used within NavigationGuardProvider",
+      "useNavigationGuard must be used within NavigationGuardProvider"
     )
   }
   return ctx

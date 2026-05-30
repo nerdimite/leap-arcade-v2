@@ -1,8 +1,8 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import type { Meta, StoryObj } from "@storybook/nextjs-vite"
 
-import type { WikiPuzzleResult } from "@/services/wiki/schema";
+import type { WikiPuzzleResult } from "@/services/wiki/schema"
 
-import { WikiFinalResults } from "./WikiFinalResults";
+import { WikiFinalResults } from "./WikiFinalResults"
 
 const sampleResults: WikiPuzzleResult[] = [
   {
@@ -27,7 +27,7 @@ const sampleResults: WikiPuzzleResult[] = [
     score: 150,
     status: "completed",
   },
-];
+]
 
 const meta = {
   component: WikiFinalResults,
@@ -35,19 +35,20 @@ const meta = {
     totalScore: 330,
     results: sampleResults,
   },
-} satisfies Meta<typeof WikiFinalResults>;
+} satisfies Meta<typeof WikiFinalResults>
 
-export default meta;
+export default meta
 
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof meta>
 
-export const Completed: Story = {};
+export const Completed: Story = {}
 
 export const Abandoned: Story = {
   args: {
     title: "Wikipedia Speed Run",
-    subtitle: "Session ended. Completed puzzles keep their scores; others count as zero.",
+    subtitle:
+      "Session ended. Completed puzzles keep their scores; others count as zero.",
   },
-};
+}
 
-export { Completed as Default };
+export { Completed as Default }

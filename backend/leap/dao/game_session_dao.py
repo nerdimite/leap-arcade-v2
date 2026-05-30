@@ -43,9 +43,7 @@ class GameSessionDAO(BaseReadPgDAO[GameSession], BaseWritePgDAO[GameSession]):
         orm = result.scalar_one_or_none()
         return self._to_dto(orm) if orm is not None else None
 
-    async def create(
-        self, session: AsyncSession, player_id: str, game_id: str
-    ) -> GameSessionDTO:
+    async def create(self, session: AsyncSession, player_id: str, game_id: str) -> GameSessionDTO:
         """Insert a new active game session and return it."""
         orm = GameSession(
             id=str(uuid.uuid4()),

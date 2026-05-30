@@ -4,9 +4,9 @@ Called from the FastAPI lifespan when SEED_ON_STARTUP=true.
 """
 
 import json
-import structlog
 from pathlib import Path
 
+import structlog
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -299,9 +299,7 @@ async def _seed_word_hunt(session: AsyncSession) -> None:
             word_entry["end_row"],
             word_entry["end_col"],
         ):
-            raise ValueError(
-                f"word_hunt seed validation failed for word {word_entry['word']!r}"
-            )
+            raise ValueError(f"word_hunt seed validation failed for word {word_entry['word']!r}")
 
     puzzle_id = puzzle.get("id", "11111111-1111-1111-1111-111111111111")
     await session.execute(
@@ -387,9 +385,7 @@ async def _seed_crossword(session: AsyncSession) -> None:
             entry["start_col"],
             entry["direction"],
         ):
-            raise ValueError(
-                f"crossword seed validation failed for entry {entry['answer']!r}"
-            )
+            raise ValueError(f"crossword seed validation failed for entry {entry['answer']!r}")
 
     validate_grid_consistency(grid, entries)
 
@@ -455,4 +451,3 @@ async def _seed_crossword(session: AsyncSession) -> None:
 
     await session.commit()
     logger.info("seed.crossword.done", puzzle_id=puzzle_id, entry_count=len(entries))
-

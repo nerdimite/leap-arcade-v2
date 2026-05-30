@@ -20,7 +20,9 @@ class RapidFireQuestion(Base):
     options: Mapped[list] = mapped_column(ARRAY(String), nullable=False)
     correct_option_index: Mapped[int] = mapped_column(Integer, nullable=False)
     category: Mapped[str | None] = mapped_column(String, nullable=True)
-    time_limit_ms: Mapped[int] = mapped_column(Integer, nullable=False, server_default=text("15000"))
+    time_limit_ms: Mapped[int] = mapped_column(
+        Integer, nullable=False, server_default=text("15000")
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )

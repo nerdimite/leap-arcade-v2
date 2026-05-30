@@ -15,18 +15,19 @@ from fastapi.testclient import TestClient
 from leap.api.routes.games import wiki as wiki_routes
 from leap.games.wiki.html_rewriter import WikiHtmlRewriter
 from leap.games.wiki.wikipedia_client import WikipediaClient
-from leap.types.player import CurrentPlayer, PlayerDTO
 from leap.types.game import GameSessionStatus
+from leap.types.player import CurrentPlayer, PlayerDTO
 from leap.types.wiki import WikiPuzzleAttemptStatus, WikiRoundDTO
+from tests.fakes import FakeServiceContainer, make_fake_container
 from tests.fixtures.wiki_html_fixtures import (
     AMAZON_EC2_HTML,
     API_HTML,
     ARM_ARCHITECTURE_HTML,
     ATTENTION_ML_HTML,
     AUTOENCODER_HTML,
-    BIOS_HTML,
     BIOLOGY_HTML,
     BIOLOGY_IN_FICTION_HTML,
+    BIOS_HTML,
     COMPUTER_HTML,
     DNA_HTML,
     FREEBSD_HTML,
@@ -36,7 +37,6 @@ from tests.fixtures.wiki_html_fixtures import (
     WORD_EMBEDDING_HTML,
 )
 from tests.unit.api.wiki.conftest import register_service_exception_handler
-from tests.fakes import FakeServiceContainer, make_fake_container
 
 _REST = "https://en.wikipedia.org/api/rest_v1/page/html"
 _BASE = re.escape(_REST)
@@ -91,9 +91,7 @@ def _five_seeded_order_rounds() -> List[WikiRoundDTO]:
             start_url="https://en.wikipedia.org/wiki/Biology",
             target_title="Attention (machine learning)",
             target_url="https://en.wikipedia.org/wiki/Attention_(machine_learning)",
-            clue=(
-                "I let the model peek around, to find which words truly count — what am I?"
-            ),
+            clue=("I let the model peek around, to find which words truly count — what am I?"),
             optimal_click_count=3,
             solution_path=[
                 "Biology",
@@ -214,7 +212,6 @@ def _register_wikimedia_routes() -> None:
         )
 
 
-
 # Optimal navigations aligned with captured HTML links in wiki_html_fixtures.py
 FIXTURE_CORPUS_NAV_STEPS: List[List[str]] = [
     ["Biology in fiction", "Intelligent machine", "Attention (machine learning)"],
@@ -281,7 +278,9 @@ class TestWikiNavigateE2E:
                 assert body2["current"]["click_path"][-1] == "Artificial intelligence"
                 assert body2["current"]["current_title"] == "Artificial intelligence"
 
-                r3 = client.post("/games/wiki/navigate", json={"title": "Attention (machine learning)"})
+                r3 = client.post(
+                    "/games/wiki/navigate", json={"title": "Attention (machine learning)"}
+                )
                 assert r3.status_code == 200
                 body3 = r3.json()
                 assert body3["state"] == "puzzle_completed"
@@ -331,7 +330,9 @@ class TestWikiNavigateE2E:
                     assert r_play.status_code == 200
                     play_body = r_play.json()
                     assert play_body["state"] == "active"
-                    assert play_body["current"]["puzzle_index"] == expected[puzzle_idx].sequence_index
+                    assert (
+                        play_body["current"]["puzzle_index"] == expected[puzzle_idx].sequence_index
+                    )
                     assert play_body["current"]["clue"] == expected[puzzle_idx].clue
 
                     for title in clicks:

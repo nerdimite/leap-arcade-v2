@@ -27,7 +27,6 @@ from leap.types.word_hunt import (
     WordHuntResultDTO,
 )
 
-
 router = APIRouter()
 
 

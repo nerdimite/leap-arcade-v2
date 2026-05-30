@@ -16,9 +16,7 @@ from leap.config.settings import get_settings
 from leap.games.pinpoint.scoring import base_score_for_clues, compute_time_bonus
 from tests.e2e.conftest import E2E_POSTGRES_URL
 
-_PINPOINT_JSON = (
-    Path(__file__).resolve().parents[2] / "leap" / "seeds" / "data" / "pinpoint.json"
-)
+_PINPOINT_JSON = Path(__file__).resolve().parents[2] / "leap" / "seeds" / "data" / "pinpoint.json"
 _WRONG_GUESS = "definitely-not-the-answer"
 
 
@@ -54,9 +52,7 @@ async def fetch_pool_size() -> int:
     try:
         async with engine.connect() as conn:
             return int(
-                (
-                    await conn.execute(text("SELECT COUNT(*) FROM pinpoint_puzzles"))
-                ).scalar_one(),
+                (await conn.execute(text("SELECT COUNT(*) FROM pinpoint_puzzles"))).scalar_one(),
             )
     finally:
         await engine.dispose()

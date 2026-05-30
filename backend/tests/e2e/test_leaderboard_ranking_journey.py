@@ -31,10 +31,7 @@ async def _correct_option_index(question_id: str) -> int:
         async with engine.connect() as conn:
             row = (
                 await conn.execute(
-                    text(
-                        "SELECT correct_option_index FROM rapid_fire_questions "
-                        "WHERE id = :id"
-                    ),
+                    text("SELECT correct_option_index FROM rapid_fire_questions WHERE id = :id"),
                     {"id": question_id},
                 )
             ).one()

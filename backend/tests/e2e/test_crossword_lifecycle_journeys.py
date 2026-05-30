@@ -7,18 +7,16 @@ import httpx
 from tests.e2e.crossword_helpers import (
     _UNKNOWN_ENTRY_ID,
     assert_clues_hide_unsolved_entries,
+    assert_completed_lobby_and_leaderboard,
     assert_no_unsolved_answer_text_in_payload,
     assert_skeleton_has_no_letters,
-    assert_completed_lobby_and_leaderboard,
     auth_headers,
     check_entry,
     count_solves_for_player,
-    crossword_session_row,
     expected_terminal_score,
     expected_time_bonus,
     fetch_persisted_session_score,
     fetch_seeded_entries,
-    get_my_sessions,
     insert_player,
     install_crossword_deterministic_controls,
     install_e2e_crossword_puzzle,
@@ -105,8 +103,10 @@ async def test_partial_solve_then_submit(
     headers = auth_headers(await login(client, player_id))
     entries = await fetch_seeded_entries()
 
-    bind_session_start, advance_to_terminal, _, restore_clock = install_crossword_deterministic_controls(
-        terminal_elapsed_ms=_TERMINAL_ELAPSED_MS,
+    bind_session_start, advance_to_terminal, _, restore_clock = (
+        install_crossword_deterministic_controls(
+            terminal_elapsed_ms=_TERMINAL_ELAPSED_MS,
+        )
     )
     try:
         _, unfound = await _partial_solve_across(
@@ -167,7 +167,9 @@ async def test_mid_game_refresh_resume(
         assert resumed_puzzle["started_at"] == started_at
         assert resumed_puzzle["solved_count"] == 1
 
-        solved_clue = next(c for c in resumed_puzzle["clues"] if c["entry_id"] == across["entry_id"])
+        solved_clue = next(
+            c for c in resumed_puzzle["clues"] if c["entry_id"] == across["entry_id"]
+        )
         assert solved_clue["solved"] is True
         assert solved_clue["answer"] == across["answer"]
         assert solved_clue["cells"] is not None
@@ -264,8 +266,10 @@ async def test_reentry_after_completion(
     headers = auth_headers(await login(client, player_id))
     entries = await fetch_seeded_entries()
 
-    bind_session_start, advance_to_terminal, _, restore_clock = install_crossword_deterministic_controls(
-        terminal_elapsed_ms=_TERMINAL_ELAPSED_MS,
+    bind_session_start, advance_to_terminal, _, restore_clock = (
+        install_crossword_deterministic_controls(
+            terminal_elapsed_ms=_TERMINAL_ELAPSED_MS,
+        )
     )
     try:
         play_body = await play_crossword(client, headers)
@@ -375,8 +379,10 @@ async def test_time_bonus_determinism_at_boundary(
     headers = auth_headers(await login(client, player_id))
     entries = await fetch_seeded_entries()
 
-    bind_session_start, advance_to_terminal, _, restore_clock = install_crossword_deterministic_controls(
-        terminal_elapsed_ms=_TERMINAL_ELAPSED_MS,
+    bind_session_start, advance_to_terminal, _, restore_clock = (
+        install_crossword_deterministic_controls(
+            terminal_elapsed_ms=_TERMINAL_ELAPSED_MS,
+        )
     )
     try:
         play_body = await play_crossword(client, headers)

@@ -16,7 +16,6 @@ from leap.service.container import ServiceContainer
 from leap.types.player import CurrentPlayer
 from leap.types.rapid_fire import RapidFirePlayPayload, RapidFireQuestionDTO, RapidFireResultDTO
 
-
 router = APIRouter()
 
 
@@ -81,7 +80,9 @@ async def answer(
         current_score=out.current_score,
         questions_answered=out.questions_answered,
         questions_remaining=out.questions_remaining,
-        next_question=_question_schema(out.next_question) if out.next_question is not None else None,
+        next_question=_question_schema(out.next_question)
+        if out.next_question is not None
+        else None,
         result=_result_schema(out.result) if out.result is not None else None,
     )
 

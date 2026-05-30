@@ -1,12 +1,12 @@
-"use client";
+"use client"
 
-import { Check } from "lucide-react";
+import { Check } from "lucide-react"
 
-import type { Clue } from "@/services/word_hunt/schema";
+import type { Clue } from "@/services/word_hunt/schema"
 
 type Props = {
-  clues: Clue[];
-};
+  clues: Clue[]
+}
 
 export function ClueListPanel({ clues }: Props) {
   return (
@@ -15,11 +15,11 @@ export function ClueListPanel({ clues }: Props) {
         <ClueRow key={clue.word_id} clue={clue} />
       ))}
     </ul>
-  );
+  )
 }
 
 function ClueRow({ clue }: { clue: Clue }) {
-  const { found, word } = clue;
+  const { found, word } = clue
 
   return (
     <li
@@ -28,11 +28,13 @@ function ClueRow({ clue }: { clue: Clue }) {
       }`}
     >
       <div className="min-w-0 flex-1">
-        <p className={`text-[14px] leading-snug ${found ? "text-ink-faint" : "text-ink-dim"}`}>
+        <p
+          className={`text-[14px] leading-snug ${found ? "text-ink-faint" : "text-ink-dim"}`}
+        >
           {clue.clue}
         </p>
         {found && word ? (
-          <p className="animate-clue-reveal mt-1.5 text-[13px] font-bold uppercase tracking-[0.5px] text-four motion-reduce:animate-none">
+          <p className="mt-1.5 animate-clue-reveal text-[13px] font-bold tracking-[0.5px] text-four uppercase motion-reduce:animate-none">
             <span className="sr-only">Solved: </span>
             {word}
           </p>
@@ -42,9 +44,9 @@ function ClueRow({ clue }: { clue: Clue }) {
         <Check
           aria-hidden
           strokeWidth={3.5}
-          className="animate-clue-check mt-px size-5 shrink-0 text-four motion-reduce:animate-none"
+          className="mt-px size-5 shrink-0 animate-clue-check text-four motion-reduce:animate-none"
         />
       ) : null}
     </li>
-  );
+  )
 }

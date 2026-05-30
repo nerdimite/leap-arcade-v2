@@ -22,7 +22,9 @@ def _wiki_svc(container: ServiceContainer) -> WikiSpeedRunService:
     return container.wiki_speed_run
 
 
-@router.post("/play", response_model=WikiPlayResponse, summary="Start or resume Wikipedia Speed Run")
+@router.post(
+    "/play", response_model=WikiPlayResponse, summary="Start or resume Wikipedia Speed Run"
+)
 async def play(
     player: CurrentPlayer = Depends(get_current_player),
     container: ServiceContainer = Depends(get_container),

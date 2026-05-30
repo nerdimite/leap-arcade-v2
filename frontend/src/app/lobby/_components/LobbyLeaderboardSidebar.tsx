@@ -1,30 +1,32 @@
-"use client";
+"use client"
 
-import { useLeaderboard } from "@/services/leaderboard/hooks";
+import { useLeaderboard } from "@/services/leaderboard/hooks"
 
-import { MiniLeaderboard } from "./MiniLeaderboard";
+import { MiniLeaderboard } from "./MiniLeaderboard"
 
 function normalizeCorp(s: string): string {
-  return s.toLowerCase();
+  return s.toLowerCase()
 }
 
 export default function LobbyLeaderboardSidebar({
   currentCorpId,
 }: {
-  currentCorpId: string | null;
+  currentCorpId: string | null
 }) {
-  const { data } = useLeaderboard();
-  const entries = data?.entries ?? [];
-  const top10 = entries.slice(0, 10);
+  const { data } = useLeaderboard()
+  const entries = data?.entries ?? []
+  const top10 = entries.slice(0, 10)
 
   const selfRow =
     currentCorpId != null
-      ? entries.find((e) => normalizeCorp(e.corp_id) === normalizeCorp(currentCorpId))
-      : undefined;
+      ? entries.find(
+          (e) => normalizeCorp(e.corp_id) === normalizeCorp(currentCorpId)
+        )
+      : undefined
   const selfInTop10 =
     currentCorpId != null &&
-    top10.some((e) => normalizeCorp(e.corp_id) === normalizeCorp(currentCorpId));
-  const showPinned = Boolean(selfRow && currentCorpId && !selfInTop10);
+    top10.some((e) => normalizeCorp(e.corp_id) === normalizeCorp(currentCorpId))
+  const showPinned = Boolean(selfRow && currentCorpId && !selfInTop10)
 
   return (
     <MiniLeaderboard
@@ -33,5 +35,5 @@ export default function LobbyLeaderboardSidebar({
       pinnedEntry={showPinned ? selfRow : undefined}
       fullBoardHref="/leaderboard"
     />
-  );
+  )
 }

@@ -29,7 +29,9 @@ class WikiRound(Base):
     target_url: Mapped[str] = mapped_column(String, nullable=False)
     clue: Mapped[str] = mapped_column(String, nullable=False)
     optimal_click_count: Mapped[int] = mapped_column(Integer, nullable=False)
-    solution_path: Mapped[list] = mapped_column(ARRAY(String), nullable=False, server_default=text("'{}'::text[]"))
+    solution_path: Mapped[list] = mapped_column(
+        ARRAY(String), nullable=False, server_default=text("'{}'::text[]")
+    )
     time_limit_ms: Mapped[int] = mapped_column(
         Integer, nullable=False, server_default=text("180000")
     )

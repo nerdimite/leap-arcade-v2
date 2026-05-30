@@ -1,6 +1,7 @@
 """DAO for loading all rapid-fire questions into the startup cache."""
 
 from typing import List
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from leap.dao.base_pg_dao import BaseReadPgDAO

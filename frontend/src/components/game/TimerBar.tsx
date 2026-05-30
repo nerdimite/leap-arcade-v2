@@ -1,5 +1,5 @@
 export function TimerBar(props: { percentage: number }) {
-  const pct = Math.min(100, Math.max(0, props.percentage));
+  const pct = Math.min(100, Math.max(0, props.percentage))
 
   return (
     <div
@@ -12,8 +12,11 @@ export function TimerBar(props: { percentage: number }) {
     >
       <div
         className="h-full rounded-full transition-[width] duration-75 ease-linear"
-        style={{ width: `${pct}%`, background: "var(--accent, var(--primary))" }}
+        style={{
+          width: `${pct}%`,
+          background: "var(--accent, var(--primary))",
+        }}
       />
     </div>
-  );
+  )
 }

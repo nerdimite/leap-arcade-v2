@@ -1,56 +1,63 @@
 /** Assembled dumb Crossword screen: grid + clue panel play surface, or result. */
 
-import type { CSSProperties, RefObject } from "react";
+import type { CSSProperties, RefObject } from "react"
 
-import { GameHeader } from "@/components/game/GameHeader";
-import { ScoreReadout } from "@/components/game/ScoreReadout";
-import type { PuzzleState, Result } from "@/services/crossword/schema";
+import { GameHeader } from "@/components/game/GameHeader"
+import { ScoreReadout } from "@/components/game/ScoreReadout"
+import type { PuzzleState, Result } from "@/services/crossword/schema"
 
-import { ClueListPanel } from "./ClueListPanel";
-import { CrosswordGrid } from "./CrosswordGrid";
-import { ResultView } from "./ResultView";
-import { ScoreIncrementChip } from "./ScoreIncrementChip";
+import { ClueListPanel } from "./ClueListPanel"
+import { CrosswordGrid } from "./CrosswordGrid"
+import { ResultView } from "./ResultView"
+import { ScoreIncrementChip } from "./ScoreIncrementChip"
 
 export type CrosswordViewState =
   | {
-      status: "playing";
-      puzzle: PuzzleState;
-      sessionScore: number;
-      displayLetter: (row: number, col: number) => string;
-      lockedCells: Set<string>;
-      selectedCell: { row: number; col: number } | null;
-      activeEntryCells: Set<string>;
-      missFlashCells: Set<string>;
-      solveFlashOrder?: Map<string, number>;
-      activeEntryId: string | null;
-      showScoreIncrement: boolean;
-      submitDisabled: boolean;
+      status: "playing"
+      puzzle: PuzzleState
+      sessionScore: number
+      displayLetter: (row: number, col: number) => string
+      lockedCells: Set<string>
+      selectedCell: { row: number; col: number } | null
+      activeEntryCells: Set<string>
+      missFlashCells: Set<string>
+      solveFlashOrder?: Map<string, number>
+      activeEntryId: string | null
+      showScoreIncrement: boolean
+      submitDisabled: boolean
     }
-  | { status: "result"; result: Result };
+  | { status: "result"; result: Result }
 
 export type CrosswordViewProps = {
-  viewState: CrosswordViewState;
-  onCellClick: (row: number, col: number) => void;
-  onClueClick: (entryId: string) => void;
-  onSubmit: () => void;
-  onBackToLobby: () => void;
-  gridRef?: RefObject<HTMLDivElement | null>;
-  hiddenInputRef?: RefObject<HTMLInputElement | null>;
-};
+  viewState: CrosswordViewState
+  onCellClick: (row: number, col: number) => void
+  onClueClick: (entryId: string) => void
+  onSubmit: () => void
+  onBackToLobby: () => void
+  gridRef?: RefObject<HTMLDivElement | null>
+  hiddenInputRef?: RefObject<HTMLInputElement | null>
+}
 
 /** Crossword runs on its coral marquee accent. */
-const CROSS_ACCENT = { "--accent": "var(--cross)" } as CSSProperties;
+const CROSS_ACCENT = { "--accent": "var(--cross)" } as CSSProperties
 
 export function CrosswordView(props: CrosswordViewProps) {
-  const { viewState, onCellClick, onClueClick, onSubmit, onBackToLobby, gridRef, hiddenInputRef } =
-    props;
+  const {
+    viewState,
+    onCellClick,
+    onClueClick,
+    onSubmit,
+    onBackToLobby,
+    gridRef,
+    hiddenInputRef,
+  } = props
 
   if (viewState.status === "result") {
     return (
       <div style={CROSS_ACCENT}>
         <ResultView result={viewState.result} onBackToLobby={onBackToLobby} />
       </div>
-    );
+    )
   }
 
   const {
@@ -65,10 +72,13 @@ export function CrosswordView(props: CrosswordViewProps) {
     activeEntryId,
     showScoreIncrement,
     submitDisabled,
-  } = viewState;
+  } = viewState
 
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-6 p-4 lg:flex-row" style={CROSS_ACCENT}>
+    <div
+      className="mx-auto flex max-w-6xl flex-col gap-6 p-4 lg:flex-row"
+      style={CROSS_ACCENT}
+    >
       <div className="space-y-4">
         <GameHeader
           gameId="crossword"
@@ -80,7 +90,7 @@ export function CrosswordView(props: CrosswordViewProps) {
           />
           <button
             type="button"
-            className="inline-flex h-11 items-center justify-center rounded-[var(--radius)] border-2 border-[var(--accent)] bg-[var(--accent)] px-5 text-[12px] font-extrabold uppercase tracking-[1.5px] text-bg shadow-[var(--shadow-cabinet-sm)] transition-[transform,box-shadow] duration-150 ease-[var(--ease-arcade)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:pointer-events-none disabled:opacity-50 motion-reduce:transition-none"
+            className="inline-flex h-11 items-center justify-center rounded-[var(--radius)] border-2 border-[var(--accent)] bg-[var(--accent)] px-5 text-[12px] font-extrabold tracking-[1.5px] text-bg uppercase shadow-[var(--shadow-cabinet-sm)] transition-[transform,box-shadow] duration-150 ease-[var(--ease-arcade)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:pointer-events-none disabled:opacity-50 motion-reduce:transition-none"
             disabled={submitDisabled}
             onClick={onSubmit}
           >
@@ -115,5 +125,5 @@ export function CrosswordView(props: CrosswordViewProps) {
         />
       </div>
     </div>
-  );
+  )
 }

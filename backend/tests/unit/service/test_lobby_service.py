@@ -3,9 +3,9 @@
 import pytest
 
 from leap.api.deps import CurrentPlayer
+from leap.core.common.time import utc_now
 from leap.service.lobby_service import LobbyService
 from leap.types.game import GameSessionDTO, GameSessionStatus
-from leap.core.common.time import utc_now
 from tests.fakes import FakeContextManager, FakeGameSessionDAO
 
 
@@ -37,6 +37,7 @@ class TestLobbyServiceGetLobby:
     async def test_returns_all_games_when_player_has_not_played_any(self):
         """Fresh player → all games returned with has_played=False and no score."""
         from leap.config.constants import GAMES
+
         svc = _make_service()
         result = await svc.get_lobby(_make_player())
 
@@ -58,6 +59,7 @@ class TestLobbyServiceGetLobby:
     async def test_unplayed_games_still_present_when_some_played(self):
         """Played one game → the other games still appear with has_played=False."""
         from leap.config.constants import GAMES
+
         svc = _make_service(sessions=[_completed_session("rapid_fire", 80)])
         result = await svc.get_lobby(_make_player())
 
@@ -118,6 +120,7 @@ class TestLobbyServiceGetLobby:
         svc = _make_service()
         result = await svc.get_lobby(_make_player(display_name="Bob Verma"))
         assert result.player_display_name == "Bob Verma"
+
 
 # TODO (executor): add edge case tests for:
 # - player with sessions for all 5 games

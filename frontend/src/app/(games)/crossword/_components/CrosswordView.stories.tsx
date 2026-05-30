@@ -1,7 +1,7 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import type { Meta, StoryObj } from "@storybook/nextjs-vite"
+import { fn } from "storybook/test"
 
-import type { Result } from "@/services/crossword/schema";
+import type { Result } from "@/services/crossword/schema"
 
 import {
   activeHighlightCells,
@@ -10,13 +10,15 @@ import {
   inProgressPuzzle,
   lockedCellsFromPuzzle,
   missFlashCells,
-} from "../_lib/storyFixtures";
-import { CrosswordView } from "./CrosswordView";
+} from "../_lib/storyFixtures"
+import { CrosswordView } from "./CrosswordView"
 
 const inProgressDisplayLetter = (row: number, col: number) =>
-  inProgressPuzzle.cells[row]?.[col]?.letter ?? draftInProgress[`${row},${col}`] ?? "";
+  inProgressPuzzle.cells[row]?.[col]?.letter ??
+  draftInProgress[`${row},${col}`] ??
+  ""
 
-const activeEntryId = inProgressPuzzle.clues[0]?.entry_id ?? null;
+const activeEntryId = inProgressPuzzle.clues[0]?.entry_id ?? null
 
 const sampleResult: Result = {
   score: 350,
@@ -43,7 +45,7 @@ const sampleResult: Result = {
       cells: [],
     },
   ],
-};
+}
 
 const meta = {
   component: CrosswordView,
@@ -54,11 +56,11 @@ const meta = {
     onSubmit: fn(),
     onBackToLobby: fn(),
   },
-} satisfies Meta<typeof CrosswordView>;
+} satisfies Meta<typeof CrosswordView>
 
-export default meta;
+export default meta
 
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof meta>
 
 export const Playing: Story = {
   args: {
@@ -76,7 +78,7 @@ export const Playing: Story = {
       submitDisabled: false,
     },
   },
-};
+}
 
 export const WrongFlash: Story = {
   args: {
@@ -94,7 +96,7 @@ export const WrongFlash: Story = {
       submitDisabled: false,
     },
   },
-};
+}
 
 export const SolvedEntry: Story = {
   args: {
@@ -102,7 +104,8 @@ export const SolvedEntry: Story = {
       status: "playing",
       puzzle: allSolvedPuzzle,
       sessionScore: 300,
-      displayLetter: (row, col) => allSolvedPuzzle.cells[row]?.[col]?.letter ?? "",
+      displayLetter: (row, col) =>
+        allSolvedPuzzle.cells[row]?.[col]?.letter ?? "",
       lockedCells: lockedCellsFromPuzzle(allSolvedPuzzle),
       selectedCell: { row: 0, col: 0 },
       activeEntryCells: activeHighlightCells,
@@ -112,11 +115,11 @@ export const SolvedEntry: Story = {
       submitDisabled: false,
     },
   },
-};
+}
 
 export const ResultStory: Story = {
   name: "Result",
   args: {
     viewState: { status: "result", result: sampleResult },
   },
-};
+}

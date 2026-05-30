@@ -8,7 +8,11 @@ import "../src/app/globals.css"
 
 // Mirror the app's font wiring (layout.tsx) so pixel/body type passes through to stories.
 const fontSans = Inter({ subsets: ["latin"], variable: "--font-sans" })
-const fontPixel = Press_Start_2P({ subsets: ["latin"], weight: "400", variable: "--font-pixel" })
+const fontPixel = Press_Start_2P({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-pixel",
+})
 const fontMono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono" })
 
 const fontClasses = [
@@ -39,7 +43,7 @@ function StoryProviders({ children }: { children: React.ReactNode }) {
           queries: { retry: false },
         },
       }),
-    [],
+    []
   )
 
   return (

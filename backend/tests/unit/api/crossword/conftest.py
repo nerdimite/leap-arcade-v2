@@ -9,13 +9,13 @@ from fastapi.testclient import TestClient
 
 from leap.api.routes.games import crossword as crossword_routes
 from leap.games.crossword.service import CrosswordService
-from leap.types.crossword import CrosswordPuzzleDTO, CrosswordEntryDTO
+from leap.types.crossword import CrosswordEntryDTO, CrosswordPuzzleDTO
 from leap.types.player import CurrentPlayer, PlayerDTO
 from tests.fakes import (
     FakeContextManager,
-    FakeGameSessionDAO,
-    FakeCrosswordSolveDAO,
     FakeCrosswordPuzzleDAO,
+    FakeCrosswordSolveDAO,
+    FakeGameSessionDAO,
     FakePlayerDAO,
 )
 from tests.unit.api.rapid_fire.conftest import register_service_exception_handler
@@ -37,16 +37,106 @@ GRID = [
 ]
 
 ENTRIES = [
-    CrosswordEntryDTO(id="e1", puzzle_id=PUZZLE_ID, number=1, direction="across", start_row=0, start_col=0, answer="MICROSERVICE", clue="Small, independently deployable unit (12)"),
-    CrosswordEntryDTO(id="e2", puzzle_id=PUZZLE_ID, number=1, direction="down", start_row=0, start_col=0, answer="MOCK", clue="Simulated object (4)"),
-    CrosswordEntryDTO(id="e3", puzzle_id=PUZZLE_ID, number=2, direction="down", start_row=0, start_col=11, answer="EVENTDRIVEN", clue="Communication style (11)"),
-    CrosswordEntryDTO(id="e4", puzzle_id=PUZZLE_ID, number=3, direction="down", start_row=2, start_col=5, answer="DNS", clue="Protocol (3)"),
-    CrosswordEntryDTO(id="e5", puzzle_id=PUZZLE_ID, number=4, direction="across", start_row=3, start_col=0, answer="KUBERNETES", clue="Container orchestration platform (10)"),
-    CrosswordEntryDTO(id="e6", puzzle_id=PUZZLE_ID, number=5, direction="down", start_row=5, start_col=4, answer="GITOPS", clue="Philosophy of treating infrastructure (6)"),
-    CrosswordEntryDTO(id="e7", puzzle_id=PUZZLE_ID, number=6, direction="down", start_row=5, start_col=0, answer="CACHING", clue="Technique (7)"),
-    CrosswordEntryDTO(id="e8", puzzle_id=PUZZLE_ID, number=7, direction="across", start_row=6, start_col=0, answer="ATOMICITY", clue="ACID property (10)"),
-    CrosswordEntryDTO(id="e9", puzzle_id=PUZZLE_ID, number=8, direction="down", start_row=7, start_col=9, answer="DRIFT", clue="When model degrades (5)"),
-    CrosswordEntryDTO(id="e10", puzzle_id=PUZZLE_ID, number=9, direction="across", start_row=9, start_col=4, answer="PIPELINE", clue="Automated workflow (8)"),
+    CrosswordEntryDTO(
+        id="e1",
+        puzzle_id=PUZZLE_ID,
+        number=1,
+        direction="across",
+        start_row=0,
+        start_col=0,
+        answer="MICROSERVICE",
+        clue="Small, independently deployable unit (12)",
+    ),
+    CrosswordEntryDTO(
+        id="e2",
+        puzzle_id=PUZZLE_ID,
+        number=1,
+        direction="down",
+        start_row=0,
+        start_col=0,
+        answer="MOCK",
+        clue="Simulated object (4)",
+    ),
+    CrosswordEntryDTO(
+        id="e3",
+        puzzle_id=PUZZLE_ID,
+        number=2,
+        direction="down",
+        start_row=0,
+        start_col=11,
+        answer="EVENTDRIVEN",
+        clue="Communication style (11)",
+    ),
+    CrosswordEntryDTO(
+        id="e4",
+        puzzle_id=PUZZLE_ID,
+        number=3,
+        direction="down",
+        start_row=2,
+        start_col=5,
+        answer="DNS",
+        clue="Protocol (3)",
+    ),
+    CrosswordEntryDTO(
+        id="e5",
+        puzzle_id=PUZZLE_ID,
+        number=4,
+        direction="across",
+        start_row=3,
+        start_col=0,
+        answer="KUBERNETES",
+        clue="Container orchestration platform (10)",
+    ),
+    CrosswordEntryDTO(
+        id="e6",
+        puzzle_id=PUZZLE_ID,
+        number=5,
+        direction="down",
+        start_row=5,
+        start_col=4,
+        answer="GITOPS",
+        clue="Philosophy of treating infrastructure (6)",
+    ),
+    CrosswordEntryDTO(
+        id="e7",
+        puzzle_id=PUZZLE_ID,
+        number=6,
+        direction="down",
+        start_row=5,
+        start_col=0,
+        answer="CACHING",
+        clue="Technique (7)",
+    ),
+    CrosswordEntryDTO(
+        id="e8",
+        puzzle_id=PUZZLE_ID,
+        number=7,
+        direction="across",
+        start_row=6,
+        start_col=0,
+        answer="ATOMICITY",
+        clue="ACID property (10)",
+    ),
+    CrosswordEntryDTO(
+        id="e9",
+        puzzle_id=PUZZLE_ID,
+        number=8,
+        direction="down",
+        start_row=7,
+        start_col=9,
+        answer="DRIFT",
+        clue="When model degrades (5)",
+    ),
+    CrosswordEntryDTO(
+        id="e10",
+        puzzle_id=PUZZLE_ID,
+        number=9,
+        direction="across",
+        start_row=9,
+        start_col=4,
+        answer="PIPELINE",
+        clue="Automated workflow (8)",
+    ),
 ]
 
 

@@ -20,9 +20,7 @@ async def test_suite_seeds_question_pool(db_setup: None) -> None:
     engine = create_async_engine(E2E_POSTGRES_URL)
     try:
         async with engine.connect() as conn:
-            n = (
-                await conn.execute(text("SELECT COUNT(*) FROM rapid_fire_questions"))
-            ).scalar_one()
+            n = (await conn.execute(text("SELECT COUNT(*) FROM rapid_fire_questions"))).scalar_one()
             assert isinstance(n, int)
             assert n > 0
     finally:
@@ -39,15 +37,12 @@ async def test_truncate_preserves_rapid_fire_content(db_setup: None) -> None:
         async with engine.begin() as conn:
             await conn.execute(
                 text(
-                    "INSERT INTO players (id, display_name) "
-                    "VALUES ('e2e-truncate-marker', 'Infra')"
+                    "INSERT INTO players (id, display_name) VALUES ('e2e-truncate-marker', 'Infra')"
                 )
             )
         await truncate_transaction_tables(engine)
         async with engine.connect() as conn:
-            players = (
-                await conn.execute(text("SELECT COUNT(*) FROM players"))
-            ).scalar_one()
+            players = (await conn.execute(text("SELECT COUNT(*) FROM players"))).scalar_one()
             after_questions = (
                 await conn.execute(text("SELECT COUNT(*) FROM rapid_fire_questions"))
             ).scalar_one()

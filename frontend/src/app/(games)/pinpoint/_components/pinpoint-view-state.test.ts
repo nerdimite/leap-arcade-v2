@@ -1,9 +1,9 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest"
 
-import type { PuzzleState } from "@/services/pinpoint/schema";
+import type { PuzzleState } from "@/services/pinpoint/schema"
 
-import { pinpointInitialState } from "../_hooks/usePinpointReducer";
-import { toPinpointViewState } from "./pinpoint-view-state";
+import { pinpointInitialState } from "../_hooks/usePinpointReducer"
+import { toPinpointViewState } from "./pinpoint-view-state"
 
 const samplePuzzle: PuzzleState = {
   puzzle_id: "p1",
@@ -15,7 +15,7 @@ const samplePuzzle: PuzzleState = {
   score: null,
   time_bonus: null,
   started_at: "2026-05-26T12:00:00.000Z",
-};
+}
 
 describe("toPinpointViewState", () => {
   it("maps playing with input enabled", () => {
@@ -28,8 +28,8 @@ describe("toPinpointViewState", () => {
           sessionScore: 100,
           guess: "test",
         },
-        false,
-      ),
+        false
+      )
     ).toEqual({
       status: "playing",
       sessionScore: 100,
@@ -39,8 +39,8 @@ describe("toPinpointViewState", () => {
       overlay: null,
       shakeBadgeIndex: null,
       errorMessage: null,
-    });
-  });
+    })
+  })
 
   it("maps flashing with overlay and disabled input", () => {
     expect(
@@ -48,14 +48,19 @@ describe("toPinpointViewState", () => {
         {
           ...pinpointInitialState,
           phase: "flashing",
-          puzzle: { ...samplePuzzle, status: "solved", score: 466, time_bonus: 66 },
+          puzzle: {
+            ...samplePuzzle,
+            status: "solved",
+            score: 466,
+            time_bonus: 66,
+          },
           sessionScore: 466,
           flashKind: "solved",
           flashBaseScore: 400,
           flashTimeBonus: 66,
         },
-        false,
-      ),
+        false
+      )
     ).toEqual({
       status: "playing",
       sessionScore: 466,
@@ -65,8 +70,8 @@ describe("toPinpointViewState", () => {
       overlay: { kind: "solved", baseScore: 400, timeBonus: 66, cluesUsed: 2 },
       shakeBadgeIndex: null,
       errorMessage: null,
-    });
-  });
+    })
+  })
 
   it("maps advancing to loading even when puzzle is still present", () => {
     expect(
@@ -76,10 +81,10 @@ describe("toPinpointViewState", () => {
           phase: "advancing",
           puzzle: { ...samplePuzzle, status: "solved", score: 400 },
         },
-        true,
-      ),
-    ).toEqual({ status: "loading" });
-  });
+        true
+      )
+    ).toEqual({ status: "loading" })
+  })
 
   it("maps result phase", () => {
     const result = {
@@ -88,7 +93,7 @@ describe("toPinpointViewState", () => {
       puzzles_failed: 0,
       puzzles_not_reached: 0,
       puzzles: [],
-    };
+    }
 
     expect(
       toPinpointViewState(
@@ -97,11 +102,11 @@ describe("toPinpointViewState", () => {
           phase: "result",
           result,
         },
-        false,
-      ),
+        false
+      )
     ).toEqual({
       status: "result",
       result,
-    });
-  });
-});
+    })
+  })
+})

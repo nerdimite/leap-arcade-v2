@@ -1,9 +1,9 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import type { Meta, StoryObj } from "@storybook/nextjs-vite"
+import { fn } from "storybook/test"
 
-import type { WikiActivePuzzle } from "@/services/wiki/schema";
+import type { WikiActivePuzzle } from "@/services/wiki/schema"
 
-import { WikiActiveView } from "./WikiActiveView";
+import { WikiActiveView } from "./WikiActiveView"
 
 const sampleCurrent: WikiActivePuzzle = {
   game_session_id: "gs-story",
@@ -22,7 +22,7 @@ const sampleCurrent: WikiActivePuzzle = {
     <p><a data-wiki-title="Moon" href="#">Moon</a></p>
   `,
   back_enabled: true,
-};
+}
 
 const meta = {
   component: WikiActiveView,
@@ -36,10 +36,10 @@ const meta = {
     onNavigate: fn(async () => Promise.resolve()),
     onBack: fn(),
   },
-} satisfies Meta<typeof WikiActiveView>;
+} satisfies Meta<typeof WikiActiveView>
 
-export default meta;
+export default meta
 
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof meta>
 
-export const Default: Story = {};
+export const Default: Story = {}

@@ -1,43 +1,49 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from "react"
 
 import {
   elapsedMsFromStartedAt,
   formatMmSsFromElapsedMs,
   stopwatchToneClass,
-} from "@/app/(games)/four-pics/_lib/stopwatch";
-import { FOUR_PICS_TIME_DECAY_MS } from "@/lib/constants";
-import { cn } from "@/lib/utils";
+} from "@/app/(games)/four-pics/_lib/stopwatch"
+import { FOUR_PICS_TIME_DECAY_MS } from "@/lib/constants"
+import { cn } from "@/lib/utils"
 
 export type StopwatchProps = {
-  startedAt: string;
-};
+  startedAt: string
+}
 
 export function Stopwatch({ startedAt }: StopwatchProps) {
-  const [elapsedMs, setElapsedMs] = useState(() => elapsedMsFromStartedAt(startedAt));
+  const [elapsedMs, setElapsedMs] = useState(() =>
+    elapsedMsFromStartedAt(startedAt)
+  )
 
   useEffect(() => {
-    const tick = () => setElapsedMs(elapsedMsFromStartedAt(startedAt));
-    tick();
-    const id = window.setInterval(tick, 100);
-    return () => window.clearInterval(id);
-  }, [startedAt]);
+    const tick = () => setElapsedMs(elapsedMsFromStartedAt(startedAt))
+    tick()
+    const id = window.setInterval(tick, 100)
+    return () => window.clearInterval(id)
+  }, [startedAt])
 
-  const pastDecay = elapsedMs >= FOUR_PICS_TIME_DECAY_MS;
+  const pastDecay = elapsedMs >= FOUR_PICS_TIME_DECAY_MS
 
   return (
     <div className="flex flex-col items-end gap-0.5">
       <span
-        className={cn("font-mono text-lg tabular-nums tracking-tight", stopwatchToneClass(elapsedMs))}
+        className={cn(
+          "font-mono text-lg tracking-tight tabular-nums",
+          stopwatchToneClass(elapsedMs)
+        )}
+        role="timer"
         aria-live="polite"
         aria-label={`Elapsed time ${formatMmSsFromElapsedMs(elapsedMs)}`}
       >
         {formatMmSsFromElapsedMs(elapsedMs)}
       </span>
       {pastDecay ? (
-        <span className="text-muted-foreground text-xs">No time bonus</span>
+        <span className="text-xs text-muted-foreground">No time bonus</span>
       ) : null}
     </div>
-  );
+  )
 }

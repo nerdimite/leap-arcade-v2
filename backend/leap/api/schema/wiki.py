@@ -108,12 +108,16 @@ def wiki_play_to_response(payload) -> WikiPlayActiveResponse | WikiPlayTerminalR
         return WikiPlayTerminalResponse(
             state=payload.state,
             total_score=payload.total_score,
-            results=[WikiPuzzleResultSchema.model_validate(r.model_dump()) for r in payload.results],
+            results=[
+                WikiPuzzleResultSchema.model_validate(r.model_dump()) for r in payload.results
+            ],
         )
     raise TypeError(f"Unsupported wiki play payload: {type(payload)!r}")
 
 
-def wiki_navigate_to_response(payload) -> WikiNavigateActiveResponse | WikiNavigatePuzzleCompletedResponse:
+def wiki_navigate_to_response(
+    payload,
+) -> WikiNavigateActiveResponse | WikiNavigatePuzzleCompletedResponse:
     from leap.types.wiki import WikiNavigateActiveDTO, WikiNavigatePuzzleCompletedDTO
 
     if isinstance(payload, WikiNavigateActiveDTO):

@@ -1,9 +1,9 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import type { Meta, StoryObj } from "@storybook/nextjs-vite"
+import { fn } from "storybook/test"
 
-import type { Result } from "@/services/rapid_fire/schema";
+import type { Result } from "@/services/rapid_fire/schema"
 
-import { ResultCard } from "./ResultCard";
+import { ResultCard } from "./ResultCard"
 
 const midResult: Result = {
   score: 42,
@@ -11,18 +11,18 @@ const midResult: Result = {
   wrong_count: 4,
   skipped_count: 1,
   time_taken_seconds: 92.3,
-};
+}
 
 const meta = {
   component: ResultCard,
   args: {
     onBackToLobby: fn(),
   },
-} satisfies Meta<typeof ResultCard>;
+} satisfies Meta<typeof ResultCard>
 
-export default meta;
+export default meta
 
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {
@@ -32,4 +32,4 @@ export const Default: Story = {
     skippedCount: midResult.skipped_count,
     timeTakenSeconds: midResult.time_taken_seconds,
   },
-};
+}

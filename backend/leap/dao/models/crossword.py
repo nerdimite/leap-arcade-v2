@@ -41,7 +41,9 @@ class CrosswordPuzzle(Base):
 class CrosswordEntry(Base):
     __tablename__ = "crossword_entries"
     __table_args__ = (
-        UniqueConstraint("puzzle_id", "number", "direction", name="uq_crossword_entries_puzzle_num_dir"),
+        UniqueConstraint(
+            "puzzle_id", "number", "direction", name="uq_crossword_entries_puzzle_num_dir"
+        ),
         CheckConstraint(
             "direction IN ('across', 'down')",
             name="ck_crossword_entries_direction",

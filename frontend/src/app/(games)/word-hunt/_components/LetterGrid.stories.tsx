@@ -1,14 +1,13 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
-
-import { LetterGrid } from "./LetterGrid";
+import type { Meta, StoryObj } from "@storybook/nextjs-vite"
+import { fn } from "storybook/test"
 import {
   allFoundClues,
   devopsTrace,
   midDragPreview,
   sampleGrid,
   springTrace,
-} from "../_lib/storyFixtures";
+} from "../_lib/storyFixtures"
+import { LetterGrid } from "./LetterGrid"
 
 const meta = {
   component: LetterGrid,
@@ -24,33 +23,36 @@ const meta = {
     onDragMove: fn(),
     onDragEnd: fn(),
   },
-} satisfies Meta<typeof LetterGrid>;
+} satisfies Meta<typeof LetterGrid>
 
-export default meta;
+export default meta
 
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof meta>
 
-export const Empty: Story = {};
+export const Empty: Story = {}
 
 export const InProgress: Story = {
   args: {
     highlighted: [devopsTrace, springTrace],
   },
-};
+}
 
 export const AllFound: Story = {
   args: {
     highlighted: allFoundClues
       .map((clue) => clue.coordinates)
-      .filter((coordinates): coordinates is NonNullable<typeof coordinates> => coordinates != null),
+      .filter(
+        (coordinates): coordinates is NonNullable<typeof coordinates> =>
+          coordinates != null
+      ),
   },
-};
+}
 
 export const MidDrag: Story = {
   args: {
     highlighted: [devopsTrace],
     preview: midDragPreview,
   },
-};
+}
 
-export { Empty as Default };
+export { Empty as Default }

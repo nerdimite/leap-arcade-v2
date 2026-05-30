@@ -1,38 +1,38 @@
 """Crossword — session lifecycle and check resolution."""
 
 from datetime import datetime
-from typing import Callable, Dict, List, Optional, Set, Any
+from typing import Any, Callable, Dict, List, Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from leap.core.common.time import utc_now
 from leap.core.context_manager import ContextManager
-from leap.dao.game_session_dao import GameSessionDAO
 from leap.dao.crossword_puzzle_dao import CrosswordPuzzleDAO
 from leap.dao.crossword_solve_dao import CrosswordSolveDAO
-from leap.games.crossword.grid import entry_cells, walk_entry, build_skeleton
+from leap.dao.game_session_dao import GameSessionDAO
+from leap.games.crossword.grid import build_skeleton, entry_cells
 from leap.games.crossword.scoring import (
     compute_base_score,
     compute_final_score,
     compute_time_bonus,
 )
 from leap.service.exceptions import (
-    NoCrosswordPuzzleAvailableException,
     CrosswordSessionAlreadyCompletedException,
+    NoCrosswordPuzzleAvailableException,
 )
-from leap.types.game import GameSessionDTO, GameSessionStatus
 from leap.types.crossword import (
-    CrosswordEntryDTO,
-    CrosswordPuzzleDTO,
-    CrosswordSolveDTO,
-    CrosswordPuzzleStateDTO,
     CellSkeleton,
     ClueSkeleton,
-    CrosswordSolvedEntryDTO,
-    CrosswordResultDTO,
-    CrosswordPlayPayload,
     CrosswordCheckPayload,
+    CrosswordEntryDTO,
+    CrosswordPlayPayload,
+    CrosswordPuzzleDTO,
+    CrosswordPuzzleStateDTO,
+    CrosswordResultDTO,
+    CrosswordSolvedEntryDTO,
+    CrosswordSolveDTO,
 )
+from leap.types.game import GameSessionDTO, GameSessionStatus
 
 
 class CrosswordService:
@@ -88,7 +88,7 @@ class CrosswordService:
             direction=entry.direction,
             clue=entry.clue,
             answer=entry.answer,
-            cells=[{"row": r, "col": c} for r, c in coords]
+            cells=[{"row": r, "col": c} for r, c in coords],
         )
 
     def _build_puzzle_state(
@@ -139,11 +139,15 @@ class CrosswordService:
             if clue:
                 clue.solved = True
                 clue.answer = entry.answer
-                coords = entry_cells(entry.start_row, entry.start_col, entry.direction, len(entry.answer))
+                coords = entry_cells(
+                    entry.start_row, entry.start_col, entry.direction, len(entry.answer)
+                )
                 clue.cells = [{"row": r, "col": c} for r, c in coords]
 
             # Update Cells letters
-            coords = entry_cells(entry.start_row, entry.start_col, entry.direction, len(entry.answer))
+            coords = entry_cells(
+                entry.start_row, entry.start_col, entry.direction, len(entry.answer)
+            )
             for i, (r, c) in enumerate(coords):
                 if cells[r][c]:
                     cells[r][c].letter = entry.answer[i].upper()
@@ -194,9 +198,7 @@ class CrosswordService:
             )
 
             if game_session is None:
-                game_session = await self.game_session_dao.create(
-                    session, player_id, "crossword"
-                )
+                game_session = await self.game_session_dao.create(session, player_id, "crossword")
                 await session.commit()
 
             puzzle = self._active_puzzle()
@@ -215,9 +217,7 @@ class CrosswordService:
             # Active session
             solves = await self.solve_dao.get_for_session(session, game_session.id)
             session_score = compute_base_score(len(solves))
-            puzzle_state = self._build_puzzle_state(
-                puzzle, solves, game_session.started_at
-            )
+            puzzle_state = self._build_puzzle_state(puzzle, solves, game_session.started_at)
             return CrosswordPlayPayload(
                 session_status=game_session.status,
                 session_score=session_score,
@@ -312,9 +312,7 @@ class CrosswordService:
                 # Check auto-complete
                 if len(solved_entry_ids) == len(puzzle.entries):
                     now = self._now()
-                    elapsed_ms = int(
-                        (now - game_session.started_at).total_seconds() * 1000
-                    )
+                    elapsed_ms = int((now - game_session.started_at).total_seconds() * 1000)
                     final_score = compute_final_score(len(solves), elapsed_ms)
                     game_session = await self.game_session_dao.update_status(
                         session,
@@ -360,9 +358,7 @@ class CrosswordService:
 
             if game_session is None:
                 # Stub session if not exists
-                game_session = await self.game_session_dao.create(
-                    session, player_id, "crossword"
-                )
+                game_session = await self.game_session_dao.create(session, player_id, "crossword")
                 await session.commit()
 
             if game_session.status == GameSessionStatus.COMPLETED.value:

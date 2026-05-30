@@ -2,9 +2,9 @@ import asyncio
 import os
 from logging.config import fileConfig
 
-from alembic import context
 from sqlalchemy.ext.asyncio import create_async_engine
 
+from alembic import context
 from leap.dao.models import Base  # noqa: F401 — models __init__ registers ORM tables on metadata
 
 config = context.config

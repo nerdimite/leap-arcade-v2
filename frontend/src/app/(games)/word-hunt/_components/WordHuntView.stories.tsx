@@ -1,7 +1,7 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import type { Meta, StoryObj } from "@storybook/nextjs-vite"
+import { fn } from "storybook/test"
 
-import type { PuzzleState, Result } from "@/services/word_hunt/schema";
+import type { PuzzleState, Result } from "@/services/word_hunt/schema"
 
 import {
   allUnfoundClues,
@@ -9,8 +9,8 @@ import {
   midDragPreview,
   partialFoundClues,
   sampleGrid,
-} from "../_lib/storyFixtures";
-import { WordHuntView } from "./WordHuntView";
+} from "../_lib/storyFixtures"
+import { WordHuntView } from "./WordHuntView"
 
 const basePuzzle: PuzzleState = {
   puzzle_id: "wh-1",
@@ -21,7 +21,7 @@ const basePuzzle: PuzzleState = {
   found_count: 0,
   total_words: 3,
   started_at: new Date(Date.now() - 45_000).toISOString(),
-};
+}
 
 const sampleResult: Result = {
   score: 350,
@@ -44,7 +44,7 @@ const sampleResult: Result = {
       coordinates: { start_row: 4, start_col: 0, end_row: 4, end_col: 5 },
     },
   ],
-};
+}
 
 const meta = {
   component: WordHuntView,
@@ -56,11 +56,11 @@ const meta = {
     onSubmit: fn(),
     onBackToLobby: fn(),
   },
-} satisfies Meta<typeof WordHuntView>;
+} satisfies Meta<typeof WordHuntView>
 
-export default meta;
+export default meta
 
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof meta>
 
 export const Playing: Story = {
   args: {
@@ -76,7 +76,7 @@ export const Playing: Story = {
       disabled: false,
     },
   },
-};
+}
 
 export const Dragging: Story = {
   args: {
@@ -92,7 +92,7 @@ export const Dragging: Story = {
       disabled: false,
     },
   },
-};
+}
 
 export const PartiallyFound: Story = {
   args: {
@@ -115,11 +115,11 @@ export const PartiallyFound: Story = {
       disabled: false,
     },
   },
-};
+}
 
 export const ResultStory: Story = {
   name: "Result",
   args: {
     viewState: { status: "result", result: sampleResult },
   },
-};
+}

@@ -18,17 +18,32 @@ def sample_questions() -> List[FourPicsQuestionDTO]:
     return [
         FourPicsQuestionDTO(
             id="fp-q1",
-            image_paths=["/images/four-pics/a/1.png", "/images/four-pics/a/2.png", "/images/four-pics/a/3.png", "/images/four-pics/a/4.png"],
+            image_paths=[
+                "/images/four-pics/a/1.png",
+                "/images/four-pics/a/2.png",
+                "/images/four-pics/a/3.png",
+                "/images/four-pics/a/4.png",
+            ],
             odd_one_out_index=2,
         ),
         FourPicsQuestionDTO(
             id="fp-q2",
-            image_paths=["/images/four-pics/b/1.png", "/images/four-pics/b/2.png", "/images/four-pics/b/3.png", "/images/four-pics/b/4.png"],
+            image_paths=[
+                "/images/four-pics/b/1.png",
+                "/images/four-pics/b/2.png",
+                "/images/four-pics/b/3.png",
+                "/images/four-pics/b/4.png",
+            ],
             odd_one_out_index=0,
         ),
         FourPicsQuestionDTO(
             id="fp-q3",
-            image_paths=["/images/four-pics/c/1.png", "/images/four-pics/c/2.png", "/images/four-pics/c/3.png", "/images/four-pics/c/4.png"],
+            image_paths=[
+                "/images/four-pics/c/1.png",
+                "/images/four-pics/c/2.png",
+                "/images/four-pics/c/3.png",
+                "/images/four-pics/c/4.png",
+            ],
             odd_one_out_index=1,
         ),
     ]

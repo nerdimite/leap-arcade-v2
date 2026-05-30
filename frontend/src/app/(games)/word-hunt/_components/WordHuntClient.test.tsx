@@ -1,53 +1,55 @@
 // @vitest-environment happy-dom
 
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { cleanup, render, screen, waitFor } from "@testing-library/react"
+import userEvent from "@testing-library/user-event"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
-import { QueryClientProviderWrapper } from "@/components/query-client-provider";
-import type { PlayResponse, Result } from "@/services/word_hunt/schema";
+import { QueryClientProviderWrapper } from "@/components/query-client-provider"
+import type { PlayResponse, Result } from "@/services/word_hunt/schema"
 
-import { WordHuntClient } from "./WordHuntClient";
+import { WordHuntClient } from "./WordHuntClient"
 
-const { setIsDirty, navigateSafe, postSubmit, postFind, postPlay } = vi.hoisted(() => ({
-  setIsDirty: vi.fn(),
-  navigateSafe: vi.fn(),
-  postSubmit: vi.fn(),
-  postFind: vi.fn(),
-  postPlay: vi.fn(),
-}));
+const { setIsDirty, navigateSafe, postSubmit, postFind, postPlay } = vi.hoisted(
+  () => ({
+    setIsDirty: vi.fn(),
+    navigateSafe: vi.fn(),
+    postSubmit: vi.fn(),
+    postFind: vi.fn(),
+    postPlay: vi.fn(),
+  })
+)
 
-let capturedConfirmHandler: (() => Promise<void>) | null = null;
+let capturedConfirmHandler: (() => Promise<void>) | null = null
 
 vi.mock("@/hooks/use-navigation-guard", () => ({
   useNavigationGuard: () => ({
     setIsDirty,
     registerBeforeNavigateConfirm: (fn: () => Promise<void>) => {
-      capturedConfirmHandler = fn;
+      capturedConfirmHandler = fn
       return () => {
-        capturedConfirmHandler = null;
-      };
+        capturedConfirmHandler = null
+      }
     },
     navigateSafe,
   }),
-}));
+}))
 
 vi.mock("@/lib/api/word-hunt", () => ({
   postSubmit,
   postFind,
   postPlay,
-}));
+}))
 
 vi.mock("./LetterGrid", () => ({
   LetterGrid: () => <div data-testid="letter-grid">grid</div>,
-}));
+}))
 
 function renderWordHunt(initialPlay: PlayResponse) {
   return render(
     <QueryClientProviderWrapper>
       <WordHuntClient initialPlay={initialPlay} />
-    </QueryClientProviderWrapper>,
-  );
+    </QueryClientProviderWrapper>
+  )
 }
 
 const completedResult: Result = {
@@ -65,7 +67,7 @@ const completedResult: Result = {
       coordinates: { start_row: 0, start_col: 0, end_row: 0, end_col: 4 },
     },
   ],
-};
+}
 
 function activePlay(): PlayResponse {
   return {
@@ -89,7 +91,7 @@ function activePlay(): PlayResponse {
       started_at: "2026-05-26T12:00:00.000Z",
     },
     result: null,
-  };
+  }
 }
 
 function completedPlay(): PlayResponse {
@@ -98,90 +100,92 @@ function completedPlay(): PlayResponse {
     session_score: completedResult.score,
     puzzle: null,
     result: completedResult,
-  };
+  }
 }
 
 describe("WordHuntClient", () => {
   beforeEach(() => {
-    vi.clearAllMocks();
-    capturedConfirmHandler = null;
-  });
+    vi.clearAllMocks()
+    capturedConfirmHandler = null
+  })
 
   afterEach(() => {
-    cleanup();
-  });
+    cleanup()
+  })
 
   it("arms the navigation guard for an active session", () => {
-    renderWordHunt(activePlay());
-    expect(setIsDirty).toHaveBeenCalledWith(true);
-  });
+    renderWordHunt(activePlay())
+    expect(setIsDirty).toHaveBeenCalledWith(true)
+  })
 
   it("does not arm the navigation guard for a completed session", () => {
-    renderWordHunt(completedPlay());
-    expect(setIsDirty).not.toHaveBeenCalledWith(true);
-  });
+    renderWordHunt(completedPlay())
+    expect(setIsDirty).not.toHaveBeenCalledWith(true)
+  })
 
   it("registers submit as the navigation guard confirm handler while active", async () => {
-    postSubmit.mockResolvedValue({ result: completedResult });
+    postSubmit.mockResolvedValue({ result: completedResult })
 
-    renderWordHunt(activePlay());
+    renderWordHunt(activePlay())
 
-    expect(capturedConfirmHandler).not.toBeNull();
-    await capturedConfirmHandler?.();
+    expect(capturedConfirmHandler).not.toBeNull()
+    await capturedConfirmHandler?.()
 
-    expect(postSubmit).toHaveBeenCalledOnce();
-  });
+    expect(postSubmit).toHaveBeenCalledOnce()
+  })
 
   it("shows ResultView directly when re-entering a completed session", () => {
-    renderWordHunt(completedPlay());
+    renderWordHunt(completedPlay())
 
-    expect(screen.getByText("350")).toBeInTheDocument();
-    expect(screen.queryByTestId("letter-grid")).toBeNull();
-    expect(screen.getByRole("button", { name: /back to lobby/i })).toBeInTheDocument();
-  });
+    expect(screen.getByText("350")).toBeInTheDocument()
+    expect(screen.queryByTestId("letter-grid")).toBeNull()
+    expect(
+      screen.getByRole("button", { name: /back to lobby/i })
+    ).toBeInTheDocument()
+  })
 
   it("transitions to ResultView after submit without reloading", async () => {
-    let resolveSubmit!: (value: { result: Result }) => void;
+    let resolveSubmit!: (value: { result: Result }) => void
     postSubmit.mockImplementation(
       () =>
         new Promise((resolve) => {
-          resolveSubmit = resolve;
-        }),
-    );
+          resolveSubmit = resolve
+        })
+    )
 
-    const user = userEvent.setup();
-    renderWordHunt(activePlay());
+    const user = userEvent.setup()
+    renderWordHunt(activePlay())
 
-    await user.click(screen.getByRole("button", { name: /^submit$/i }));
-    expect(postSubmit).toHaveBeenCalledOnce();
+    await user.click(screen.getByRole("button", { name: /^submit$/i }))
+    expect(postSubmit).toHaveBeenCalledOnce()
 
-    await user.click(screen.getByRole("button", { name: /^submit$/i }));
-    expect(postSubmit).toHaveBeenCalledOnce();
+    await user.click(screen.getByRole("button", { name: /^submit$/i }))
+    expect(postSubmit).toHaveBeenCalledOnce()
 
-    resolveSubmit({ result: completedResult });
+    resolveSubmit({ result: completedResult })
 
-    expect(await screen.findByText("350")).toBeInTheDocument();
-    expect(screen.queryByTestId("letter-grid")).toBeNull();
-  });
+    expect(await screen.findByText("350")).toBeInTheDocument()
+    expect(screen.queryByTestId("letter-grid")).toBeNull()
+  })
 
   it("disarms the guard after submit completes", async () => {
-    postSubmit.mockResolvedValue({ result: completedResult });
+    postSubmit.mockResolvedValue({ result: completedResult })
 
-    const user = userEvent.setup();
-    renderWordHunt(activePlay());
+    const user = userEvent.setup()
+    renderWordHunt(activePlay())
 
-    await user.click(screen.getByRole("button", { name: /^submit$/i }));
+    await user.click(screen.getByRole("button", { name: /^submit$/i }))
 
     await waitFor(() => {
-      expect(setIsDirty).toHaveBeenCalledWith(false);
-    });
-  });
+      expect(setIsDirty).toHaveBeenCalledWith(false)
+    })
+  })
 
   it("routes back to lobby via navigateSafe", async () => {
-    const user = userEvent.setup();
-    renderWordHunt(completedPlay());
+    const user = userEvent.setup()
+    renderWordHunt(completedPlay())
 
-    await user.click(screen.getByRole("button", { name: /back to lobby/i }));
-    expect(navigateSafe).toHaveBeenCalledWith("/lobby");
-  });
-});
+    await user.click(screen.getByRole("button", { name: /back to lobby/i }))
+    expect(navigateSafe).toHaveBeenCalledWith("/lobby")
+  })
+})

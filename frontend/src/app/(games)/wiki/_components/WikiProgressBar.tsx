@@ -1,15 +1,15 @@
 /** Determinate segment progress across wiki puzzles. */
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils"
 
 export type WikiProgressBarProps = {
-  puzzleIndex: number;
-  puzzleCount: number;
-  completedCount: number;
-};
+  puzzleIndex: number
+  puzzleCount: number
+  completedCount: number
+}
 
 export function WikiProgressBar(props: WikiProgressBarProps) {
-  const { puzzleIndex, puzzleCount, completedCount } = props;
+  const { puzzleIndex, puzzleCount, completedCount } = props
   return (
     <div
       className="flex gap-1"
@@ -20,9 +20,9 @@ export function WikiProgressBar(props: WikiProgressBarProps) {
       aria-label={`${completedCount} of ${puzzleCount} puzzles completed`}
     >
       {Array.from({ length: puzzleCount }, (_, i) => {
-        const idx = i + 1;
-        const done = idx <= completedCount;
-        const current = idx === puzzleIndex;
+        const idx = i + 1
+        const done = idx <= completedCount
+        const current = idx === puzzleIndex
         return (
           <div
             key={idx}
@@ -32,11 +32,11 @@ export function WikiProgressBar(props: WikiProgressBarProps) {
               !done &&
                 current &&
                 "bg-[var(--accent,var(--wiki))]/35 ring-2 ring-[var(--accent,var(--wiki))] ring-offset-2 ring-offset-bg",
-              !done && !current && "bg-line",
+              !done && !current && "bg-line"
             )}
           />
-        );
+        )
       })}
     </div>
-  );
+  )
 }

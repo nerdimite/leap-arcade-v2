@@ -1,10 +1,11 @@
 import pytest
+
 from leap.games.crossword.grid import (
-    entry_cells,
-    walk_entry,
-    validate_seeded_entry,
-    validate_grid_consistency,
     build_skeleton,
+    entry_cells,
+    validate_grid_consistency,
+    validate_seeded_entry,
+    walk_entry,
 )
 
 GRID = [
@@ -29,7 +30,7 @@ ENTRIES = [
         "start_row": 0,
         "start_col": 0,
         "answer": "MICROSERVICE",
-        "clue": "Small, independently deployable unit in modern cloud architecture (12)"
+        "clue": "Small, independently deployable unit in modern cloud architecture (12)",
     },
     {
         "number": 1,
@@ -37,7 +38,7 @@ ENTRIES = [
         "start_row": 0,
         "start_col": 0,
         "answer": "MOCK",
-        "clue": "Simulated object used in testing to replace a real dependency (4)"
+        "clue": "Simulated object used in testing to replace a real dependency (4)",
     },
     {
         "number": 2,
@@ -45,7 +46,7 @@ ENTRIES = [
         "start_row": 0,
         "start_col": 11,
         "answer": "EVENTDRIVEN",
-        "clue": "Communication style where services interact through events (11)"
+        "clue": "Communication style where services interact through events (11)",
     },
     {
         "number": 3,
@@ -53,7 +54,7 @@ ENTRIES = [
         "start_row": 2,
         "start_col": 5,
         "answer": "DNS",
-        "clue": "Protocol that assigns a readable name (3)"
+        "clue": "Protocol that assigns a readable name (3)",
     },
     {
         "number": 4,
@@ -61,7 +62,7 @@ ENTRIES = [
         "start_row": 3,
         "start_col": 0,
         "answer": "KUBERNETES",
-        "clue": "Container orchestration platform (10)"
+        "clue": "Container orchestration platform (10)",
     },
     {
         "number": 5,
@@ -69,7 +70,7 @@ ENTRIES = [
         "start_row": 5,
         "start_col": 4,
         "answer": "GITOPS",
-        "clue": "Philosophy of treating infrastructure (6)"
+        "clue": "Philosophy of treating infrastructure (6)",
     },
     {
         "number": 6,
@@ -77,7 +78,7 @@ ENTRIES = [
         "start_row": 5,
         "start_col": 0,
         "answer": "CACHING",
-        "clue": "Technique of storing frequently accessed data (7)"
+        "clue": "Technique of storing frequently accessed data (7)",
     },
     {
         "number": 7,
@@ -85,7 +86,7 @@ ENTRIES = [
         "start_row": 6,
         "start_col": 0,
         "answer": "ATOMICITY",
-        "clue": "ACID property (10)"
+        "clue": "ACID property (10)",
     },
     {
         "number": 8,
@@ -93,7 +94,7 @@ ENTRIES = [
         "start_row": 7,
         "start_col": 9,
         "answer": "DRIFT",
-        "clue": "When a deployed model's accuracy degrades (5)"
+        "clue": "When a deployed model's accuracy degrades (5)",
     },
     {
         "number": 9,
@@ -101,8 +102,8 @@ ENTRIES = [
         "start_row": 9,
         "start_col": 4,
         "answer": "PIPELINE",
-        "clue": "Automated workflow from code commit to deployment (8)"
-    }
+        "clue": "Automated workflow from code commit to deployment (8)",
+    },
 ]
 
 

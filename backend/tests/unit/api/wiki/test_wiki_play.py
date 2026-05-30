@@ -5,7 +5,9 @@ from tests.unit.api.wiki.conftest import sample_wiki_rounds
 
 
 class TestWikiPlay:
-    def test_play_twice_returns_same_attempt_id(self, wiki_client, auth_player: CurrentPlayer) -> None:
+    def test_play_twice_returns_same_attempt_id(
+        self, wiki_client, auth_player: CurrentPlayer
+    ) -> None:
         r1 = wiki_client.post("/games/wiki/play")
         assert r1.status_code == 200
         body1 = r1.json()

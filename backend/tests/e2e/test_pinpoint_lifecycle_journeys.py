@@ -2,14 +2,13 @@
 
 from __future__ import annotations
 
-from typing import Dict, Optional, Set
+from typing import Optional, Set
 
 import httpx
 
 from tests.e2e.pinpoint_helpers import (
     assert_no_answer_fields_in_payload,
     auth_headers,
-    fail_puzzle,
     fetch_pool_size,
     fetch_puzzle_answer,
     get_my_sessions,

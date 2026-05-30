@@ -1,16 +1,16 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import type { Meta, StoryObj } from "@storybook/nextjs-vite"
+import { fn } from "storybook/test"
 
-import type { Puzzle, Result } from "@/services/picture/schema";
+import type { Puzzle, Result } from "@/services/picture/schema"
 
-import { PictureView } from "./PictureView";
+import { PictureView } from "./PictureView"
 
 const samplePuzzle: Puzzle = {
   id: "p-1",
   image_filename: "neural_network.png",
   puzzles_answered: 2,
   puzzles_total: 5,
-};
+}
 
 const sampleResult: Result = {
   score: 640,
@@ -18,15 +18,30 @@ const sampleResult: Result = {
   time_bonus: 120,
   time_remaining_seconds: 84,
   puzzles: [
-    { puzzle_id: "p-1", image_filename: "neural_network.png", status: "correct", score_earned: 180 },
-    { puzzle_id: "p-2", image_filename: "nlp.png", status: "correct", score_earned: 160 },
+    {
+      puzzle_id: "p-1",
+      image_filename: "neural_network.png",
+      status: "correct",
+      score_earned: 180,
+    },
+    {
+      puzzle_id: "p-2",
+      image_filename: "nlp.png",
+      status: "correct",
+      score_earned: 160,
+    },
     {
       puzzle_id: "p-3",
       image_filename: "large_language_model.png",
       status: "skipped",
       score_earned: 0,
     },
-    { puzzle_id: "p-4", image_filename: "gradient_descent.png", status: "wrong", score_earned: 0 },
+    {
+      puzzle_id: "p-4",
+      image_filename: "gradient_descent.png",
+      status: "wrong",
+      score_earned: 0,
+    },
     {
       puzzle_id: "p-5",
       image_filename: "huggingface.png",
@@ -34,7 +49,7 @@ const sampleResult: Result = {
       score_earned: 0,
     },
   ],
-};
+}
 
 const meta = {
   component: PictureView,
@@ -47,11 +62,11 @@ const meta = {
     onSessionExpired: fn(),
     onBackToLobby: fn(),
   },
-} satisfies Meta<typeof PictureView>;
+} satisfies Meta<typeof PictureView>
 
-export default meta;
+export default meta
 
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof meta>
 
 export const Playing: Story = {
   args: {
@@ -67,7 +82,7 @@ export const Playing: Story = {
       celebration: null,
     },
   },
-};
+}
 
 export const CorrectAnswer: Story = {
   args: {
@@ -83,7 +98,7 @@ export const CorrectAnswer: Story = {
       celebration: { token: 1, scoreDelta: 180, streak: 1 },
     },
   },
-};
+}
 
 export const CorrectStreak: Story = {
   args: {
@@ -99,7 +114,7 @@ export const CorrectStreak: Story = {
       celebration: { token: 4, scoreDelta: 200, streak: 4 },
     },
   },
-};
+}
 
 export const WrongAnswer: Story = {
   args: {
@@ -115,7 +130,7 @@ export const WrongAnswer: Story = {
       celebration: null,
     },
   },
-};
+}
 
 export const UrgentTimer: Story = {
   args: {
@@ -131,11 +146,11 @@ export const UrgentTimer: Story = {
       celebration: null,
     },
   },
-};
+}
 
 export const ResultStory: Story = {
   name: "Result",
   args: {
     viewState: { status: "result", result: sampleResult },
   },
-};
+}

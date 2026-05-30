@@ -1,53 +1,57 @@
 /** Assembled dumb Four Pics screen: image grid play surface, answer overlay, result. */
 
-import { Check, X } from "lucide-react";
-import Image from "next/image";
-import type { CSSProperties } from "react";
+import { Check, X } from "lucide-react"
+import Image from "next/image"
+import type { CSSProperties } from "react"
 
-import { GameHeader } from "@/components/game/GameHeader";
-import { ScoreReadout } from "@/components/game/ScoreReadout";
-import { cn } from "@/lib/utils";
-import type { QuestionState, Result } from "@/services/four_pics/schema";
+import { GameHeader } from "@/components/game/GameHeader"
+import { ScoreReadout } from "@/components/game/ScoreReadout"
+import { cn } from "@/lib/utils"
+import type { QuestionState, Result } from "@/services/four_pics/schema"
 
-import { AnswerOverlay } from "./AnswerOverlay";
-import { ResultView } from "./ResultView";
-import { Stopwatch } from "./Stopwatch";
+import { AnswerOverlay } from "./AnswerOverlay"
+import { ResultView } from "./ResultView"
+import { Stopwatch } from "./Stopwatch"
 
 export type FourPicsOverlay = {
-  correct: boolean;
-  score: number;
-  timeBonus: number;
-  selectedIndex: number;
-};
+  correct: boolean
+  score: number
+  timeBonus: number
+  selectedIndex: number
+}
 
 export type FourPicsViewState =
   | {
-      status: "playing";
-      question: QuestionState;
-      sessionScore: number;
-      overlay: FourPicsOverlay | null;
-      submitError: string | null;
-      inputDisabled: boolean;
+      status: "playing"
+      question: QuestionState
+      sessionScore: number
+      overlay: FourPicsOverlay | null
+      submitError: string | null
+      inputDisabled: boolean
     }
   | { status: "result"; result: Result }
-  | { status: "empty" };
+  | { status: "empty" }
 
 export type FourPicsViewProps = {
-  viewState: FourPicsViewState;
-  onSelect: (index: number) => void;
-  onBackToLobby: () => void;
-};
+  viewState: FourPicsViewState
+  onSelect: (index: number) => void
+  onBackToLobby: () => void
+}
 
 /** Four Pics runs on its lime marquee accent. */
-const FOUR_ACCENT = { "--accent": "var(--four)" } as CSSProperties;
+const FOUR_ACCENT = { "--accent": "var(--four)" } as CSSProperties
 
-export function FourPicsView({ viewState, onSelect, onBackToLobby }: FourPicsViewProps) {
+export function FourPicsView({
+  viewState,
+  onSelect,
+  onBackToLobby,
+}: FourPicsViewProps) {
   if (viewState.status === "result") {
     return (
       <div style={FOUR_ACCENT}>
         <ResultView result={viewState.result} onBackToLobby={onBackToLobby} />
       </div>
-    );
+    )
   }
 
   if (viewState.status === "empty") {
@@ -55,13 +59,17 @@ export function FourPicsView({ viewState, onSelect, onBackToLobby }: FourPicsVie
       <div className="p-6" style={FOUR_ACCENT}>
         <p className="text-[15px] text-ink-dim">No question available.</p>
       </div>
-    );
+    )
   }
 
-  const { question, sessionScore, overlay, submitError, inputDisabled } = viewState;
+  const { question, sessionScore, overlay, submitError, inputDisabled } =
+    viewState
 
   return (
-    <div className="mx-auto flex max-w-lg flex-col gap-5 p-6" style={FOUR_ACCENT}>
+    <div
+      className="mx-auto flex max-w-lg flex-col gap-5 p-6"
+      style={FOUR_ACCENT}
+    >
       <GameHeader
         gameId="four_pics"
         progress={`Round ${question.question_number} of ${question.total_questions}`}
@@ -82,10 +90,11 @@ export function FourPicsView({ viewState, onSelect, onBackToLobby }: FourPicsVie
       <div className="relative">
         <div className="grid grid-cols-2 gap-3">
           {question.image_paths.map((path, index) => {
-            const isSelected = overlay !== null && overlay.selectedIndex === index;
-            const isCorrectPick = isSelected && overlay.correct;
-            const isWrongPick = isSelected && !overlay.correct;
-            const isDimmed = overlay !== null && !isSelected;
+            const isSelected =
+              overlay !== null && overlay.selectedIndex === index
+            const isCorrectPick = isSelected && overlay.correct
+            const isWrongPick = isSelected && !overlay.correct
+            const isDimmed = overlay !== null && !isSelected
 
             return (
               <button
@@ -93,7 +102,7 @@ export function FourPicsView({ viewState, onSelect, onBackToLobby }: FourPicsVie
                 type="button"
                 disabled={inputDisabled}
                 className={cn(
-                  "relative aspect-square overflow-hidden rounded-[var(--radius)] border-2 border-line bg-bg-2 shadow-[var(--shadow-cabinet-sm)] transition-[transform,opacity,border-color] duration-150 ease-[var(--ease-arcade)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-bg motion-reduce:transition-none",
+                  "relative aspect-square overflow-hidden rounded-[var(--radius)] border-2 border-line bg-bg-2 shadow-[var(--shadow-cabinet-sm)] transition-[transform,opacity,border-color] duration-150 ease-[var(--ease-arcade)] focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-bg focus-visible:outline-none motion-reduce:transition-none",
                   // Idle play: lift toward the cursor, press in on tap (cabinet button).
                   overlay === null &&
                     "hover:not-disabled:-translate-y-0.5 hover:not-disabled:shadow-[var(--shadow-cabinet)] active:not-disabled:translate-y-0 active:not-disabled:shadow-[var(--shadow-cabinet-sm)] motion-reduce:hover:translate-y-0",
@@ -102,8 +111,9 @@ export function FourPicsView({ viewState, onSelect, onBackToLobby }: FourPicsVie
                   // Verdict: the picked tile stays lit and rises; the rest recede.
                   isCorrectPick &&
                     "z-30 border-four ring-2 ring-four motion-safe:animate-rf-verdict-in",
-                  isWrongPick && "z-30 border-cross motion-safe:animate-picture-input-shake",
-                  isDimmed && "opacity-35",
+                  isWrongPick &&
+                    "z-30 border-cross motion-safe:animate-picture-input-shake",
+                  isDimmed && "opacity-35"
                 )}
                 onClick={() => onSelect(index)}
               >
@@ -118,8 +128,10 @@ export function FourPicsView({ viewState, onSelect, onBackToLobby }: FourPicsVie
                   <span
                     aria-hidden
                     className={cn(
-                      "absolute right-2 top-2 z-10 flex size-7 items-center justify-center rounded-full border-2 shadow-[var(--shadow-cabinet-sm)]",
-                      isCorrectPick ? "border-four bg-four text-bg" : "border-cross bg-cross text-bg",
+                      "absolute top-2 right-2 z-10 flex size-7 items-center justify-center rounded-full border-2 shadow-[var(--shadow-cabinet-sm)]",
+                      isCorrectPick
+                        ? "border-four bg-four text-bg"
+                        : "border-cross bg-cross text-bg"
                     )}
                   >
                     {isCorrectPick ? (
@@ -130,7 +142,7 @@ export function FourPicsView({ viewState, onSelect, onBackToLobby }: FourPicsVie
                   </span>
                 ) : null}
               </button>
-            );
+            )
           })}
         </div>
         {overlay !== null ? (
@@ -149,5 +161,5 @@ export function FourPicsView({ viewState, onSelect, onBackToLobby }: FourPicsVie
         </p>
       ) : null}
     </div>
-  );
+  )
 }

@@ -1,34 +1,37 @@
-import type { z } from "zod";
+import type { z } from "zod"
 
-import type { LoginOkResponse } from "@/services/auth/schema";
-import { LoginOkResponseSchema, LoginRequestSchema } from "@/services/auth/schema";
+import type { LoginOkResponse } from "@/services/auth/schema"
+import {
+  LoginOkResponseSchema,
+  LoginRequestSchema,
+} from "@/services/auth/schema"
 
-export type LoginPayload = z.input<typeof LoginRequestSchema>;
+export type LoginPayload = z.input<typeof LoginRequestSchema>
 
 export class LoginApiError extends Error {
-  readonly status: number;
+  readonly status: number
 
   constructor(status: number, message = "Login failed") {
-    super(message);
-    this.name = "LoginApiError";
-    this.status = status;
+    super(message)
+    this.name = "LoginApiError"
+    this.status = status
   }
 }
 
 function authRequestUrl(path: string): string {
   if (typeof window !== "undefined" && window.location?.origin) {
-    return new URL(path, window.location.origin).href;
+    return new URL(path, window.location.origin).href
   }
-  return `http://localhost:3000${path}`;
+  return `http://localhost:3000${path}`
 }
 
 function loginRequestUrl(): string {
-  return authRequestUrl("/api/auth/login");
+  return authRequestUrl("/api/auth/login")
 }
 
 /** POST `/api/auth/login`; sets httpOnly cookie without exposing the JWT body. */
 export async function postLogin(input: LoginPayload): Promise<LoginOkResponse> {
-  const body = LoginRequestSchema.parse(input);
+  const body = LoginRequestSchema.parse(input)
 
   const res = await fetch(loginRequestUrl(), {
     method: "POST",
@@ -37,14 +40,14 @@ export async function postLogin(input: LoginPayload): Promise<LoginOkResponse> {
       accept: "application/json",
     },
     body: JSON.stringify(body),
-  });
+  })
 
   if (!res.ok) {
-    throw new LoginApiError(res.status);
+    throw new LoginApiError(res.status)
   }
 
-  const json: unknown = await res.json();
-  return LoginOkResponseSchema.parse(json);
+  const json: unknown = await res.json()
+  return LoginOkResponseSchema.parse(json)
 }
 
 /** POST `/api/auth/logout`; clears the httpOnly session cookie. */
@@ -52,9 +55,9 @@ export async function postLogout(): Promise<void> {
   const res = await fetch(authRequestUrl("/api/auth/logout"), {
     method: "POST",
     headers: { accept: "application/json" },
-  });
+  })
 
   if (!res.ok) {
-    throw new LoginApiError(res.status, "Logout failed");
+    throw new LoginApiError(res.status, "Logout failed")
   }
 }

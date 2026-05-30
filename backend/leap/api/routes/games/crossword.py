@@ -1,6 +1,5 @@
 """Crossword game routes."""
 
-from typing import Optional, List
 from fastapi import APIRouter, Depends
 
 from leap.api.deps import get_container, get_current_player
@@ -28,7 +27,6 @@ from leap.types.crossword import (
     CrosswordSolvedEntryDTO,
 )
 from leap.types.player import CurrentPlayer
-
 
 router = APIRouter()
 

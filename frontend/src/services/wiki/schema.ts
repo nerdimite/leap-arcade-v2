@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "zod"
 
 export const WikiPuzzleResultSchema = z.object({
   round_id: z.string(),
@@ -10,9 +10,9 @@ export const WikiPuzzleResultSchema = z.object({
   time_ms: z.number().int().nullable().optional(),
   score: z.number().int(),
   status: z.enum(["active", "completed", "timed_out", "abandoned"]),
-});
+})
 
-export type WikiPuzzleResult = z.infer<typeof WikiPuzzleResultSchema>;
+export type WikiPuzzleResult = z.infer<typeof WikiPuzzleResultSchema>
 
 export const WikiActivePuzzleSchema = z.object({
   game_session_id: z.string(),
@@ -28,9 +28,9 @@ export const WikiActivePuzzleSchema = z.object({
   click_path: z.array(z.string()),
   article_html: z.string(),
   back_enabled: z.boolean(),
-});
+})
 
-export type WikiActivePuzzle = z.infer<typeof WikiActivePuzzleSchema>;
+export type WikiActivePuzzle = z.infer<typeof WikiActivePuzzleSchema>
 
 export const WikiPlayResponseSchema = z.discriminatedUnion("state", [
   z.object({
@@ -50,13 +50,13 @@ export const WikiPlayResponseSchema = z.discriminatedUnion("state", [
     total_score: z.number().int(),
     results: z.array(WikiPuzzleResultSchema),
   }),
-]);
+])
 
-export type WikiPlayResponse = z.infer<typeof WikiPlayResponseSchema>;
+export type WikiPlayResponse = z.infer<typeof WikiPlayResponseSchema>
 
 export const WikiNavigateRequestSchema = z.object({
   title: z.string().min(1),
-});
+})
 
 export const WikiNavigateResponseSchema = z.discriminatedUnion("state", [
   z.object({
@@ -69,6 +69,6 @@ export const WikiNavigateResponseSchema = z.discriminatedUnion("state", [
     next_puzzle_available: z.boolean(),
     total_score: z.number().int(),
   }),
-]);
+])
 
-export type WikiNavigateResponse = z.infer<typeof WikiNavigateResponseSchema>;
+export type WikiNavigateResponse = z.infer<typeof WikiNavigateResponseSchema>

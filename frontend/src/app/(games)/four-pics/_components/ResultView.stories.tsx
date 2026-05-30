@@ -1,9 +1,9 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import type { Meta, StoryObj } from "@storybook/nextjs-vite"
+import { fn } from "storybook/test"
 
-import type { Result } from "@/services/four_pics/schema";
+import type { Result } from "@/services/four_pics/schema"
 
-import { ResultView } from "./ResultView";
+import { ResultView } from "./ResultView"
 
 const mixedResult: Result = {
   score: 275,
@@ -15,24 +15,24 @@ const mixedResult: Result = {
     { question_id: "q2", status: "wrong", score: 0, time_bonus: 0 },
     { question_id: "q3", status: "correct", score: 133, time_bonus: 33 },
   ],
-};
+}
 
 const meta = {
   component: ResultView,
   args: {
     onBackToLobby: fn(),
   },
-} satisfies Meta<typeof ResultView>;
+} satisfies Meta<typeof ResultView>
 
-export default meta;
+export default meta
 
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof meta>
 
 export const MixedStatuses: Story = {
   args: {
     result: mixedResult,
   },
-};
+}
 
 export const WithNotReached: Story = {
   args: {
@@ -48,6 +48,6 @@ export const WithNotReached: Story = {
       ],
     },
   },
-};
+}
 
-export { MixedStatuses as Default };
+export { MixedStatuses as Default }

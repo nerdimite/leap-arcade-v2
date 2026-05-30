@@ -1,28 +1,31 @@
 /** Assembled dumb wiki screen: switches on viewState.status and composes leaves. */
 
-import { WikiActiveView } from "./WikiActiveView";
-import { WikiFinalResults } from "./WikiFinalResults";
-import { WikiPuzzleResultCard } from "./WikiPuzzleResultCard";
-import type { WikiViewState } from "./wiki-view-state";
+import { WikiActiveView } from "./WikiActiveView"
+import { WikiFinalResults } from "./WikiFinalResults"
+import { WikiPuzzleResultCard } from "./WikiPuzzleResultCard"
+import type { WikiViewState } from "./wiki-view-state"
 
 export type WikiViewProps = {
-  viewState: WikiViewState;
-  onNavigate: (title: string) => Promise<void>;
-  onBack: () => Promise<void> | void;
-  onContinue: () => Promise<void> | void;
-};
+  viewState: WikiViewState
+  onNavigate: (title: string) => Promise<void>
+  onBack: () => Promise<void> | void
+  onContinue: () => Promise<void> | void
+}
 
 export function WikiView(props: WikiViewProps) {
-  const { viewState, onNavigate, onBack, onContinue } = props;
+  const { viewState, onNavigate, onBack, onContinue } = props
 
   if (viewState.status === "none") {
-    return null;
+    return null
   }
 
   if (viewState.status === "finalCompleted") {
     return (
-      <WikiFinalResults totalScore={viewState.totalScore} results={viewState.results} />
-    );
+      <WikiFinalResults
+        totalScore={viewState.totalScore}
+        results={viewState.results}
+      />
+    )
   }
 
   if (viewState.status === "finalAbandoned") {
@@ -33,7 +36,7 @@ export function WikiView(props: WikiViewProps) {
         title="Wikipedia Speed Run"
         subtitle="Session ended. Completed puzzles keep their scores; others count as zero."
       />
-    );
+    )
   }
 
   if (viewState.status === "error") {
@@ -43,11 +46,11 @@ export function WikiView(props: WikiViewProps) {
           {viewState.message}
         </p>
       </div>
-    );
+    )
   }
 
   if (viewState.status === "puzzleResult") {
-    const r = viewState.result;
+    const r = viewState.result
     return (
       <WikiPuzzleResultCard
         targetTitle={r.target_title}
@@ -59,7 +62,7 @@ export function WikiView(props: WikiViewProps) {
         continuePending={viewState.continuePending}
         onContinue={() => void onContinue()}
       />
-    );
+    )
   }
 
   if (viewState.status === "active") {
@@ -74,8 +77,8 @@ export function WikiView(props: WikiViewProps) {
         onNavigate={onNavigate}
         onBack={() => void onBack()}
       />
-    );
+    )
   }
 
-  return null;
+  return null
 }

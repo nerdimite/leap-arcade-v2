@@ -1,7 +1,7 @@
 from leap.games.crossword.scoring import (
     compute_base_score,
-    compute_time_bonus,
     compute_final_score,
+    compute_time_bonus,
 )
 
 

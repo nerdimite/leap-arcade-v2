@@ -21,4 +21,3 @@ GAME_IDS: List[str] = [game["id"] for game in GAMES]
 
 # Picture Illustration — global session timer (ms). Consumed by PictureService + client display.
 PICTURE_TIME_LIMIT_MS: int = 300_000
-

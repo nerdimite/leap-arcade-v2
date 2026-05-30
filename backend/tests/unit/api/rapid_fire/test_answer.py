@@ -6,8 +6,8 @@ import random
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from leap.api.routes.games import rapid_fire as rapid_fire_routes
 from leap.api.deps import get_current_player
+from leap.api.routes.games import rapid_fire as rapid_fire_routes
 from leap.types.player import CurrentPlayer, PlayerDTO
 from tests.fakes import make_fake_container
 from tests.unit.api.rapid_fire.assertions import assert_no_correct_option_index_in_payload

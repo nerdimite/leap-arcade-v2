@@ -1,22 +1,27 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 
-import { postFind, postPlay, postSubmit } from "@/lib/api/word-hunt";
+import { postFind, postPlay, postSubmit } from "@/lib/api/word-hunt"
 
-import { wordHuntQueryKeys } from "./keys";
-import type { FindRequest, FindResponse, PlayResponse, SubmitResponse } from "./schema";
+import { wordHuntQueryKeys } from "./keys"
+import type {
+  FindRequest,
+  FindResponse,
+  PlayResponse,
+  SubmitResponse,
+} from "./schema"
 
 export function useWordHuntPlay() {
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (): Promise<PlayResponse> => postPlay(),
     onSuccess: (data) => {
-      queryClient.setQueryData(wordHuntQueryKeys.play(), data);
+      queryClient.setQueryData(wordHuntQueryKeys.play(), data)
     },
-  });
+  })
 }
 
 export function useWordHuntFind() {
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (input: FindRequest): Promise<FindResponse> => postFind(input),
     onSuccess: (data) => {
@@ -26,14 +31,14 @@ export function useWordHuntFind() {
           session_score: data.session_score,
           puzzle: null,
           result: data.result,
-        });
+        })
       }
     },
-  });
+  })
 }
 
 export function useWordHuntSubmit() {
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (): Promise<SubmitResponse> => postSubmit(),
     onSuccess: (data) => {
@@ -42,7 +47,7 @@ export function useWordHuntSubmit() {
         session_score: data.result.score,
         puzzle: null,
         result: data.result,
-      });
+      })
     },
-  });
+  })
 }

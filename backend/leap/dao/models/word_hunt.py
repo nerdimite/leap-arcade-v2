@@ -1,7 +1,6 @@
 from datetime import datetime
 
 from sqlalchemy import (
-    CheckConstraint,
     DateTime,
     ForeignKey,
     Index,
@@ -40,9 +39,7 @@ class WordHuntPuzzle(Base):
 
 class WordHuntWord(Base):
     __tablename__ = "word_hunt_words"
-    __table_args__ = (
-        UniqueConstraint("puzzle_id", "word", name="uq_word_hunt_words_puzzle_word"),
-    )
+    __table_args__ = (UniqueConstraint("puzzle_id", "word", name="uq_word_hunt_words_puzzle_word"),)
 
     id: Mapped[str] = mapped_column(
         String,

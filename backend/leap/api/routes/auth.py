@@ -3,9 +3,9 @@
 from fastapi import APIRouter, Depends
 
 from leap.api.deps import get_container, get_current_player
-from leap.types.player import CurrentPlayer
 from leap.api.schema.auth import LoginRequest, LoginResponse
 from leap.service.container import ServiceContainer
+from leap.types.player import CurrentPlayer
 
 router = APIRouter()
 

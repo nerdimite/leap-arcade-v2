@@ -7,33 +7,44 @@
  * game-agnostic.
  */
 
-import type { ReactNode } from "react";
+import type { ReactNode } from "react"
 
-import type { LobbyGameId } from "@/lib/constants";
-import { GAME_VISUALS } from "@/lib/game-tiles";
-import { cn } from "@/lib/utils";
+import type { LobbyGameId } from "@/lib/constants"
+import { GAME_VISUALS } from "@/lib/game-tiles"
+import { cn } from "@/lib/utils"
 
 export type GameHeaderProps = {
-  gameId: LobbyGameId;
+  gameId: LobbyGameId
   /** Sits under the tagline, e.g. "Question 3 of 10". */
-  progress?: ReactNode;
+  progress?: ReactNode
   /** Denser plate for sticky/space-tight headers (Wikipedia Speed Run). */
-  compact?: boolean;
+  compact?: boolean
   /** Right-side cluster: ScoreReadout, timers, submit, composed per game. */
-  children?: ReactNode;
-  className?: string;
-};
+  children?: ReactNode
+  className?: string
+}
 
-export function GameHeader({ gameId, progress, compact, children, className }: GameHeaderProps) {
-  const { label, tagline } = GAME_VISUALS[gameId];
+export function GameHeader({
+  gameId,
+  progress,
+  compact,
+  children,
+  className,
+}: GameHeaderProps) {
+  const { label, tagline } = GAME_VISUALS[gameId]
 
   return (
-    <header className={cn("flex flex-wrap items-end justify-between gap-4", className)}>
+    <header
+      className={cn(
+        "flex flex-wrap items-end justify-between gap-4",
+        className
+      )}
+    >
       <div>
         <p
           className={cn(
-            "font-pixel uppercase tracking-[2px] text-[var(--accent)]",
-            compact ? "text-[8px]" : "text-[9px]",
+            "font-pixel tracking-[2px] text-[var(--accent)] uppercase",
+            compact ? "text-[8px]" : "text-[9px]"
           )}
         >
           ▸ {label}
@@ -41,16 +52,22 @@ export function GameHeader({ gameId, progress, compact, children, className }: G
         <h1
           className={cn(
             "font-pixel text-ink",
-            compact ? "mt-1.5 text-[12px] leading-none" : "mt-2.5 text-[13px] leading-[1.5]",
+            compact
+              ? "mt-1.5 text-[12px] leading-none"
+              : "mt-2.5 text-[13px] leading-[1.5]"
           )}
         >
           {tagline}
         </h1>
         {progress ? (
-          <p className="mt-2 text-[13px] text-ink-dim tabular-nums">{progress}</p>
+          <p className="mt-2 text-[13px] text-ink-dim tabular-nums">
+            {progress}
+          </p>
         ) : null}
       </div>
-      {children ? <div className="flex items-center gap-3">{children}</div> : null}
+      {children ? (
+        <div className="flex items-center gap-3">{children}</div>
+      ) : null}
     </header>
-  );
+  )
 }

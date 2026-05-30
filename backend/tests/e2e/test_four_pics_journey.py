@@ -141,7 +141,11 @@ async def test_full_pool_happy_path_completed_lobby_and_leaderboard(
         assert body["correct"] is want_correct
 
         if want_correct:
-            assert FOUR_PICS_BASE_SCORE <= body["score"] <= FOUR_PICS_BASE_SCORE + FOUR_PICS_TIME_BONUS_MAX
+            assert (
+                FOUR_PICS_BASE_SCORE
+                <= body["score"]
+                <= FOUR_PICS_BASE_SCORE + FOUR_PICS_TIME_BONUS_MAX
+            )
             assert 0 <= body["time_bonus"] <= FOUR_PICS_TIME_BONUS_MAX
         else:
             assert body["score"] == 0
@@ -167,9 +171,7 @@ async def test_full_pool_happy_path_completed_lobby_and_leaderboard(
     assert len(seen_ids) == total_questions
     assert last["session_score"] == running_score
 
-    expected_min = sum(
-        FOUR_PICS_BASE_SCORE if i % 2 == 0 else 0 for i in range(total_questions)
-    )
+    expected_min = sum(FOUR_PICS_BASE_SCORE if i % 2 == 0 else 0 for i in range(total_questions))
     expected_max = sum(
         (FOUR_PICS_BASE_SCORE + FOUR_PICS_TIME_BONUS_MAX if i % 2 == 0 else 0)
         for i in range(total_questions)

@@ -8,7 +8,6 @@ from leap.core.common.time import utc_now
 from leap.types.game import GameSessionDTO, GameSessionStatus
 from leap.types.player import CurrentPlayer
 from leap.types.rapid_fire import RapidFireAnswerDTO
-
 from tests.unit.api.rapid_fire.assertions import assert_no_correct_option_index_in_payload
 
 
@@ -23,9 +22,7 @@ class TestRapidFirePlay:
         assert r2.json()["game_session_id"] == r1.json()["game_session_id"]
         assert r2.json()["questions_answered"] == 0
 
-    def test_new_player_active_with_first_question(
-        self, rapid_fire_client: TestClient
-    ) -> None:
+    def test_new_player_active_with_first_question(self, rapid_fire_client: TestClient) -> None:
         r = rapid_fire_client.post("/games/rapid-fire/play")
         assert r.status_code == 200
         body = r.json()

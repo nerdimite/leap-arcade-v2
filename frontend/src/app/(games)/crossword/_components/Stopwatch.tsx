@@ -1,33 +1,36 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from "react"
 
 import {
   elapsedMsFromStartedAt,
   formatMmSsFromElapsedMs,
-} from "@/app/(games)/crossword/_lib/stopwatch";
+} from "@/app/(games)/crossword/_lib/stopwatch"
 
 export type StopwatchProps = {
-  startedAt: string;
-};
+  startedAt: string
+}
 
 export function Stopwatch({ startedAt }: StopwatchProps) {
-  const [elapsedMs, setElapsedMs] = useState(() => elapsedMsFromStartedAt(startedAt));
+  const [elapsedMs, setElapsedMs] = useState(() =>
+    elapsedMsFromStartedAt(startedAt)
+  )
 
   useEffect(() => {
-    const tick = () => setElapsedMs(elapsedMsFromStartedAt(startedAt));
-    tick();
-    const id = window.setInterval(tick, 1000);
-    return () => window.clearInterval(id);
-  }, [startedAt]);
+    const tick = () => setElapsedMs(elapsedMsFromStartedAt(startedAt))
+    tick()
+    const id = window.setInterval(tick, 1000)
+    return () => window.clearInterval(id)
+  }, [startedAt])
 
   return (
     <span
-      className="font-mono text-lg tabular-nums tracking-tight text-muted-foreground"
+      className="font-mono text-lg tracking-tight text-muted-foreground tabular-nums"
+      role="timer"
       aria-live="polite"
       aria-label={`Elapsed time ${formatMmSsFromElapsedMs(elapsedMs)}`}
     >
       {formatMmSsFromElapsedMs(elapsedMs)}
     </span>
-  );
+  )
 }

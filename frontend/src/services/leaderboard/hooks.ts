@@ -1,9 +1,9 @@
-"use client";
+"use client"
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query"
 
-import { getLeaderboardQueryOptions } from "./query-options";
+import { getLeaderboardQueryOptions } from "./query-options"
 
 export function useLeaderboard() {
-  return useQuery(getLeaderboardQueryOptions());
+  return useQuery(getLeaderboardQueryOptions())
 }

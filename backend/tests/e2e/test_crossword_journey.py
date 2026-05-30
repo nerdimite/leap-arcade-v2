@@ -37,8 +37,10 @@ async def test_full_playthrough_completed_score_lobby_leaderboard(
 ) -> None:
     """Login → play → solve every entry → lobby + leaderboard reflect final score."""
     await install_e2e_crossword_puzzle()
-    bind_session_start, advance_to_terminal, _, restore_clock = install_crossword_deterministic_controls(
-        terminal_elapsed_ms=_ELAPSED_MS,
+    bind_session_start, advance_to_terminal, _, restore_clock = (
+        install_crossword_deterministic_controls(
+            terminal_elapsed_ms=_ELAPSED_MS,
+        )
     )
     try:
         await insert_player(_PLAYER_ID, "E2E Crossword Happy")

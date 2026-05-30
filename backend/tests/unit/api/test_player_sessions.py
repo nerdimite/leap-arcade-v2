@@ -83,9 +83,7 @@ class TestPlayerSessionsAuthorized:
         assert by_game["wiki"]["status"] == "completed"
         assert by_game["wiki"]["score"] == 42
 
-    def test_returns_empty_list_when_no_sessions(
-        self, player_sessions_client: TestClient
-    ) -> None:
+    def test_returns_empty_list_when_no_sessions(self, player_sessions_client: TestClient) -> None:
         container = player_sessions_client.app.state.container
         container.player_dao._players = {
             "emp001": PlayerDTO(id="emp001", display_name="Test Player"),

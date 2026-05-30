@@ -1,6 +1,6 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest"
 
-import { PlayResponseSchema, ResultSchema } from "./schema";
+import { PlayResponseSchema, ResultSchema } from "./schema"
 
 const sampleResult = {
   score: 212,
@@ -27,16 +27,16 @@ const sampleResult = {
       score_earned: 0,
     },
   ],
-};
+}
 
 describe("ResultSchema", () => {
   it("parses backend result payloads without answer fields", () => {
-    const parsed = ResultSchema.parse(sampleResult);
-    expect(parsed.score).toBe(212);
-    expect(parsed.puzzles).toHaveLength(3);
-    expect(parsed.puzzles[0]?.status).toBe("correct");
-    expect(Object.keys(parsed)).not.toContain("canonical_answer");
-  });
+    const parsed = ResultSchema.parse(sampleResult)
+    expect(parsed.score).toBe(212)
+    expect(parsed.puzzles).toHaveLength(3)
+    expect(parsed.puzzles[0]?.status).toBe("correct")
+    expect(Object.keys(parsed)).not.toContain("canonical_answer")
+  })
 
   it("accepts wrong puzzle status for forward-compatible APIs", () => {
     const parsed = ResultSchema.parse({
@@ -49,24 +49,24 @@ describe("ResultSchema", () => {
           score_earned: 0,
         },
       ],
-    });
-    expect(parsed.puzzles[0]?.status).toBe("wrong");
-  });
-});
+    })
+    expect(parsed.puzzles[0]?.status).toBe("wrong")
+  })
+})
 
 describe("PlayResponseSchema", () => {
   it("parses completed branch with result only (no puzzle shell)", () => {
     const raw = {
       status: "completed",
       result: sampleResult,
-    };
-    const parsed = PlayResponseSchema.parse(raw);
-    expect(parsed.status).toBe("completed");
-    if (parsed.status !== "completed") {
-      throw new Error("expected completed");
     }
-    expect(parsed.result).toEqual(sampleResult);
-    expect("puzzle" in parsed).toBe(false);
-    expect("session_started_at" in parsed).toBe(false);
-  });
-});
+    const parsed = PlayResponseSchema.parse(raw)
+    expect(parsed.status).toBe("completed")
+    if (parsed.status !== "completed") {
+      throw new Error("expected completed")
+    }
+    expect(parsed.result).toEqual(sampleResult)
+    expect("puzzle" in parsed).toBe(false)
+    expect("session_started_at" in parsed).toBe(false)
+  })
+})

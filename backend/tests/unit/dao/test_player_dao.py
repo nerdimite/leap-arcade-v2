@@ -8,9 +8,6 @@ Real integration tests live in tests/integration/ (not yet scaffolded).
 The executor should add those when wiring up the test DB fixture.
 """
 
-import pytest
-
-from leap.dao.player_dao import PlayerDAO
 
 # TODO (executor): add integration tests using a real async session + test DB:
 # - get_by_id returns PlayerDTO for a seeded player

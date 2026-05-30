@@ -1,8 +1,8 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import type { Meta, StoryObj } from "@storybook/nextjs-vite"
 
-import { GameHeader } from "./GameHeader";
-import { GameShell } from "./GameShell";
-import { ScoreReadout } from "./ScoreReadout";
+import { GameHeader } from "./GameHeader"
+import { GameShell } from "./GameShell"
+import { ScoreReadout } from "./ScoreReadout"
 
 /**
  * `GameShell` is the frame each `<Game>View` renders into: it sets the local
@@ -13,11 +13,11 @@ import { ScoreReadout } from "./ScoreReadout";
 const meta = {
   component: GameShell,
   parameters: { layout: "fullscreen" },
-} satisfies Meta<typeof GameShell>;
+} satisfies Meta<typeof GameShell>
 
-export default meta;
+export default meta
 
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof meta>
 
 const stage = (
   <div className="space-y-5">
@@ -25,34 +25,40 @@ const stage = (
       <ScoreReadout score={420} />
     </GameHeader>
     <div className="rounded-[var(--radius)] border-2 border-line bg-panel p-6 shadow-[var(--shadow-cabinet)]">
-      <p className="text-[20px] font-semibold leading-snug text-ink">
-        Which deployment model gives the customer the least operational responsibility?
+      <p className="text-[20px] leading-snug font-semibold text-ink">
+        Which deployment model gives the customer the least operational
+        responsibility?
       </p>
     </div>
   </div>
-);
+)
 
 const resultSlot = (
   <div className="mx-auto max-w-lg p-6">
     <div className="overflow-hidden rounded-[var(--radius)] border-2 border-line bg-panel shadow-[var(--shadow-cabinet)]">
-      <div className="h-2 bg-[var(--accent)]" style={{ boxShadow: "0 0 18px var(--accent)" }} />
+      <div
+        className="h-2 bg-[var(--accent)]"
+        style={{ boxShadow: "0 0 18px var(--accent)" }}
+      />
       <div className="p-6 text-center">
-        <p className="font-pixel text-[9px] uppercase tracking-[2px] text-[var(--accent)]">
+        <p className="font-pixel text-[9px] tracking-[2px] text-[var(--accent)] uppercase">
           ▸ Round complete
         </p>
-        <p className="mt-4 font-pixel text-[28px] text-four tabular-nums">1,440</p>
+        <p className="mt-4 font-pixel text-[28px] text-four tabular-nums">
+          1,440
+        </p>
         <p className="mt-2 text-[13px] text-ink-dim">12 correct · 3 wrong</p>
       </div>
     </div>
   </div>
-);
+)
 
-const slots = { question: stage, result: resultSlot };
+const slots = { question: stage, result: resultSlot }
 
 /** The playing stage: shell-owned container at `xl` width on the amber accent. */
 export const Playing: Story = {
   args: { gameId: "rapid_fire", state: "question", size: "xl", slots },
-};
+}
 
 /** A bleed state owns its own width; the shell contributes only the accent. */
 export const ResultBleed: Story = {
@@ -63,7 +69,7 @@ export const ResultBleed: Story = {
     bleedStates: ["result"],
     slots,
   },
-};
+}
 
 /** Same shell, a different game — only the inherited accent changes. */
 export const DifferentGame: Story = {
@@ -84,4 +90,4 @@ export const DifferentGame: Story = {
       ),
     },
   },
-};
+}

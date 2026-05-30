@@ -10,9 +10,7 @@ from leap.dao.models.base import Base
 
 class PicturePuzzle(Base):
     __tablename__ = "picture_puzzles"
-    __table_args__ = (
-        UniqueConstraint("image_filename", name="uq_picture_puzzles_image_filename"),
-    )
+    __table_args__ = (UniqueConstraint("image_filename", name="uq_picture_puzzles_image_filename"),)
 
     id: Mapped[str] = mapped_column(
         String,

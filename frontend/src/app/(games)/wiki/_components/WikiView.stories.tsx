@@ -1,10 +1,10 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import type { Meta, StoryObj } from "@storybook/nextjs-vite"
+import { fn } from "storybook/test"
 
-import type { WikiActivePuzzle, WikiPuzzleResult } from "@/services/wiki/schema";
+import type { WikiActivePuzzle, WikiPuzzleResult } from "@/services/wiki/schema"
 
-import { WikiView } from "./WikiView";
-import type { WikiViewState } from "./wiki-view-state";
+import { WikiView } from "./WikiView"
+import type { WikiViewState } from "./wiki-view-state"
 
 const sampleActive: WikiActivePuzzle = {
   game_session_id: "gs-story",
@@ -20,7 +20,7 @@ const sampleActive: WikiActivePuzzle = {
   click_path: ["Denmark"],
   article_html: '<p><a data-wiki-title="Niels Bohr" href="#">Bohr</a></p>',
   back_enabled: true,
-};
+}
 
 const samplePuzzleResult: WikiPuzzleResult = {
   round_id: "round-3",
@@ -32,7 +32,7 @@ const samplePuzzleResult: WikiPuzzleResult = {
   time_ms: 96_000,
   score: 140,
   status: "completed",
-};
+}
 
 const finalResults: WikiPuzzleResult[] = [
   samplePuzzleResult,
@@ -47,22 +47,22 @@ const finalResults: WikiPuzzleResult[] = [
     score: 200,
     status: "completed",
   },
-];
+]
 
 const timingRefFns = () => ({
   onNavigate: fn(async () => Promise.resolve()),
   onBack: fn(async () => Promise.resolve()),
   onContinue: fn(async () => Promise.resolve()),
-});
+})
 
 const meta = {
   component: WikiView,
   args: timingRefFns(),
-} satisfies Meta<typeof WikiView>;
+} satisfies Meta<typeof WikiView>
 
-export default meta;
+export default meta
 
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof meta>
 
 export const Active: Story = {
   args: {
@@ -77,7 +77,7 @@ export const Active: Story = {
       navPending: false,
     } satisfies WikiViewState,
   },
-};
+}
 
 export const PuzzleResult: Story = {
   args: {
@@ -90,7 +90,7 @@ export const PuzzleResult: Story = {
       continuePending: false,
     } satisfies WikiViewState,
   },
-};
+}
 
 export const FinalCompleted: Story = {
   args: {
@@ -101,7 +101,7 @@ export const FinalCompleted: Story = {
       results: finalResults,
     } satisfies WikiViewState,
   },
-};
+}
 
 export const FinalAbandoned: Story = {
   args: {
@@ -112,7 +112,7 @@ export const FinalAbandoned: Story = {
       results: finalResults,
     } satisfies WikiViewState,
   },
-};
+}
 
 export const ErrorStory: Story = {
   name: "Error",
@@ -123,4 +123,4 @@ export const ErrorStory: Story = {
       message: "Could not load the wiki session.",
     } satisfies WikiViewState,
   },
-};
+}

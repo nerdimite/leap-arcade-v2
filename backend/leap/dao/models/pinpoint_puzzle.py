@@ -1,6 +1,17 @@
 from datetime import datetime
 
-from sqlalchemy import CheckConstraint, DateTime, ForeignKey, Index, Integer, SmallInteger, String, Text, UniqueConstraint, text
+from sqlalchemy import (
+    CheckConstraint,
+    DateTime,
+    ForeignKey,
+    Index,
+    Integer,
+    SmallInteger,
+    String,
+    Text,
+    UniqueConstraint,
+    text,
+)
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
@@ -32,7 +43,9 @@ class PinpointPuzzle(Base):
 class PinpointPuzzleAttempt(Base):
     __tablename__ = "pinpoint_puzzle_attempts"
     __table_args__ = (
-        UniqueConstraint("session_id", "puzzle_id", name="uq_pinpoint_puzzle_attempts_session_puzzle"),
+        UniqueConstraint(
+            "session_id", "puzzle_id", name="uq_pinpoint_puzzle_attempts_session_puzzle"
+        ),
         CheckConstraint(
             "status IN ('active', 'solved', 'failed')",
             name="ck_pinpoint_puzzle_attempts_status",

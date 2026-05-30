@@ -1,14 +1,14 @@
 """Read-only DAO for crossword puzzles (startup cache warm)."""
 
-from typing import List, NoReturn, Any
+from typing import Any, List, NoReturn
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from leap.dao.base_pg_dao import BaseReadPgDAO
-from leap.dao.models.crossword import CrosswordPuzzle, CrosswordEntry
-from leap.types.crossword import CrosswordPuzzleDTO, CrosswordEntryDTO
+from leap.dao.models.crossword import CrosswordEntry, CrosswordPuzzle
+from leap.types.crossword import CrosswordEntryDTO, CrosswordPuzzleDTO
 
 
 class CrosswordPuzzleDAO(BaseReadPgDAO[CrosswordPuzzle]):

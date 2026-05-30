@@ -17,7 +17,6 @@ from leap.config.settings import get_settings
 from leap.core.common.time import utc_now
 from leap.core.exceptions import InvalidTokenException
 
-
 _JWT_ALGORITHM = "HS256"
 
 

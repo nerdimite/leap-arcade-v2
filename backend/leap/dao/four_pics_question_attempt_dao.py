@@ -11,7 +11,9 @@ from leap.dao.models.four_pics_question_attempt import FourPicsQuestionAttempt
 from leap.types.four_pics import FourPicsQuestionAttemptDTO
 
 
-class FourPicsQuestionAttemptDAO(BaseReadPgDAO[FourPicsQuestionAttempt], BaseWritePgDAO[FourPicsQuestionAttempt]):
+class FourPicsQuestionAttemptDAO(
+    BaseReadPgDAO[FourPicsQuestionAttempt], BaseWritePgDAO[FourPicsQuestionAttempt]
+):
     """Persists per-question attempt lifecycle for a Four Pics session."""
 
     def __init__(self) -> None:

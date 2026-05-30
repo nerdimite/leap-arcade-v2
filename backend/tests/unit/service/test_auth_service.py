@@ -9,7 +9,6 @@ from leap.service.exceptions import InvalidEventCodeException, PlayerNotFoundExc
 from leap.types.player import PlayerDTO
 from tests.fakes import FakeContextManager, FakePlayerDAO
 
-
 _VALID_PLAYER = PlayerDTO(id="emp001", display_name="Alice Smith")
 _EVENT_CODE = "supersecret"
 
@@ -85,6 +84,7 @@ class TestAuthServiceLogin:
         svc = _make_service(players={})
         with pytest.raises(PlayerNotFoundException):
             await svc.login("ghost", "wrongcode")
+
 
 # TODO (executor): add edge case tests for:
 # - corp_id with leading/trailing whitespace (should be stripped + normalised)

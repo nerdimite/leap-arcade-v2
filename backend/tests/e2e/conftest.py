@@ -28,10 +28,7 @@ E2E_POSTGRES_URL = "postgresql+asyncpg://leap:leap@localhost:5433/leap_test"
 
 
 def _truncate_transactional_tables_sql() -> str:
-    return (
-        "TRUNCATE TABLE players, game_sessions, rapid_fire_answers "
-        "RESTART IDENTITY CASCADE"
-    )
+    return "TRUNCATE TABLE players, game_sessions, rapid_fire_answers RESTART IDENTITY CASCADE"
 
 
 async def truncate_transaction_tables(engine: AsyncEngine) -> None:
@@ -44,9 +41,10 @@ async def truncate_all_tables_for_suite(engine: AsyncEngine) -> None:
     """Full wipe including seeded question pools — used once per pytest session."""
     stmt = text(
         "TRUNCATE TABLE rapid_fire_answers, four_pics_question_attempts, "
-        "crossword_solves, word_hunt_finds, game_sessions, players, "
-        "rapid_fire_questions, four_pics_questions, crossword_entries, "
-        "crossword_puzzles, word_hunt_words, word_hunt_puzzles "
+        "pinpoint_puzzle_attempts, crossword_solves, word_hunt_finds, "
+        "game_sessions, players, "
+        "rapid_fire_questions, four_pics_questions, pinpoint_puzzles, "
+        "crossword_entries, crossword_puzzles, word_hunt_words, word_hunt_puzzles "
         "RESTART IDENTITY CASCADE"
     )
     async with engine.begin() as conn:
@@ -78,7 +76,7 @@ os.environ.setdefault("EVENT_CODE", "e2e-event-code")
 
 _apply_e2e_settings_patch()
 
-from leap.api.main import app
+from leap.api.main import app  # noqa: E402  (import must follow _apply_e2e_settings_patch)
 
 
 def _run_alembic_upgrade_head() -> None:

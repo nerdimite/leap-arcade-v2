@@ -5,7 +5,6 @@ import re
 import pytest
 
 from leap.games.wiki.html_rewriter import WikiHtmlRewriter
-
 from tests.fixtures.wiki_html_fixtures import SEED_HTML_FIXTURES
 
 
@@ -30,7 +29,7 @@ def test_seed_fixture_rewrites_to_game_safe_html(fixture_name: str) -> None:
 def test_biology_fixture_keeps_upload_wikimedia_image() -> None:
     snippet = (
         '<section><img src="https://upload.wikimedia.org/wikipedia/commons/x.png" alt="x"/>'
-        "<p><a href=\"/wiki/Test\">t</a></p></section>"
+        '<p><a href="/wiki/Test">t</a></p></section>'
     )
     out = WikiHtmlRewriter().rewrite(snippet)
     assert "upload.wikimedia.org" in out.html

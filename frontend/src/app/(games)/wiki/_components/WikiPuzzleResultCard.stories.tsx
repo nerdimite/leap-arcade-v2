@@ -1,7 +1,7 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import type { Meta, StoryObj } from "@storybook/nextjs-vite"
+import { fn } from "storybook/test"
 
-import { WikiPuzzleResultCard } from "./WikiPuzzleResultCard";
+import { WikiPuzzleResultCard } from "./WikiPuzzleResultCard"
 
 const meta = {
   component: WikiPuzzleResultCard,
@@ -14,22 +14,22 @@ const meta = {
     continuePending: false,
     onContinue: fn(),
   },
-} satisfies Meta<typeof WikiPuzzleResultCard>;
+} satisfies Meta<typeof WikiPuzzleResultCard>
 
-export default meta;
+export default meta
 
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof meta>
 
 export const HasNext: Story = {
   args: {
     hasNext: true,
   },
-};
+}
 
 export const ViewFinalResults: Story = {
   args: {
     hasNext: false,
   },
-};
+}
 
-export { HasNext as Default };
+export { HasNext as Default }

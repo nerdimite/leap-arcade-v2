@@ -24,5 +24,23 @@
 			"!**/public",
 			"!**/storybook-static"
 		]
-	}
+	},
+	"overrides": [
+		{
+			"includes": ["**/*.test.ts", "**/*.test.tsx"],
+			"linter": {
+				"rules": {
+					"style": { "noNonNullAssertion": "off" }
+				}
+			}
+		},
+		{
+			"includes": [".storybook/**"],
+			"linter": {
+				"rules": {
+					"performance": { "noImgElement": "off" }
+				}
+			}
+		}
+	]
 }

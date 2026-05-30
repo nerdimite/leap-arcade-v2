@@ -10,9 +10,7 @@ from leap.types.player import CurrentPlayer
 
 
 class TestPinpointAbandon:
-    def test_abandon_mid_puzzle_returns_not_reached_rows(
-        self, pinpoint_client: TestClient
-    ) -> None:
+    def test_abandon_mid_puzzle_returns_not_reached_rows(self, pinpoint_client: TestClient) -> None:
         client = pinpoint_client
         play = client.post("/games/pinpoint/play")
         assert play.status_code == 200

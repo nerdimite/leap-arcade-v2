@@ -34,7 +34,9 @@ class FourPicsQuestionAttempt(Base):
 
     id = Column(String, primary_key=True, server_default=text("gen_random_uuid()::text"))
     session_id = Column(String, ForeignKey("game_sessions.id", ondelete="CASCADE"), nullable=False)
-    question_id = Column(String, ForeignKey("four_pics_questions.id", ondelete="CASCADE"), nullable=False)
+    question_id = Column(
+        String, ForeignKey("four_pics_questions.id", ondelete="CASCADE"), nullable=False
+    )
     status = Column(String, nullable=False)
     selected_index = Column(SmallInteger, nullable=True)
     score = Column(Integer, nullable=True)

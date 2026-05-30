@@ -1,185 +1,188 @@
-"use client";
+"use client"
 
-import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef } from "react"
 
-import { useNavigationGuard } from "@/hooks/use-navigation-guard";
+import { useNavigationGuard } from "@/hooks/use-navigation-guard"
 import {
   CROSSWORD_MISS_FLASH_MS,
   CROSSWORD_SCORE_INCREMENT_MS,
   CROSSWORD_SOLVE_FLASH_MS,
-} from "@/lib/constants";
+} from "@/lib/constants"
 import {
   useCrosswordCheck,
   useCrosswordPlay,
   useCrosswordSubmit,
-} from "@/services/crossword/hooks";
-import type { Clue, PlayResponse, Result } from "@/services/crossword/schema";
+} from "@/services/crossword/hooks"
+import type { Clue, PlayResponse, Result } from "@/services/crossword/schema"
 import {
   crosswordPlayInitialState,
   crosswordPlayReducer,
   getActiveClueEntryId,
   getDisplayLetter,
-} from "../_hooks/crosswordPlayReducer";
+} from "../_hooks/crosswordPlayReducer"
 import {
   cellKey,
   collectEntryCellKeys,
   entryLetters,
   getActiveEntryCellKeys,
-} from "../_lib/crosswordGrid";
-import { CrosswordView } from "./CrosswordView";
+} from "../_lib/crosswordGrid"
+import { CrosswordView } from "./CrosswordView"
 
 type Props = {
-  initialPlay: PlayResponse;
-};
+  initialPlay: PlayResponse
+}
 
 function cellsForEntryIds(
   cluesById: Record<string, Clue>,
-  entryIds: string[],
+  entryIds: string[]
 ): Set<string> {
-  const cells = new Set<string>();
+  const cells = new Set<string>()
   for (const entryId of entryIds) {
-    const clue = cluesById[entryId];
+    const clue = cluesById[entryId]
     if (!clue) {
-      continue;
+      continue
     }
     for (const key of collectEntryCellKeys(clue)) {
-      cells.add(key);
+      cells.add(key)
     }
   }
-  return cells;
+  return cells
 }
 
 /** Maps each just-solved cell to its position along the entry, so the lime pop
  *  travels letter by letter. Shared cells keep their earliest index. */
 function solveFlashOrderForEntryIds(
   cluesById: Record<string, Clue>,
-  entryIds: string[],
+  entryIds: string[]
 ): Map<string, number> {
-  const order = new Map<string, number>();
+  const order = new Map<string, number>()
   for (const entryId of entryIds) {
-    const clue = cluesById[entryId];
+    const clue = cluesById[entryId]
     if (!clue) {
-      continue;
+      continue
     }
     collectEntryCellKeys(clue).forEach((key, index) => {
-      const existing = order.get(key);
+      const existing = order.get(key)
       if (existing === undefined || index < existing) {
-        order.set(key, index);
+        order.set(key, index)
       }
-    });
+    })
   }
-  return order;
+  return order
 }
 
 export function CrosswordClient({ initialPlay }: Props) {
-  const { mutateAsync: refreshPlay } = useCrosswordPlay();
-  const { mutateAsync: submitCheck } = useCrosswordCheck();
-  const { mutateAsync: submitSession, isPending: isSubmitPending } = useCrosswordSubmit();
-  const { setIsDirty, registerBeforeNavigateConfirm, navigateSafe } = useNavigationGuard();
+  const { mutateAsync: refreshPlay } = useCrosswordPlay()
+  const { mutateAsync: submitCheck } = useCrosswordCheck()
+  const { mutateAsync: submitSession, isPending: isSubmitPending } =
+    useCrosswordSubmit()
+  const { setIsDirty, registerBeforeNavigateConfirm, navigateSafe } =
+    useNavigationGuard()
 
   const [play, setPlay] = useReducer(
-    (state: PlayResponse, next: PlayResponse) => next,
-    initialPlay,
-  );
+    (_state: PlayResponse, next: PlayResponse) => next,
+    initialPlay
+  )
   const [playState, dispatchPlay] = useReducer(
     crosswordPlayReducer,
-    crosswordPlayInitialState,
-  );
+    crosswordPlayInitialState
+  )
 
-  const gridRef = useRef<HTMLDivElement>(null);
-  const hiddenInputRef = useRef<HTMLInputElement>(null);
-  const checkSeqRef = useRef(0);
-  const submitInFlightRef = useRef(false);
-  const playStateRef = useRef(playState);
-  const submitCheckRef = useRef(submitCheck);
-  const refreshPlayRef = useRef(refreshPlay);
-  playStateRef.current = playState;
-  submitCheckRef.current = submitCheck;
-  refreshPlayRef.current = refreshPlay;
+  const gridRef = useRef<HTMLDivElement>(null)
+  const hiddenInputRef = useRef<HTMLInputElement>(null)
+  const checkSeqRef = useRef(0)
+  const submitInFlightRef = useRef(false)
+  const playStateRef = useRef(playState)
+  const submitCheckRef = useRef(submitCheck)
+  const refreshPlayRef = useRef(refreshPlay)
+  playStateRef.current = playState
+  submitCheckRef.current = submitCheck
+  refreshPlayRef.current = refreshPlay
 
-  const puzzle = play.puzzle;
-  const result: Result | null = play.result;
-  const inProgress = play.session_status === "active" && puzzle !== null;
+  const puzzle = play.puzzle
+  const result: Result | null = play.result
+  const inProgress = play.session_status === "active" && puzzle !== null
 
   useEffect(() => {
-    setIsDirty(inProgress);
-  }, [inProgress, setIsDirty]);
+    setIsDirty(inProgress)
+  }, [inProgress, setIsDirty])
 
   useEffect(() => {
     if (puzzle) {
-      dispatchPlay({ type: "SET_PUZZLE", payload: { puzzle } });
+      dispatchPlay({ type: "SET_PUZZLE", payload: { puzzle } })
     }
-  }, [puzzle]);
+  }, [puzzle])
 
   const lockedCells = useMemo(() => {
     if (!playState.context) {
-      return new Set<string>();
+      return new Set<string>()
     }
-    return playState.context.lockedCells;
-  }, [playState.context]);
+    return playState.context.lockedCells
+  }, [playState.context])
 
   const activeEntryCells = useMemo(() => {
     if (!playState.context) {
-      return new Set<string>();
+      return new Set<string>()
     }
     return new Set(
       getActiveEntryCellKeys(
         playState.context,
         playState.cursor,
-        playState.direction,
-      ),
-    );
-  }, [playState.context, playState.cursor, playState.direction]);
+        playState.direction
+      )
+    )
+  }, [playState.context, playState.cursor, playState.direction])
 
   const missFlashCells = useMemo(() => {
     if (!playState.context) {
-      return new Set<string>();
+      return new Set<string>()
     }
     return cellsForEntryIds(
       playState.context.cluesById,
-      playState.missFlashEntryIds,
-    );
-  }, [playState.context, playState.missFlashEntryIds]);
+      playState.missFlashEntryIds
+    )
+  }, [playState.context, playState.missFlashEntryIds])
 
   const solveFlashOrder = useMemo(() => {
     if (!playState.context) {
-      return new Map<string, number>();
+      return new Map<string, number>()
     }
     return solveFlashOrderForEntryIds(
       playState.context.cluesById,
-      playState.solveFlashEntryIds,
-    );
-  }, [playState.context, playState.solveFlashEntryIds]);
+      playState.solveFlashEntryIds
+    )
+  }, [playState.context, playState.solveFlashEntryIds])
 
   const displayLetter = useCallback(
-    (row: number, col: number) => getDisplayLetter(playState, cellKey(row, col)),
-    [playState],
-  );
+    (row: number, col: number) =>
+      getDisplayLetter(playState, cellKey(row, col)),
+    [playState]
+  )
 
   const applyPlay = useCallback((next: PlayResponse) => {
-    setPlay(next);
-  }, []);
+    setPlay(next)
+  }, [])
 
   const runCheck = useCallback(
     async (entryId: string, seq: number) => {
-      const { context, draft } = playStateRef.current;
+      const { context, draft } = playStateRef.current
       if (!context) {
-        return;
+        return
       }
-      const letters = entryLetters(context, draft, entryId);
+      const letters = entryLetters(context, draft, entryId)
       try {
         const response = await submitCheckRef.current({
           entry_id: entryId,
           letters,
-        });
+        })
         if (seq !== checkSeqRef.current) {
-          return;
+          return
         }
 
         if (response.correct) {
-          dispatchPlay({ type: "CHECK_HIT", payload: { entryId } });
+          dispatchPlay({ type: "CHECK_HIT", payload: { entryId } })
         } else {
-          dispatchPlay({ type: "CHECK_MISS", payload: { entryId } });
+          dispatchPlay({ type: "CHECK_MISS", payload: { entryId } })
         }
 
         if (response.session_status === "completed" && response.result) {
@@ -188,178 +191,183 @@ export function CrosswordClient({ initialPlay }: Props) {
             session_score: response.session_score,
             puzzle: null,
             result: response.result,
-          });
-          return;
+          })
+          return
         }
 
-        const refreshed = await refreshPlayRef.current();
+        const refreshed = await refreshPlayRef.current()
         if (seq !== checkSeqRef.current) {
-          return;
+          return
         }
-        applyPlay(refreshed);
+        applyPlay(refreshed)
       } finally {
         if (seq === checkSeqRef.current) {
-          dispatchPlay({ type: "CHECK_FINISHED", payload: { entryId } });
+          dispatchPlay({ type: "CHECK_FINISHED", payload: { entryId } })
         }
       }
     },
-    [applyPlay],
-  );
+    [applyPlay]
+  )
 
   useEffect(() => {
     if (!inProgress || playState.checkQueue.length === 0) {
-      return;
+      return
     }
 
-    const seq = ++checkSeqRef.current;
-    const queue = playState.checkQueue;
-    const pending = new Set(playState.pendingCheckEntryIds);
+    const seq = ++checkSeqRef.current
+    const queue = playState.checkQueue
+    const pending = new Set(playState.pendingCheckEntryIds)
 
-    dispatchPlay({ type: "CLEAR_CHECK_QUEUE" });
+    dispatchPlay({ type: "CLEAR_CHECK_QUEUE" })
 
     for (const entryId of queue) {
       if (pending.has(entryId)) {
-        continue;
+        continue
       }
-      pending.add(entryId);
-      dispatchPlay({ type: "CHECK_STARTED", payload: { entryId } });
-      void runCheck(entryId, seq);
+      pending.add(entryId)
+      dispatchPlay({ type: "CHECK_STARTED", payload: { entryId } })
+      void runCheck(entryId, seq)
     }
-  }, [inProgress, playState.checkQueue, playState.pendingCheckEntryIds, runCheck]);
+  }, [
+    inProgress,
+    playState.checkQueue,
+    playState.pendingCheckEntryIds,
+    runCheck,
+  ])
 
   useEffect(() => {
     if (playState.missFlashEntryIds.length === 0) {
-      return undefined;
+      return undefined
     }
     const timeout = window.setTimeout(() => {
-      dispatchPlay({ type: "MISS_FLASH_COMPLETE" });
-    }, CROSSWORD_MISS_FLASH_MS);
+      dispatchPlay({ type: "MISS_FLASH_COMPLETE" })
+    }, CROSSWORD_MISS_FLASH_MS)
     return () => {
-      window.clearTimeout(timeout);
-    };
-  }, [playState.missFlashEntryIds]);
+      window.clearTimeout(timeout)
+    }
+  }, [playState.missFlashEntryIds])
 
   useEffect(() => {
     if (playState.solveFlashEntryIds.length === 0) {
-      return undefined;
+      return undefined
     }
     const timeout = window.setTimeout(() => {
-      dispatchPlay({ type: "SOLVE_FLASH_COMPLETE" });
-    }, CROSSWORD_SOLVE_FLASH_MS);
+      dispatchPlay({ type: "SOLVE_FLASH_COMPLETE" })
+    }, CROSSWORD_SOLVE_FLASH_MS)
     return () => {
-      window.clearTimeout(timeout);
-    };
-  }, [playState.solveFlashEntryIds]);
+      window.clearTimeout(timeout)
+    }
+  }, [playState.solveFlashEntryIds])
 
   useEffect(() => {
     if (!playState.showScoreIncrement) {
-      return undefined;
+      return undefined
     }
     const timeout = window.setTimeout(() => {
-      dispatchPlay({ type: "SCORE_INCREMENT_COMPLETE" });
-    }, CROSSWORD_SCORE_INCREMENT_MS);
+      dispatchPlay({ type: "SCORE_INCREMENT_COMPLETE" })
+    }, CROSSWORD_SCORE_INCREMENT_MS)
     return () => {
-      window.clearTimeout(timeout);
-    };
-  }, [playState.showScoreIncrement]);
+      window.clearTimeout(timeout)
+    }
+  }, [playState.showScoreIncrement])
 
   useEffect(() => {
     if (!inProgress) {
-      return undefined;
+      return undefined
     }
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      const target = event.target as HTMLElement | null;
+      const target = event.target as HTMLElement | null
       if (
         target &&
         (target.tagName === "INPUT" || target.tagName === "TEXTAREA") &&
         target !== hiddenInputRef.current
       ) {
-        return;
+        return
       }
 
       if (event.key === "Tab" || event.key === " ") {
-        event.preventDefault();
-        dispatchPlay({ type: "TOGGLE_DIRECTION" });
-        return;
+        event.preventDefault()
+        dispatchPlay({ type: "TOGGLE_DIRECTION" })
+        return
       }
 
       if (event.key === "Backspace") {
-        event.preventDefault();
-        dispatchPlay({ type: "BACKSPACE" });
-        return;
+        event.preventDefault()
+        dispatchPlay({ type: "BACKSPACE" })
+        return
       }
 
       if (event.key === "ArrowLeft") {
-        event.preventDefault();
-        dispatchPlay({ type: "ARROW", payload: { deltaRow: 0, deltaCol: -1 } });
-        return;
+        event.preventDefault()
+        dispatchPlay({ type: "ARROW", payload: { deltaRow: 0, deltaCol: -1 } })
+        return
       }
       if (event.key === "ArrowRight") {
-        event.preventDefault();
-        dispatchPlay({ type: "ARROW", payload: { deltaRow: 0, deltaCol: 1 } });
-        return;
+        event.preventDefault()
+        dispatchPlay({ type: "ARROW", payload: { deltaRow: 0, deltaCol: 1 } })
+        return
       }
       if (event.key === "ArrowUp") {
-        event.preventDefault();
-        dispatchPlay({ type: "ARROW", payload: { deltaRow: -1, deltaCol: 0 } });
-        return;
+        event.preventDefault()
+        dispatchPlay({ type: "ARROW", payload: { deltaRow: -1, deltaCol: 0 } })
+        return
       }
       if (event.key === "ArrowDown") {
-        event.preventDefault();
-        dispatchPlay({ type: "ARROW", payload: { deltaRow: 1, deltaCol: 0 } });
-        return;
+        event.preventDefault()
+        dispatchPlay({ type: "ARROW", payload: { deltaRow: 1, deltaCol: 0 } })
+        return
       }
 
       if (/^[a-zA-Z]$/.test(event.key)) {
-        event.preventDefault();
-        dispatchPlay({ type: "TYPE_LETTER", payload: { letter: event.key } });
+        event.preventDefault()
+        dispatchPlay({ type: "TYPE_LETTER", payload: { letter: event.key } })
       }
-    };
+    }
 
-    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown)
     return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [inProgress]);
+      window.removeEventListener("keydown", handleKeyDown)
+    }
+  }, [inProgress])
 
   const handleCellClick = useCallback((row: number, col: number) => {
-    dispatchPlay({ type: "SELECT_CELL", payload: { row, col } });
-    hiddenInputRef.current?.focus();
-    gridRef.current?.focus();
-  }, []);
+    dispatchPlay({ type: "SELECT_CELL", payload: { row, col } })
+    hiddenInputRef.current?.focus()
+    gridRef.current?.focus()
+  }, [])
 
   const handleClueClick = useCallback((entryId: string) => {
-    dispatchPlay({ type: "SELECT_CLUE", payload: { entryId } });
-    hiddenInputRef.current?.focus();
-    gridRef.current?.focus();
-  }, []);
+    dispatchPlay({ type: "SELECT_CLUE", payload: { entryId } })
+    hiddenInputRef.current?.focus()
+    gridRef.current?.focus()
+  }, [])
 
   const handleSubmit = useCallback(async () => {
     if (submitInFlightRef.current || isSubmitPending) {
-      return;
+      return
     }
-    submitInFlightRef.current = true;
+    submitInFlightRef.current = true
     try {
-      const response = await submitSession();
+      const response = await submitSession()
       applyPlay({
         session_status: "completed",
         session_score: response.result.score,
         puzzle: null,
         result: response.result,
-      });
-      setIsDirty(false);
+      })
+      setIsDirty(false)
     } finally {
-      submitInFlightRef.current = false;
+      submitInFlightRef.current = false
     }
-  }, [applyPlay, isSubmitPending, setIsDirty, submitSession]);
+  }, [applyPlay, isSubmitPending, setIsDirty, submitSession])
 
   useEffect(() => {
     if (!inProgress) {
-      return undefined;
+      return undefined
     }
-    return registerBeforeNavigateConfirm(handleSubmit);
-  }, [handleSubmit, inProgress, registerBeforeNavigateConfirm]);
+    return registerBeforeNavigateConfirm(handleSubmit)
+  }, [handleSubmit, inProgress, registerBeforeNavigateConfirm])
 
   if (result) {
     return (
@@ -370,11 +378,11 @@ export function CrosswordClient({ initialPlay }: Props) {
         onSubmit={() => {}}
         onBackToLobby={() => navigateSafe("/lobby")}
       />
-    );
+    )
   }
 
   if (!puzzle) {
-    return null;
+    return null
   }
 
   return (
@@ -400,5 +408,5 @@ export function CrosswordClient({ initialPlay }: Props) {
       gridRef={gridRef}
       hiddenInputRef={hiddenInputRef}
     />
-  );
+  )
 }

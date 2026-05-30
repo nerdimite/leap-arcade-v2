@@ -1,10 +1,10 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest"
 
-import type { WikiPlayResponse } from "@/services/wiki/schema";
+import type { WikiPlayResponse } from "@/services/wiki/schema"
 
-import type { WikiState } from "../_hooks/useWikiReducer";
-import { wikiInitialState } from "../_hooks/useWikiReducer";
-import { toWikiViewState, type WikiViewState } from "./wiki-view-state";
+import type { WikiState } from "../_hooks/useWikiReducer"
+import { wikiInitialState } from "../_hooks/useWikiReducer"
+import { toWikiViewState, type WikiViewState } from "./wiki-view-state"
 
 function activePlay(): Extract<WikiPlayResponse, { state: "active" }> {
   return {
@@ -27,7 +27,7 @@ function activePlay(): Extract<WikiPlayResponse, { state: "active" }> {
       article_html: "<p>x</p>",
       back_enabled: true,
     },
-  };
+  }
 }
 
 const sampleResult = {
@@ -40,37 +40,37 @@ const sampleResult = {
   time_ms: 1000 as number | null | undefined,
   score: 100,
   status: "completed" as const,
-};
+}
 
 const uiDefaults = {
   pathRoot: "Root",
   navPending: false,
   continuePending: false,
-};
+}
 
 describe("toWikiViewState", () => {
   it("maps loading phase to none (fallback)", () => {
     expect(
       toWikiViewState(
         { ...wikiInitialState, phase: "loading", play: null },
-        uiDefaults,
-      ),
-    ).toEqual({ status: "none" });
-  });
+        uiDefaults
+      )
+    ).toEqual({ status: "none" })
+  })
 
   it("maps loading phase with non-active play (impossible reducer shape) to none", () => {
     const terminalPlay: WikiPlayResponse = {
       state: "completed",
       total_score: 0,
       results: [],
-    };
+    }
     expect(
       toWikiViewState(
         { ...wikiInitialState, phase: "loading", play: terminalPlay },
-        uiDefaults,
-      ),
-    ).toEqual({ status: "none" });
-  });
+        uiDefaults
+      )
+    ).toEqual({ status: "none" })
+  })
 
   it("maps active phase with missing play to none", () => {
     expect(
@@ -82,31 +82,34 @@ describe("toWikiViewState", () => {
           timerRemainingMs: 5000,
           timerDeadlineAtMs: Date.now() + 5000,
         },
-        uiDefaults,
-      ),
-    ).toEqual({ status: "none" });
-  });
+        uiDefaults
+      )
+    ).toEqual({ status: "none" })
+  })
 
   it("maps active phase with terminal play snapshot to none", () => {
     const play: WikiPlayResponse = {
       state: "completed",
       total_score: 99,
       results: [sampleResult],
-    };
+    }
     expect(
-      toWikiViewState({ ...wikiInitialState, phase: "active", play }, uiDefaults),
-    ).toEqual({ status: "none" });
-  });
+      toWikiViewState(
+        { ...wikiInitialState, phase: "active", play },
+        uiDefaults
+      )
+    ).toEqual({ status: "none" })
+  })
 
   it("maps active phase + active play to active view including pathRoot and pendings", () => {
-    const play = activePlay();
+    const play = activePlay()
     const state: WikiState = {
       ...wikiInitialState,
       phase: "active",
       play,
       timerRemainingMs: 12_000,
       timerDeadlineAtMs: Date.now() + 12_000,
-    };
+    }
     const expected: WikiViewState = {
       status: "active",
       current: play.current,
@@ -115,31 +118,31 @@ describe("toWikiViewState", () => {
       completedCount: 2,
       totalScore: 10,
       navPending: true,
-    };
+    }
     expect(
       toWikiViewState(state, {
         ...uiDefaults,
         pathRoot: "CustomRoot",
         navPending: true,
-      }),
-    ).toEqual(expected);
-  });
+      })
+    ).toEqual(expected)
+  })
 
   it("uses article time_remaining when timerRemainingMs is null", () => {
-    const play = activePlay();
+    const play = activePlay()
     const state: WikiState = {
       ...wikiInitialState,
       phase: "active",
       play,
       timerRemainingMs: null,
       timerDeadlineAtMs: null,
-    };
-    const v = toWikiViewState(state, uiDefaults);
-    expect(v.status).toBe("active");
-    if (v.status === "active") {
-      expect(v.timerRemainingMs).toBe(play.current.time_remaining_ms);
     }
-  });
+    const v = toWikiViewState(state, uiDefaults)
+    expect(v.status).toBe("active")
+    if (v.status === "active") {
+      expect(v.timerRemainingMs).toBe(play.current.time_remaining_ms)
+    }
+  })
 
   it("maps puzzleResult phase with null puzzleResult to none", () => {
     expect(
@@ -151,10 +154,10 @@ describe("toWikiViewState", () => {
           totalScoreAfterPuzzle: null,
           nextPuzzleAvailable: null,
         },
-        uiDefaults,
-      ),
-    ).toEqual({ status: "none" });
-  });
+        uiDefaults
+      )
+    ).toEqual({ status: "none" })
+  })
 
   it("maps puzzleResult phase when puzzleResult is defined", () => {
     const state: WikiState = {
@@ -163,15 +166,17 @@ describe("toWikiViewState", () => {
       puzzleResult: sampleResult,
       totalScoreAfterPuzzle: 180,
       nextPuzzleAvailable: true,
-    };
-    expect(toWikiViewState(state, { ...uiDefaults, continuePending: true })).toEqual({
+    }
+    expect(
+      toWikiViewState(state, { ...uiDefaults, continuePending: true })
+    ).toEqual({
       status: "puzzleResult",
       result: sampleResult,
       totalScore: 180,
       hasNext: true,
       continuePending: true,
-    });
-  });
+    })
+  })
 
   it("defaults total score after puzzle when totalScoreAfterPuzzle missing", () => {
     const state: WikiState = {
@@ -180,57 +185,60 @@ describe("toWikiViewState", () => {
       puzzleResult: sampleResult,
       totalScoreAfterPuzzle: null,
       nextPuzzleAvailable: false,
-    };
+    }
     expect(toWikiViewState(state, uiDefaults)).toEqual({
       status: "puzzleResult",
       result: sampleResult,
       totalScore: sampleResult.score,
       hasNext: false,
       continuePending: false,
-    });
-  });
+    })
+  })
 
   it("maps terminal phase with completed play", () => {
     const state: WikiState = {
       ...wikiInitialState,
       phase: "terminal",
       play: { state: "completed", total_score: 420, results: [sampleResult] },
-    };
+    }
     expect(toWikiViewState(state, uiDefaults)).toEqual({
       status: "finalCompleted",
       totalScore: 420,
       results: [sampleResult],
-    });
-  });
+    })
+  })
 
   it("maps terminal phase with abandoned play", () => {
-    const results = [sampleResult];
+    const results = [sampleResult]
     const state: WikiState = {
       ...wikiInitialState,
       phase: "terminal",
       play: { state: "abandoned", total_score: 100, results },
-    };
+    }
     expect(toWikiViewState(state, uiDefaults)).toEqual({
       status: "finalAbandoned",
       totalScore: 100,
       results,
-    });
-  });
+    })
+  })
 
   it("maps terminal phase with unexpected active play snapshot to none", () => {
     const state: WikiState = {
       ...wikiInitialState,
       phase: "terminal",
       play: activePlay(),
-    };
-    expect(toWikiViewState(state, uiDefaults)).toEqual({ status: "none" });
-  });
+    }
+    expect(toWikiViewState(state, uiDefaults)).toEqual({ status: "none" })
+  })
 
   it("maps terminal phase with null play to none", () => {
     expect(
-      toWikiViewState({ ...wikiInitialState, phase: "terminal", play: null }, uiDefaults),
-    ).toEqual({ status: "none" });
-  });
+      toWikiViewState(
+        { ...wikiInitialState, phase: "terminal", play: null },
+        uiDefaults
+      )
+    ).toEqual({ status: "none" })
+  })
 
   it("maps error phase with message fallback trimmed to client copy", () => {
     expect(
@@ -240,10 +248,10 @@ describe("toWikiViewState", () => {
           phase: "error",
           errorMessage: null,
         },
-        uiDefaults,
-      ),
-    ).toEqual({ status: "error", message: "Something went wrong" });
-  });
+        uiDefaults
+      )
+    ).toEqual({ status: "error", message: "Something went wrong" })
+  })
 
   it("maps error phase with explicit message", () => {
     expect(
@@ -253,8 +261,8 @@ describe("toWikiViewState", () => {
           phase: "error",
           errorMessage: "Network failed",
         },
-        uiDefaults,
-      ),
-    ).toEqual({ status: "error", message: "Network failed" });
-  });
-});
+        uiDefaults
+      )
+    ).toEqual({ status: "error", message: "Network failed" })
+  })
+})

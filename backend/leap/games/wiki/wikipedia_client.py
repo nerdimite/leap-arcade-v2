@@ -1,7 +1,7 @@
 """HTTP fetcher for Wikimedia page HTML (REST `page/html` endpoint)."""
 
 from typing import Dict, Optional
-from urllib.parse import unquote, quote
+from urllib.parse import quote, unquote
 
 import httpx
 
@@ -31,7 +31,9 @@ class WikipediaClient:
             await self._client.aclose()
 
     @staticmethod
-    def _canonical_title_from_content_location(content_location: str, fallback_requested: str) -> str:
+    def _canonical_title_from_content_location(
+        content_location: str, fallback_requested: str
+    ) -> str:
         if not content_location:
             return fallback_requested
         if "/page/html/" in content_location:

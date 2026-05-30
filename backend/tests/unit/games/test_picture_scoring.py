@@ -35,7 +35,9 @@ def test_normalize_answer_preserves_spaces_only_when_word_separators() -> None:
 
 
 def test_normalize_answer_handles_mixed_punctuation() -> None:
-    assert normalize_answer("-- Natural - Language (Processing) !!!") == "natural language processing"
+    assert (
+        normalize_answer("-- Natural - Language (Processing) !!!") == "natural language processing"
+    )
 
 
 def test_score_per_puzzle_attempt_counts_map_to_pts() -> None:

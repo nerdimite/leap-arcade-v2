@@ -14,14 +14,13 @@ from leap.api.schema.picture import (
 )
 from leap.games.picture.service import PictureService
 from leap.service.container import ServiceContainer
-from leap.types.player import CurrentPlayer
 from leap.types.picture import (
     PictureAnswerPayload,
     PictureDisplayedPuzzleDTO,
     PicturePlayPayload,
     PictureResultDTO,
 )
-
+from leap.types.player import CurrentPlayer
 
 router = APIRouter()
 
@@ -73,7 +72,9 @@ def _answer_response(payload: PictureAnswerPayload) -> AnswerResponse:
         current_score=payload.current_score,
         puzzles_solved=payload.puzzles_solved,
         puzzles_remaining=payload.puzzles_remaining,
-        next_puzzle=_puzzle_schema(payload.next_puzzle) if payload.next_puzzle is not None else None,
+        next_puzzle=_puzzle_schema(payload.next_puzzle)
+        if payload.next_puzzle is not None
+        else None,
         result=_result_schema(payload.result) if payload.result is not None else None,
     )
 
@@ -97,11 +98,17 @@ async def answer(
     player: CurrentPlayer = Depends(get_current_player),
     container: ServiceContainer = Depends(get_container),
 ) -> AnswerResponse:
-    out = await _picture_svc(container).submit_answer(player.id, body.puzzle_id, body.submitted_answer)
+    out = await _picture_svc(container).submit_answer(
+        player.id, body.puzzle_id, body.submitted_answer
+    )
     return _answer_response(out)
 
 
-@router.post("/abandon", response_model=AbandonResponse, summary="End Picture Illustration session (timer or nav)")
+@router.post(
+    "/abandon",
+    response_model=AbandonResponse,
+    summary="End Picture Illustration session (timer or nav)",
+)
 async def abandon(
     player: CurrentPlayer = Depends(get_current_player),
     container: ServiceContainer = Depends(get_container),

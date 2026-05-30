@@ -148,7 +148,9 @@ async def test_wrong_guess_reveals_next_clue(puzzles: list[PinpointPuzzleDTO]) -
 
 
 @pytest.mark.asyncio
-async def test_correct_guess_marks_solved_and_next_play_advances(puzzles: list[PinpointPuzzleDTO]) -> None:
+async def test_correct_guess_marks_solved_and_next_play_advances(
+    puzzles: list[PinpointPuzzleDTO],
+) -> None:
     svc = _svc(puzzles)
     await _init(svc)
     play = await svc.play("emp001")
@@ -170,7 +172,9 @@ async def test_correct_guess_marks_solved_and_next_play_advances(puzzles: list[P
 
 
 @pytest.mark.asyncio
-async def test_fifth_wrong_guess_marks_failed_with_zero_score(puzzles: list[PinpointPuzzleDTO]) -> None:
+async def test_fifth_wrong_guess_marks_failed_with_zero_score(
+    puzzles: list[PinpointPuzzleDTO],
+) -> None:
     svc = _svc(puzzles)
     await _init(svc)
     play = await svc.play("emp001")
@@ -220,14 +224,18 @@ async def test_final_puzzle_completion_returns_result_and_persists_session_score
     assert finished.result.puzzles_solved == 2
     assert finished.result.puzzles_failed == 0
 
-    session = await svc.game_session_dao.get_by_player_and_game(FakeAsyncSession(), "emp001", "pinpoint")
+    session = await svc.game_session_dao.get_by_player_and_game(
+        FakeAsyncSession(), "emp001", "pinpoint"
+    )
     assert session is not None
     assert session.status == GameSessionStatus.COMPLETED
     assert session.score == 1200
 
 
 @pytest.mark.asyncio
-async def test_correct_guess_at_30s_elapsed_applies_time_bonus(puzzles: list[PinpointPuzzleDTO]) -> None:
+async def test_correct_guess_at_30s_elapsed_applies_time_bonus(
+    puzzles: list[PinpointPuzzleDTO],
+) -> None:
     base = datetime(2026, 5, 26, 12, 0, 0, tzinfo=timezone.utc)
     answer_at = base + timedelta(milliseconds=30_000)
     svc = _svc(puzzles, clock=[base, answer_at, answer_at])
@@ -244,7 +252,9 @@ async def test_correct_guess_at_30s_elapsed_applies_time_bonus(puzzles: list[Pin
 
 
 @pytest.mark.asyncio
-async def test_correct_guess_after_decay_still_earns_base_only(puzzles: list[PinpointPuzzleDTO]) -> None:
+async def test_correct_guess_after_decay_still_earns_base_only(
+    puzzles: list[PinpointPuzzleDTO],
+) -> None:
     base = datetime(2026, 5, 26, 12, 0, 0, tzinfo=timezone.utc)
     answer_at = base + timedelta(milliseconds=120_000)
     svc = _svc(puzzles, clock=[base, answer_at, answer_at])
@@ -297,7 +307,9 @@ async def test_abandon_active_mid_puzzle_closes_attempt_and_marks_unattempted_no
     assert result.puzzles_failed == 1
     assert result.puzzles_not_reached == 1
 
-    session = await svc.game_session_dao.get_by_player_and_game(FakeAsyncSession(), "emp001", "pinpoint")
+    session = await svc.game_session_dao.get_by_player_and_game(
+        FakeAsyncSession(), "emp001", "pinpoint"
+    )
     assert session is not None
     assert session.status == GameSessionStatus.ABANDONED
     assert session.score == 0

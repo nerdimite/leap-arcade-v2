@@ -43,7 +43,4 @@ class WordHuntPuzzleDAO(BaseReadPgDAO[WordHuntPuzzle]):
         )
         result = await session.execute(stmt)
         puzzles = result.scalars().unique().all()
-        return [
-            self._to_dto(puzzle, list(puzzle.words))
-            for puzzle in puzzles
-        ]
+        return [self._to_dto(puzzle, list(puzzle.words)) for puzzle in puzzles]

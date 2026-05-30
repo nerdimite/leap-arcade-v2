@@ -1,22 +1,22 @@
-import { z } from "zod";
+import { z } from "zod"
 
 export const PuzzleSchema = z.object({
   id: z.string(),
   image_filename: z.string(),
   puzzles_answered: z.number().int(),
   puzzles_total: z.number().int(),
-});
+})
 
-export type Puzzle = z.infer<typeof PuzzleSchema>;
+export type Puzzle = z.infer<typeof PuzzleSchema>
 
 export const ResultPuzzleSchema = z.object({
   puzzle_id: z.string(),
   image_filename: z.string(),
   status: z.enum(["correct", "skipped", "not_reached", "wrong"]),
   score_earned: z.number().int(),
-});
+})
 
-export type ResultPuzzle = z.infer<typeof ResultPuzzleSchema>;
+export type ResultPuzzle = z.infer<typeof ResultPuzzleSchema>
 
 export const ResultSchema = z.object({
   score: z.number().int(),
@@ -24,15 +24,15 @@ export const ResultSchema = z.object({
   time_bonus: z.number().int(),
   time_remaining_seconds: z.number().int(),
   puzzles: z.array(ResultPuzzleSchema),
-});
+})
 
-export type Result = z.infer<typeof ResultSchema>;
+export type Result = z.infer<typeof ResultSchema>
 
 export const AbandonResponseSchema = z.object({
   result: ResultSchema,
-});
+})
 
-export type AbandonResponse = z.infer<typeof AbandonResponseSchema>;
+export type AbandonResponse = z.infer<typeof AbandonResponseSchema>
 
 export const PlayResponseSchema = z.discriminatedUnion("status", [
   z.object({
@@ -52,16 +52,16 @@ export const PlayResponseSchema = z.discriminatedUnion("status", [
     status: z.literal("abandoned"),
     result: ResultSchema,
   }),
-]);
+])
 
-export type PlayResponse = z.infer<typeof PlayResponseSchema>;
+export type PlayResponse = z.infer<typeof PlayResponseSchema>
 
 export const AnswerRequestSchema = z.object({
   puzzle_id: z.string().min(1),
   submitted_answer: z.string().nullable(),
-});
+})
 
-export type AnswerRequest = z.infer<typeof AnswerRequestSchema>;
+export type AnswerRequest = z.infer<typeof AnswerRequestSchema>
 
 export const AnswerResponseSchema = z.object({
   correct: z.boolean(),
@@ -71,6 +71,6 @@ export const AnswerResponseSchema = z.object({
   puzzles_remaining: z.number().int(),
   next_puzzle: PuzzleSchema.nullable(),
   result: ResultSchema.nullable(),
-});
+})
 
-export type AnswerResponse = z.infer<typeof AnswerResponseSchema>;
+export type AnswerResponse = z.infer<typeof AnswerResponseSchema>

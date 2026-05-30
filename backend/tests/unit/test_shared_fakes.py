@@ -1,7 +1,6 @@
 """Contract tests for shared hand-written fakes (Sub-1 test infrastructure)."""
 
 from datetime import datetime
-
 from typing import Callable
 
 import pytest
@@ -64,7 +63,9 @@ class TestFakeGameSessionDAOUpdateStatus:
         )
         dao = FakeGameSessionDAO(sessions=[session_row])
         before = utc_now()
-        updated = await dao.update_status(FakeAsyncSession(), "s1", GameSessionStatus.COMPLETED, score=10)
+        updated = await dao.update_status(
+            FakeAsyncSession(), "s1", GameSessionStatus.COMPLETED, score=10
+        )
         assert updated.completed_at is not None
         assert updated.completed_at >= before
         assert (updated.completed_at - started).total_seconds() >= 0

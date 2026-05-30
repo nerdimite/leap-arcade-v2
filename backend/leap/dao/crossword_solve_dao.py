@@ -1,6 +1,6 @@
 """DAO for crossword solve rows."""
 
-from typing import List, Any
+from typing import Any, List
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -60,8 +60,10 @@ class CrosswordSolveDAO(BaseReadPgDAO[CrosswordSolve], BaseWritePgDAO[CrosswordS
         session: AsyncSession,
         session_id: str,
     ) -> int:
-        stmt = select(func.count()).select_from(CrosswordSolve).where(
-            CrosswordSolve.game_session_id == session_id
+        stmt = (
+            select(func.count())
+            .select_from(CrosswordSolve)
+            .where(CrosswordSolve.game_session_id == session_id)
         )
         result = await session.execute(stmt)
         return int(result.scalar_one())

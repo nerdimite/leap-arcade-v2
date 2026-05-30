@@ -22,7 +22,9 @@ INTELLIGENT_MACHINE_HTML = """<section id="bodyContent"><p>AI topic</p>
 <a href="/wiki/Word_embedding">target r2</a>
 </section>"""
 
-ATTENTION_ML_HTML = """<section id="bodyContent"><p>Attention (machine learning) goal</p></section>"""
+ATTENTION_ML_HTML = (
+    """<section id="bodyContent"><p>Attention (machine learning) goal</p></section>"""
+)
 
 WORD_EMBEDDING_HTML = """<section id="bodyContent"><p>Word embedding goal</p></section>"""
 

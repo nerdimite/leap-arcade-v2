@@ -263,9 +263,7 @@ class PinpointService:
                     time_bonus=time_bonus,
                     completed_at=now,
                 )
-                attempts = [
-                    updated if a.id == updated.id else a for a in attempts
-                ]
+                attempts = [updated if a.id == updated.id else a for a in attempts]
                 session_score = self._session_score(attempts)
                 is_final = len(self._terminal_puzzle_ids(attempts)) >= self._pool_size()
 
@@ -295,9 +293,7 @@ class PinpointService:
                     active.id,
                     guess,
                 )
-                attempts = [
-                    updated if a.id == updated.id else a for a in attempts
-                ]
+                attempts = [updated if a.id == updated.id else a for a in attempts]
                 session_score = self._session_score(attempts)
                 return PinpointGuessPayload(
                     correct=False,
@@ -315,9 +311,7 @@ class PinpointService:
                 time_bonus=None,
                 completed_at=now,
             )
-            attempts = [
-                updated if a.id == updated.id else a for a in attempts
-            ]
+            attempts = [updated if a.id == updated.id else a for a in attempts]
             session_score = self._session_score(attempts)
             is_final = len(self._terminal_puzzle_ids(attempts)) >= self._pool_size()
 
@@ -349,9 +343,7 @@ class PinpointService:
             if game_session is None:
                 raise SessionNotFoundException(player_id, "pinpoint")
             if game_session.status != GameSessionStatus.ACTIVE:
-                raise SessionAlreadyCompletedException(
-                    game_session.id, game_session.status.value
-                )
+                raise SessionAlreadyCompletedException(game_session.id, game_session.status.value)
 
             attempts = await self.attempt_dao.get_for_session(session, game_session.id)
             active = await self._active_attempt(session, game_session.id, attempts)
@@ -366,9 +358,7 @@ class PinpointService:
                     time_bonus=None,
                     completed_at=now,
                 )
-                attempts = [
-                    updated if a.id == updated.id else a for a in attempts
-                ]
+                attempts = [updated if a.id == updated.id else a for a in attempts]
 
             session_score = self._session_score(attempts)
             await self.game_session_dao.update_status(

@@ -290,7 +290,11 @@ class WikiHtmlRewriter:
                 continue
 
             low = href.strip().lower()
-            if low.startswith("javascript:") or low.startswith("data:") or low.startswith("vbscript:"):
+            if (
+                low.startswith("javascript:")
+                or low.startswith("data:")
+                or low.startswith("vbscript:")
+            ):
                 a.unwrap()
                 removed += 1
                 continue

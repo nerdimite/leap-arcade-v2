@@ -22,7 +22,6 @@ from leap.types.four_pics import (
 )
 from leap.types.player import CurrentPlayer
 
-
 router = APIRouter()
 
 

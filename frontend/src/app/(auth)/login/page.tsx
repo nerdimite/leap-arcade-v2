@@ -1,5 +1,5 @@
-import { LoginClient } from "./_components/LoginClient";
+import { LoginClient } from "./_components/LoginClient"
 
 export default function LoginPage() {
-  return <LoginClient />;
+  return <LoginClient />
 }

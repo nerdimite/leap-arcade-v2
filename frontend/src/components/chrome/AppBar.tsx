@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 /**
  * Global chrome for the lobby and leaderboard (games stay full-focus with only
@@ -8,20 +8,20 @@
  * logout. Runs on the default Wiki-cyan accent since no game is in context.
  */
 
-import { ArrowLeft, ArrowRight, ChevronDown, LogOut } from "lucide-react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import type { CSSProperties } from "react";
+import { ArrowLeft, ArrowRight, ChevronDown, LogOut } from "lucide-react"
+import Link from "next/link"
+import { usePathname, useRouter } from "next/navigation"
+import type { CSSProperties } from "react"
 
-import { Wordmark } from "@/components/chrome/Wordmark";
+import { Wordmark } from "@/components/chrome/Wordmark"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { useLogoutMutation } from "@/services/auth/hooks";
+} from "@/components/ui/dropdown-menu"
+import { useLogoutMutation } from "@/services/auth/hooks"
 
 // Primary action: the single lit CTA. Solid accent fill, dark ink, cabinet
 // press. This is the one thing in the bar we want players reaching for.
@@ -33,7 +33,7 @@ const NAV_CTA =
   "active:translate-x-[1px] active:translate-y-[1px] active:shadow-none " +
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] " +
   "focus-visible:ring-offset-2 focus-visible:ring-offset-bg " +
-  "motion-reduce:transition-none motion-reduce:hover:translate-x-0 motion-reduce:hover:translate-y-0";
+  "motion-reduce:transition-none motion-reduce:hover:translate-x-0 motion-reduce:hover:translate-y-0"
 
 // Player token: a framed cabinet chip with a recessed "screen" of initials.
 const PLAYER_TOKEN =
@@ -45,54 +45,67 @@ const PLAYER_TOKEN =
   "aria-expanded:translate-x-[1px] aria-expanded:translate-y-[1px] aria-expanded:shadow-none " +
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] " +
   "focus-visible:ring-offset-2 focus-visible:ring-offset-bg " +
-  "motion-reduce:transition-none motion-reduce:hover:translate-x-0 motion-reduce:hover:translate-y-0";
+  "motion-reduce:transition-none motion-reduce:hover:translate-x-0 motion-reduce:hover:translate-y-0"
 
 // Recessed "screen" holding the initials. A deep, near-black well plus a
 // bright cyan glyph (raised lightness, same wiki hue) so the thin pixel
 // strokes clear AA comfortably; the inset is soft so it frames, not crowds.
 const TOKEN_SCREEN =
   "grid place-items-center rounded-[2px] bg-[oklch(0.13_0.03_280)] font-pixel leading-none " +
-  "text-[oklch(0.9_0.14_220)] shadow-[inset_0_0_5px_oklch(0_0_0/0.45)]";
+  "text-[oklch(0.9_0.14_220)] shadow-[inset_0_0_5px_oklch(0_0_0/0.45)]"
 
-const BAR_ACCENT = { "--accent": "var(--wiki)" } as CSSProperties;
+const BAR_ACCENT = { "--accent": "var(--wiki)" } as CSSProperties
 
-function initialsFrom(displayName: string | null, corpId: string | null): string {
-  const source = displayName?.trim() || corpId?.trim() || "";
-  if (!source) return "??";
-  const words = source.split(/\s+/).filter(Boolean);
+function initialsFrom(
+  displayName: string | null,
+  corpId: string | null
+): string {
+  const source = displayName?.trim() || corpId?.trim() || ""
+  if (!source) return "??"
+  const words = source.split(/\s+/).filter(Boolean)
   if (words.length >= 2) {
-    return (words[0][0] + words[1][0]).toUpperCase();
+    return (words[0][0] + words[1][0]).toUpperCase()
   }
-  return source.slice(0, 2).toUpperCase();
+  return source.slice(0, 2).toUpperCase()
 }
 
 export type AppBarProps = {
-  corpId: string | null;
-  displayName?: string | null;
-};
+  corpId: string | null
+  displayName?: string | null
+}
 
 export function AppBar({ corpId, displayName }: AppBarProps) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const logout = useLogoutMutation();
+  const router = useRouter()
+  const pathname = usePathname()
+  const logout = useLogoutMutation()
 
-  const onLeaderboard = pathname?.startsWith("/leaderboard") ?? false;
+  const onLeaderboard = pathname?.startsWith("/leaderboard") ?? false
   const dest = onLeaderboard
-    ? { href: "/lobby", label: "Lobby", Icon: ArrowLeft, side: "before" as const }
-    : { href: "/leaderboard", label: "Leaderboard", Icon: ArrowRight, side: "after" as const };
+    ? {
+        href: "/lobby",
+        label: "Lobby",
+        Icon: ArrowLeft,
+        side: "before" as const,
+      }
+    : {
+        href: "/leaderboard",
+        label: "Leaderboard",
+        Icon: ArrowRight,
+        side: "after" as const,
+      }
 
-  const initials = initialsFrom(displayName ?? null, corpId);
-  const primaryName = displayName?.trim() || corpId || "Player";
-  const showCorpMeta = Boolean(displayName?.trim()) && Boolean(corpId);
+  const initials = initialsFrom(displayName ?? null, corpId)
+  const primaryName = displayName?.trim() || corpId || "Player"
+  const showCorpMeta = Boolean(displayName?.trim()) && Boolean(corpId)
 
   function handleLogout() {
-    if (logout.isPending) return;
+    if (logout.isPending) return
     logout.mutate(undefined, {
       onSettled: () => {
-        router.replace("/login");
-        router.refresh();
+        router.replace("/login")
+        router.refresh()
       },
-    });
+    })
   }
 
   return (
@@ -111,9 +124,13 @@ export function AppBar({ corpId, displayName }: AppBarProps) {
 
         <div className="flex items-center gap-2.5 sm:gap-3">
           <Link href={dest.href} className={NAV_CTA}>
-            {dest.side === "before" ? <dest.Icon aria-hidden className="size-3.5" /> : null}
+            {dest.side === "before" ? (
+              <dest.Icon aria-hidden className="size-3.5" />
+            ) : null}
             {dest.label}
-            {dest.side === "after" ? <dest.Icon aria-hidden className="size-3.5" /> : null}
+            {dest.side === "after" ? (
+              <dest.Icon aria-hidden className="size-3.5" />
+            ) : null}
           </Link>
 
           <DropdownMenu>
@@ -121,7 +138,9 @@ export function AppBar({ corpId, displayName }: AppBarProps) {
               aria-label={`${primaryName} — open player menu`}
               className={PLAYER_TOKEN}
             >
-              <span className={`${TOKEN_SCREEN} size-7 text-[10px]`}>{initials}</span>
+              <span className={`${TOKEN_SCREEN} size-7 text-[10px]`}>
+                {initials}
+              </span>
               <ChevronDown
                 aria-hidden
                 className="size-3.5 text-ink-faint transition-colors duration-150 ease-[var(--ease-arcade)] group-hover:text-ink group-aria-expanded:text-ink"
@@ -134,15 +153,19 @@ export function AppBar({ corpId, displayName }: AppBarProps) {
               className="min-w-52 rounded-[var(--radius)] border-2 border-line bg-panel p-1.5 shadow-[var(--shadow-cabinet)]"
             >
               <div className="flex items-center gap-2.5 px-2 pt-1 pb-2">
-                <span className={`${TOKEN_SCREEN} size-8 text-[11px]`}>{initials}</span>
+                <span className={`${TOKEN_SCREEN} size-8 text-[11px]`}>
+                  {initials}
+                </span>
                 <span className="flex min-w-0 flex-col">
-                  <span className="truncate text-[13px] font-semibold text-ink">{primaryName}</span>
+                  <span className="truncate text-[13px] font-semibold text-ink">
+                    {primaryName}
+                  </span>
                   {showCorpMeta ? (
-                    <span className="text-[10px] font-bold uppercase tracking-[1px] text-ink-faint">
+                    <span className="text-[10px] font-bold tracking-[1px] text-ink-faint uppercase">
                       {corpId}
                     </span>
                   ) : (
-                    <span className="text-[10px] font-bold uppercase tracking-[1px] text-ink-faint">
+                    <span className="text-[10px] font-bold tracking-[1px] text-ink-faint uppercase">
                       Player
                     </span>
                   )}
@@ -154,10 +177,10 @@ export function AppBar({ corpId, displayName }: AppBarProps) {
               <DropdownMenuItem
                 disabled={logout.isPending}
                 onSelect={(event) => {
-                  event.preventDefault();
-                  handleLogout();
+                  event.preventDefault()
+                  handleLogout()
                 }}
-                className="gap-2 rounded-[2px] px-2 py-1.5 text-[12px] font-bold uppercase tracking-[0.5px] text-ink-dim focus:bg-panel-2 focus:text-cross"
+                className="gap-2 rounded-[2px] px-2 py-1.5 text-[12px] font-bold tracking-[0.5px] text-ink-dim uppercase focus:bg-panel-2 focus:text-cross"
               >
                 <LogOut aria-hidden className="size-3.5" />
                 {logout.isPending ? "Leaving…" : "Logout"}
@@ -167,5 +190,5 @@ export function AppBar({ corpId, displayName }: AppBarProps) {
         </div>
       </div>
     </header>
-  );
+  )
 }

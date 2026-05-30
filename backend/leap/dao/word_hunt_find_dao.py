@@ -69,8 +69,10 @@ class WordHuntFindDAO(BaseReadPgDAO[WordHuntFind], BaseWritePgDAO[WordHuntFind])
         session: AsyncSession,
         session_id: str,
     ) -> int:
-        stmt = select(func.count()).select_from(WordHuntFind).where(
-            WordHuntFind.game_session_id == session_id
+        stmt = (
+            select(func.count())
+            .select_from(WordHuntFind)
+            .where(WordHuntFind.game_session_id == session_id)
         )
         result = await session.execute(stmt)
         return int(result.scalar_one())

@@ -7,7 +7,6 @@ from fastapi.testclient import TestClient
 from leap.core.common.time import utc_now
 from leap.types.game import GameSessionDTO, GameSessionStatus
 from leap.types.player import CurrentPlayer
-
 from tests.unit.api.rapid_fire.assertions import assert_no_correct_option_index_in_payload
 
 
@@ -36,9 +35,7 @@ class TestRapidFireAbandon:
         assert payload["result"]["score"] > 0
         assert payload["result"]["correct_count"] >= 1
 
-    def test_abandon_without_answers_yields_zero_score(
-        self, rapid_fire_client: TestClient
-    ) -> None:
+    def test_abandon_without_answers_yields_zero_score(self, rapid_fire_client: TestClient) -> None:
         client = rapid_fire_client
         p = client.post("/games/rapid-fire/play")
         assert p.status_code == 200

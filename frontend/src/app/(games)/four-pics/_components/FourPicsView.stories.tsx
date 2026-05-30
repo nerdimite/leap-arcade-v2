@@ -1,9 +1,9 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import type { Meta, StoryObj } from "@storybook/nextjs-vite"
+import { fn } from "storybook/test"
 
-import type { QuestionState, Result } from "@/services/four_pics/schema";
+import type { QuestionState, Result } from "@/services/four_pics/schema"
 
-import { FourPicsView } from "./FourPicsView";
+import { FourPicsView } from "./FourPicsView"
 
 const sampleQuestion: QuestionState = {
   question_id: "q-1",
@@ -17,7 +17,7 @@ const sampleQuestion: QuestionState = {
   ],
   status: "active",
   started_at: new Date(Date.now() - 8_000).toISOString(),
-};
+}
 
 const sampleResult: Result = {
   score: 1840,
@@ -32,7 +32,7 @@ const sampleResult: Result = {
     { question_id: "q-5", status: "correct", score: 360, time_bonus: 60 },
     { question_id: "q-6", status: "not_reached", score: 0, time_bonus: 0 },
   ],
-};
+}
 
 const meta = {
   component: FourPicsView,
@@ -41,11 +41,11 @@ const meta = {
     onSelect: fn(),
     onBackToLobby: fn(),
   },
-} satisfies Meta<typeof FourPicsView>;
+} satisfies Meta<typeof FourPicsView>
 
-export default meta;
+export default meta
 
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof meta>
 
 export const Playing: Story = {
   args: {
@@ -58,7 +58,7 @@ export const Playing: Story = {
       inputDisabled: false,
     },
   },
-};
+}
 
 export const CorrectOverlay: Story = {
   args: {
@@ -71,7 +71,7 @@ export const CorrectOverlay: Story = {
       inputDisabled: true,
     },
   },
-};
+}
 
 export const WrongOverlay: Story = {
   args: {
@@ -84,7 +84,7 @@ export const WrongOverlay: Story = {
       inputDisabled: true,
     },
   },
-};
+}
 
 export const SubmitError: Story = {
   args: {
@@ -97,11 +97,11 @@ export const SubmitError: Story = {
       inputDisabled: false,
     },
   },
-};
+}
 
 export const ResultStory: Story = {
   name: "Result",
   args: {
     viewState: { status: "result", result: sampleResult },
   },
-};
+}

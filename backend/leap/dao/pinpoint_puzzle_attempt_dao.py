@@ -11,7 +11,9 @@ from leap.dao.models.pinpoint_puzzle import PinpointPuzzleAttempt
 from leap.types.pinpoint import PinpointPuzzleAttemptDTO
 
 
-class PinpointPuzzleAttemptDAO(BaseReadPgDAO[PinpointPuzzleAttempt], BaseWritePgDAO[PinpointPuzzleAttempt]):
+class PinpointPuzzleAttemptDAO(
+    BaseReadPgDAO[PinpointPuzzleAttempt], BaseWritePgDAO[PinpointPuzzleAttempt]
+):
     """Persists per-puzzle attempt lifecycle for a Pinpoint session."""
 
     def __init__(self) -> None:

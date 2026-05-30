@@ -113,7 +113,7 @@ def test_citation_note_fragment_disabled() -> None:
 
 
 def test_script_removed() -> None:
-    html = '<section><script>x()</script><p>a</p></section>'
+    html = "<section><script>x()</script><p>a</p></section>"
     out = WikiHtmlRewriter().rewrite(html)
     assert "<script" not in out.html
     assert "onload" not in out.html
@@ -179,9 +179,7 @@ def test_iframe_removed() -> None:
 
 
 def test_trusted_wikimedia_image_keeps_src() -> None:
-    html = (
-        '<p><img src="https://upload.wikimedia.org/wikipedia/commons/x.png" alt="i"/></p>'
-    )
+    html = '<p><img src="https://upload.wikimedia.org/wikipedia/commons/x.png" alt="i"/></p>'
     out = WikiHtmlRewriter().rewrite(html)
     assert "upload.wikimedia.org" in out.html
     assert "<img " in out.html

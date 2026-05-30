@@ -9,7 +9,9 @@ from leap.service.container import ServiceContainer
 router = APIRouter()
 
 
-@router.get("", response_model=LobbyResponse, summary="Get lobby state for the authenticated player")
+@router.get(
+    "", response_model=LobbyResponse, summary="Get lobby state for the authenticated player"
+)
 async def get_lobby(
     player: CurrentPlayer = Depends(get_current_player),
     container: ServiceContainer = Depends(get_container),

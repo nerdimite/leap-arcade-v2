@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import type { Meta, StoryObj } from "@storybook/nextjs-vite"
 
-import { AnswerOverlay } from "./AnswerOverlay";
+import { AnswerOverlay } from "./AnswerOverlay"
 
 const meta = {
   component: AnswerOverlay,
@@ -11,11 +11,11 @@ const meta = {
       </div>
     ),
   ],
-} satisfies Meta<typeof AnswerOverlay>;
+} satisfies Meta<typeof AnswerOverlay>
 
-export default meta;
+export default meta
 
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof meta>
 
 export const Correct: Story = {
   args: {
@@ -24,7 +24,7 @@ export const Correct: Story = {
     timeBonus: 42,
     selectedIndex: 2,
   },
-};
+}
 
 export const Wrong: Story = {
   args: {
@@ -33,6 +33,6 @@ export const Wrong: Story = {
     timeBonus: 0,
     selectedIndex: 1,
   },
-};
+}
 
-export { Correct as Default };
+export { Correct as Default }

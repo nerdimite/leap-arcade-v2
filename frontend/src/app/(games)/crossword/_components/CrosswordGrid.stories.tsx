@@ -1,7 +1,5 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
-
-import { CrosswordGrid } from "./CrosswordGrid";
+import type { Meta, StoryObj } from "@storybook/nextjs-vite"
+import { fn } from "storybook/test"
 import {
   activeHighlightCells,
   allSolvedPuzzle,
@@ -10,18 +8,19 @@ import {
   inProgressPuzzle,
   lockedCellsFromPuzzle,
   missFlashCells,
-} from "../_lib/storyFixtures";
+} from "../_lib/storyFixtures"
+import { CrosswordGrid } from "./CrosswordGrid"
 
 const meta = {
   component: CrosswordGrid,
   args: {
     onCellClick: fn(),
   },
-} satisfies Meta<typeof CrosswordGrid>;
+} satisfies Meta<typeof CrosswordGrid>
 
-export default meta;
+export default meta
 
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof meta>
 
 export const Empty: Story = {
   args: {
@@ -32,59 +31,60 @@ export const Empty: Story = {
     activeEntryCells: new Set(),
     missFlashCells: new Set(),
   },
-};
+}
 
 export const InProgress: Story = {
   args: {
     puzzle: inProgressPuzzle,
     displayLetter: (row, col) => {
-      const cell = inProgressPuzzle.cells[row]?.[col];
-      return cell?.letter ?? draftInProgress[`${row},${col}`] ?? "";
+      const cell = inProgressPuzzle.cells[row]?.[col]
+      return cell?.letter ?? draftInProgress[`${row},${col}`] ?? ""
     },
     lockedCells: lockedCellsFromPuzzle(inProgressPuzzle),
     selectedCell: { row: 1, col: 0 },
     activeEntryCells: new Set(["1,0", "2,0"]),
     missFlashCells: new Set(),
   },
-};
+}
 
 export const AllSolved: Story = {
   args: {
     puzzle: allSolvedPuzzle,
-    displayLetter: (row, col) => allSolvedPuzzle.cells[row]?.[col]?.letter ?? "",
+    displayLetter: (row, col) =>
+      allSolvedPuzzle.cells[row]?.[col]?.letter ?? "",
     lockedCells: lockedCellsFromPuzzle(allSolvedPuzzle),
     selectedCell: { row: 0, col: 0 },
     activeEntryCells: activeHighlightCells,
     missFlashCells: new Set(),
   },
-};
+}
 
 export const MidEntryHighlight: Story = {
   args: {
     puzzle: emptyPuzzle,
     displayLetter: (row, col) => {
-      const letters: Record<string, string> = { "0,0": "C", "0,1": "A" };
-      return letters[`${row},${col}`] ?? "";
+      const letters: Record<string, string> = { "0,0": "C", "0,1": "A" }
+      return letters[`${row},${col}`] ?? ""
     },
     lockedCells: lockedCellsFromPuzzle(emptyPuzzle),
     selectedCell: { row: 0, col: 1 },
     activeEntryCells: activeHighlightCells,
     missFlashCells: new Set(),
   },
-};
+}
 
 export const WrongFlash: Story = {
   args: {
     puzzle: inProgressPuzzle,
     displayLetter: (row, col) => {
-      const cell = inProgressPuzzle.cells[row]?.[col];
-      return cell?.letter ?? draftInProgress[`${row},${col}`] ?? "";
+      const cell = inProgressPuzzle.cells[row]?.[col]
+      return cell?.letter ?? draftInProgress[`${row},${col}`] ?? ""
     },
     lockedCells: lockedCellsFromPuzzle(inProgressPuzzle),
     selectedCell: { row: 2, col: 0 },
     activeEntryCells: new Set(["1,0", "2,0"]),
     missFlashCells,
   },
-};
+}
 
-export { Empty as Default };
+export { Empty as Default }

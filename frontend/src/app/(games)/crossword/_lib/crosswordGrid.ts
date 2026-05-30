@@ -1,90 +1,97 @@
-import type { CellSkeleton, Clue, PuzzleState } from "@/services/crossword/schema";
+import type {
+  CellSkeleton,
+  Clue,
+  PuzzleState,
+} from "@/services/crossword/schema"
 
-export type CrosswordDirection = "across" | "down";
+export type CrosswordDirection = "across" | "down"
 
-export type CellKey = string;
+export type CellKey = string
 
 export function cellKey(row: number, col: number): CellKey {
-  return `${row},${col}`;
+  return `${row},${col}`
 }
 
 export function parseCellKey(key: CellKey): { row: number; col: number } {
-  const [row, col] = key.split(",").map(Number);
-  return { row, col };
+  const [row, col] = key.split(",").map(Number)
+  return { row, col }
 }
 
 export function entryKey(clue: Clue): string {
-  return `${clue.start_row},${clue.start_col},${clue.direction}`;
+  return `${clue.start_row},${clue.start_col},${clue.direction}`
 }
 
 export function collectEntryCellKeys(clue: Clue): CellKey[] {
-  const keys: CellKey[] = [];
+  const keys: CellKey[] = []
   for (let i = 0; i < clue.length; i += 1) {
     if (clue.direction === "across") {
-      keys.push(cellKey(clue.start_row, clue.start_col + i));
+      keys.push(cellKey(clue.start_row, clue.start_col + i))
     } else {
-      keys.push(cellKey(clue.start_row + i, clue.start_col));
+      keys.push(cellKey(clue.start_row + i, clue.start_col))
     }
   }
-  return keys;
+  return keys
 }
 
 export type CellMembership = {
-  acrossEntryId: string | null;
-  downEntryId: string | null;
-};
+  acrossEntryId: string | null
+  downEntryId: string | null
+}
 
 export type PuzzleContext = {
-  rows: number;
-  cols: number;
-  openCells: Set<CellKey>;
-  lockedCells: Set<CellKey>;
-  cellLetters: Record<CellKey, string>;
-  membership: Record<CellKey, CellMembership>;
-  cluesById: Record<string, Clue>;
-  clues: Clue[];
-};
+  rows: number
+  cols: number
+  openCells: Set<CellKey>
+  lockedCells: Set<CellKey>
+  cellLetters: Record<CellKey, string>
+  membership: Record<CellKey, CellMembership>
+  cluesById: Record<string, Clue>
+  clues: Clue[]
+}
 
 export function buildPuzzleContext(puzzle: PuzzleState): PuzzleContext {
-  const openCells = new Set<CellKey>();
-  const lockedCells = new Set<CellKey>();
-  const cellLetters: Record<CellKey, string> = {};
-  const membership: Record<CellKey, CellMembership> = {};
+  const openCells = new Set<CellKey>()
+  const lockedCells = new Set<CellKey>()
+  const cellLetters: Record<CellKey, string> = {}
+  const membership: Record<CellKey, CellMembership> = {}
 
   for (const row of puzzle.cells) {
     for (const cell of row) {
       if (cell === null) {
-        continue;
+        continue
       }
-      const key = cellKey(cell.row, cell.col);
-      openCells.add(key);
+      const key = cellKey(cell.row, cell.col)
+      openCells.add(key)
       if (cell.letter) {
-        lockedCells.add(key);
-        cellLetters[key] = cell.letter.toUpperCase();
+        lockedCells.add(key)
+        cellLetters[key] = cell.letter.toUpperCase()
       }
-      membership[key] = { acrossEntryId: null, downEntryId: null };
+      membership[key] = { acrossEntryId: null, downEntryId: null }
     }
   }
 
-  const cluesById: Record<string, Clue> = {};
+  const cluesById: Record<string, Clue> = {}
   for (const clue of puzzle.clues) {
-    cluesById[clue.entry_id] = clue;
-    const keys = collectEntryCellKeys(clue);
+    cluesById[clue.entry_id] = clue
+    const keys = collectEntryCellKeys(clue)
     for (const key of keys) {
-      const entry = membership[key] ?? { acrossEntryId: null, downEntryId: null };
-      if (clue.direction === "across") {
-        entry.acrossEntryId = clue.entry_id;
-      } else {
-        entry.downEntryId = clue.entry_id;
+      const entry = membership[key] ?? {
+        acrossEntryId: null,
+        downEntryId: null,
       }
-      membership[key] = entry;
+      if (clue.direction === "across") {
+        entry.acrossEntryId = clue.entry_id
+      } else {
+        entry.downEntryId = clue.entry_id
+      }
+      membership[key] = entry
     }
     if (clue.solved && clue.cells && clue.answer) {
       for (let i = 0; i < clue.cells.length; i += 1) {
-        const coord = clue.cells[i];
-        const key = cellKey(coord.row, coord.col);
-        lockedCells.add(key);
-        cellLetters[key] = clue.answer[i]?.toUpperCase() ?? "";
+        const coord = clue.cells[i]
+        const key = cellKey(coord.row, coord.col)
+        lockedCells.add(key)
+        cellLetters[key] = clue.answer[i]?.toUpperCase() ?? ""
       }
     }
   }
@@ -98,171 +105,175 @@ export function buildPuzzleContext(puzzle: PuzzleState): PuzzleContext {
     membership,
     cluesById,
     clues: puzzle.clues,
-  };
+  }
 }
 
 export function getActiveEntryId(
   context: PuzzleContext,
   cursor: { row: number; col: number } | null,
-  direction: CrosswordDirection,
+  direction: CrosswordDirection
 ): string | null {
   if (!cursor) {
-    return null;
+    return null
   }
-  const member = context.membership[cellKey(cursor.row, cursor.col)];
+  const member = context.membership[cellKey(cursor.row, cursor.col)]
   if (!member) {
-    return null;
+    return null
   }
   if (direction === "across") {
-    return member.acrossEntryId;
+    return member.acrossEntryId
   }
-  return member.downEntryId;
+  return member.downEntryId
 }
 
 export function getActiveEntryCellKeys(
   context: PuzzleContext,
   cursor: { row: number; col: number } | null,
-  direction: CrosswordDirection,
+  direction: CrosswordDirection
 ): CellKey[] {
-  const entryId = getActiveEntryId(context, cursor, direction);
+  const entryId = getActiveEntryId(context, cursor, direction)
   if (!entryId) {
-    return [];
+    return []
   }
-  const clue = context.cluesById[entryId];
-  return clue ? collectEntryCellKeys(clue) : [];
+  const clue = context.cluesById[entryId]
+  return clue ? collectEntryCellKeys(clue) : []
 }
 
 export function resolveDirectionForCell(
   context: PuzzleContext,
   row: number,
   col: number,
-  preferred: CrosswordDirection,
+  preferred: CrosswordDirection
 ): CrosswordDirection {
-  const member = context.membership[cellKey(row, col)];
+  const member = context.membership[cellKey(row, col)]
   if (!member) {
-    return preferred;
+    return preferred
   }
-  const hasAcross = member.acrossEntryId !== null;
-  const hasDown = member.downEntryId !== null;
+  const hasAcross = member.acrossEntryId !== null
+  const hasDown = member.downEntryId !== null
   if (hasAcross && hasDown) {
-    return preferred;
+    return preferred
   }
   if (hasAcross) {
-    return "across";
+    return "across"
   }
   if (hasDown) {
-    return "down";
+    return "down"
   }
-  return preferred;
+  return preferred
 }
 
-export function isSharedCell(context: PuzzleContext, row: number, col: number): boolean {
-  const member = context.membership[cellKey(row, col)];
+export function isSharedCell(
+  context: PuzzleContext,
+  row: number,
+  col: number
+): boolean {
+  const member = context.membership[cellKey(row, col)]
   if (!member) {
-    return false;
+    return false
   }
-  return member.acrossEntryId !== null && member.downEntryId !== null;
+  return member.acrossEntryId !== null && member.downEntryId !== null
 }
 
 export function getCellLetter(
   context: PuzzleContext,
   draft: Record<CellKey, string>,
-  key: CellKey,
+  key: CellKey
 ): string {
   if (context.lockedCells.has(key)) {
-    return context.cellLetters[key] ?? "";
+    return context.cellLetters[key] ?? ""
   }
-  return draft[key] ?? "";
+  return draft[key] ?? ""
 }
 
 export function isEntryComplete(
   context: PuzzleContext,
   draft: Record<CellKey, string>,
-  entryId: string,
+  entryId: string
 ): boolean {
-  const clue = context.cluesById[entryId];
+  const clue = context.cluesById[entryId]
   if (!clue || clue.solved) {
-    return false;
+    return false
   }
-  const keys = collectEntryCellKeys(clue);
-  return keys.every((key) => getCellLetter(context, draft, key) !== "");
+  const keys = collectEntryCellKeys(clue)
+  return keys.every((key) => getCellLetter(context, draft, key) !== "")
 }
 
 export function entryLetters(
   context: PuzzleContext,
   draft: Record<CellKey, string>,
-  entryId: string,
+  entryId: string
 ): string {
-  const clue = context.cluesById[entryId];
+  const clue = context.cluesById[entryId]
   if (!clue) {
-    return "";
+    return ""
   }
   return collectEntryCellKeys(clue)
     .map((key) => getCellLetter(context, draft, key))
-    .join("");
+    .join("")
 }
 
 export function firstOpenCellInEntry(
   context: PuzzleContext,
-  entryId: string,
+  entryId: string
 ): { row: number; col: number } | null {
-  const clue = context.cluesById[entryId];
+  const clue = context.cluesById[entryId]
   if (!clue) {
-    return null;
+    return null
   }
   for (const key of collectEntryCellKeys(clue)) {
     if (!context.lockedCells.has(key)) {
-      return parseCellKey(key);
+      return parseCellKey(key)
     }
   }
-  return null;
+  return null
 }
 
 export function findOpenCellInDirection(
   context: PuzzleContext,
   from: { row: number; col: number },
   deltaRow: number,
-  deltaCol: number,
+  deltaCol: number
 ): { row: number; col: number } | null {
-  let row = from.row + deltaRow;
-  let col = from.col + deltaCol;
+  let row = from.row + deltaRow
+  let col = from.col + deltaCol
   while (row >= 0 && row < context.rows && col >= 0 && col < context.cols) {
-    const key = cellKey(row, col);
+    const key = cellKey(row, col)
     if (context.openCells.has(key)) {
-      return { row, col };
+      return { row, col }
     }
-    row += deltaRow;
-    col += deltaCol;
+    row += deltaRow
+    col += deltaCol
   }
-  return null;
+  return null
 }
 
 export function nextCellInEntry(
   context: PuzzleContext,
   clue: Clue,
   from: { row: number; col: number },
-  forward: boolean,
+  forward: boolean
 ): { row: number; col: number } | null {
-  const keys = collectEntryCellKeys(clue);
-  const fromKey = cellKey(from.row, from.col);
-  const index = keys.indexOf(fromKey);
+  const keys = collectEntryCellKeys(clue)
+  const fromKey = cellKey(from.row, from.col)
+  const index = keys.indexOf(fromKey)
   if (index === -1) {
-    return null;
+    return null
   }
-  const step = forward ? 1 : -1;
+  const step = forward ? 1 : -1
   for (let i = index + step; i >= 0 && i < keys.length; i += step) {
-    const key = keys[i];
+    const key = keys[i]
     if (context.openCells.has(key)) {
-      return parseCellKey(key);
+      return parseCellKey(key)
     }
   }
-  return null;
+  return null
 }
 
 export function cellSkeletonAt(
   puzzle: PuzzleState,
   row: number,
-  col: number,
+  col: number
 ): CellSkeleton | null {
-  return puzzle.cells[row]?.[col] ?? null;
+  return puzzle.cells[row]?.[col] ?? null
 }

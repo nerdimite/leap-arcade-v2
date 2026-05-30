@@ -20,9 +20,7 @@ class LobbyService:
     the persisted score; active sessions do not count as played yet.
     """
 
-    def __init__(
-        self, context_manager: ContextManager, game_session_dao: "GameSessionDAO"
-    ) -> None:
+    def __init__(self, context_manager: ContextManager, game_session_dao: "GameSessionDAO") -> None:
         self.ctx = context_manager
         self.game_session_dao = game_session_dao
 

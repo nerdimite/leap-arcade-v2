@@ -137,11 +137,7 @@ async def test_play_creates_session_with_no_letters_or_answers() -> None:
     assert all(clue.answer is None for clue in out.puzzle.clues)
     payload = out.model_dump_json()
     assert _unsolved_answers(payload) == 0
-    assert all(
-        cell is None or cell.letter is None
-        for row in out.puzzle.cells
-        for cell in row
-    )
+    assert all(cell is None or cell.letter is None for row in out.puzzle.cells for cell in row)
 
 
 @pytest.mark.asyncio

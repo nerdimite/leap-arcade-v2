@@ -23,9 +23,7 @@ async def _player_count() -> int:
     engine = create_async_engine(E2E_POSTGRES_URL)
     try:
         async with engine.connect() as conn:
-            return int(
-                (await conn.execute(text("SELECT COUNT(*) FROM players"))).scalar_one()
-            )
+            return int((await conn.execute(text("SELECT COUNT(*) FROM players"))).scalar_one())
     finally:
         await engine.dispose()
 
@@ -35,9 +33,7 @@ async def _insert_player(player_id: str, display_name: str) -> None:
     try:
         async with engine.begin() as conn:
             await conn.execute(
-                text(
-                    "INSERT INTO players (id, display_name) VALUES (:id, :display_name)"
-                ),
+                text("INSERT INTO players (id, display_name) VALUES (:id, :display_name)"),
                 {"id": player_id, "display_name": display_name},
             )
     finally:
@@ -50,10 +46,7 @@ async def _fetch_correct_option_index(question_id: str) -> int:
         async with engine.connect() as conn:
             row = (
                 await conn.execute(
-                    text(
-                        "SELECT correct_option_index FROM rapid_fire_questions "
-                        "WHERE id = :id"
-                    ),
+                    text("SELECT correct_option_index FROM rapid_fire_questions WHERE id = :id"),
                     {"id": question_id},
                 )
             ).one()

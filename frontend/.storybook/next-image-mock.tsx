@@ -8,19 +8,19 @@
  * in for `next/image` via `.storybook/main.ts` viteFinal. App code is unchanged.
  */
 
-import type { CSSProperties, ImgHTMLAttributes } from "react";
+import type { CSSProperties, ImgHTMLAttributes } from "react"
 
 type NextImageLikeProps = Omit<ImgHTMLAttributes<HTMLImageElement>, "src"> & {
-  src: string | { src: string };
-  alt?: string;
-  fill?: boolean;
-  priority?: boolean;
-  quality?: number;
-  sizes?: string;
-  placeholder?: string;
-  blurDataURL?: string;
-  loader?: unknown;
-};
+  src: string | { src: string }
+  alt?: string
+  fill?: boolean
+  priority?: boolean
+  quality?: number
+  sizes?: string
+  placeholder?: string
+  blurDataURL?: string
+  loader?: unknown
+}
 
 export default function NextImageMock({
   src,
@@ -35,11 +35,18 @@ export default function NextImageMock({
   style,
   ...rest
 }: NextImageLikeProps) {
-  const resolved = typeof src === "object" && src !== null ? src.src : src;
+  const resolved = typeof src === "object" && src !== null ? src.src : src
   const fillStyle: CSSProperties | undefined = fill
     ? { position: "absolute", inset: 0, width: "100%", height: "100%" }
-    : undefined;
+    : undefined
 
   // eslint-disable-next-line @next/next/no-img-element
-  return <img src={resolved} alt={alt} style={{ ...fillStyle, ...style }} {...rest} />;
+  return (
+    <img
+      src={resolved}
+      alt={alt}
+      style={{ ...fillStyle, ...style }}
+      {...rest}
+    />
+  )
 }

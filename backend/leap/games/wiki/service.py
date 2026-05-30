@@ -209,7 +209,9 @@ class WikiSpeedRunService:
         )
         if not self._is_last_round(puzzle_round):
             return
-        game_session = await self.game_session_dao.get_by_player_and_game(session, player_id, "wiki")
+        game_session = await self.game_session_dao.get_by_player_and_game(
+            session, player_id, "wiki"
+        )
         if game_session is None:
             raise SessionNotFoundException(player_id, "wiki")
         await self.game_session_dao.update_status(
@@ -223,7 +225,9 @@ class WikiSpeedRunService:
         self, session: AsyncSession, player_id: str
     ) -> WikiPlayPayload:
         while True:
-            game_session = await self.game_session_dao.get_by_player_and_game(session, player_id, "wiki")
+            game_session = await self.game_session_dao.get_by_player_and_game(
+                session, player_id, "wiki"
+            )
             if game_session is None:
                 raise SessionNotFoundException(player_id, "wiki")
             if game_session.status != GameSessionStatus.ACTIVE:
@@ -270,7 +274,9 @@ class WikiSpeedRunService:
             _ = self._first_round()
 
         async with self.ctx.session() as session:
-            game_session = await self.game_session_dao.get_by_player_and_game(session, player_id, "wiki")
+            game_session = await self.game_session_dao.get_by_player_and_game(
+                session, player_id, "wiki"
+            )
             if game_session is None:
                 raise SessionNotFoundException(player_id, "wiki")
             if game_session.status != GameSessionStatus.ACTIVE:
@@ -352,7 +358,9 @@ class WikiSpeedRunService:
                 raise SessionNotFoundException(player_id, "wiki")
 
             rewritten = self.html_rewriter.rewrite(article.html)
-            remaining_after = _time_remaining_ms(attempt.started_at, puzzle_round.time_limit_ms, now)
+            remaining_after = _time_remaining_ms(
+                attempt.started_at, puzzle_round.time_limit_ms, now
+            )
             current = WikiActivePuzzleDTO(
                 game_session_id=refreshed_game.id,
                 attempt_id=attempt.id,
@@ -444,7 +452,9 @@ class WikiSpeedRunService:
 
             article = await self.wikipedia_client.fetch_article_html(attempt.current_title)
             rewritten = self.html_rewriter.rewrite(article.html)
-            remaining_after = _time_remaining_ms(attempt.started_at, puzzle_round.time_limit_ms, now)
+            remaining_after = _time_remaining_ms(
+                attempt.started_at, puzzle_round.time_limit_ms, now
+            )
 
             refreshed_game = await self.game_session_dao.get_by_player_and_game(
                 session, player_id, "wiki"
@@ -487,7 +497,9 @@ class WikiSpeedRunService:
                 game_session.id,
                 GameSessionStatus.ABANDONED,
             )
-            refreshed = await self.game_session_dao.get_by_player_and_game(session, player_id, "wiki")
+            refreshed = await self.game_session_dao.get_by_player_and_game(
+                session, player_id, "wiki"
+            )
             if refreshed is None:
                 raise SessionNotFoundException(player_id, "wiki")
 

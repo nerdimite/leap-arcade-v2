@@ -10,13 +10,13 @@
  * slot controls its own width. Grid games pass `className` (e.g. `lg:flex-row`).
  */
 
-import type { CSSProperties, ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react"
 
-import type { LobbyGameId } from "@/lib/constants";
-import { GAME_VISUALS } from "@/lib/game-tiles";
-import { cn } from "@/lib/utils";
+import type { LobbyGameId } from "@/lib/constants"
+import { GAME_VISUALS } from "@/lib/game-tiles"
+import { cn } from "@/lib/utils"
 
-export type GameShellSize = "sm" | "md" | "lg" | "xl" | "wide" | "ultrawide";
+export type GameShellSize = "sm" | "md" | "lg" | "xl" | "wide" | "ultrawide"
 
 /** Container max-widths, named to the per-game sizes the views already used. */
 const SIZE_MAX_WIDTH: Record<GameShellSize, string> = {
@@ -26,24 +26,24 @@ const SIZE_MAX_WIDTH: Record<GameShellSize, string> = {
   xl: "max-w-2xl",
   wide: "max-w-5xl",
   ultrawide: "max-w-6xl",
-};
+}
 
 export type GameShellProps = {
   /** Drives the local `--accent` channel via `GAME_VISUALS`. */
-  gameId: LobbyGameId;
+  gameId: LobbyGameId
   /** Current `viewState.status`; selects which slot renders. */
-  state: string;
+  state: string
   /** View content keyed by status. A missing slot renders nothing. */
-  slots: Partial<Record<string, ReactNode>>;
+  slots: Partial<Record<string, ReactNode>>
   /** Container width for the framed (non-bleed) states. Defaults to `md`. */
-  size?: GameShellSize;
+  size?: GameShellSize
   /** Padding utility for the framed container. Defaults to `p-6`. */
-  padding?: string;
+  padding?: string
   /** States that own their own width/padding; the shell sets accent only. */
-  bleedStates?: readonly string[];
+  bleedStates?: readonly string[]
   /** Extra classes on the container (e.g. `lg:flex-row` for grid games). */
-  className?: string;
-};
+  className?: string
+}
 
 export function GameShell({
   gameId,
@@ -54,16 +54,18 @@ export function GameShell({
   bleedStates,
   className,
 }: GameShellProps) {
-  const accentStyle = { "--accent": GAME_VISUALS[gameId].accent } as CSSProperties;
-  const content = slots[state] ?? null;
-  const bleed = bleedStates?.includes(state) ?? false;
+  const accentStyle = {
+    "--accent": GAME_VISUALS[gameId].accent,
+  } as CSSProperties
+  const content = slots[state] ?? null
+  const bleed = bleedStates?.includes(state) ?? false
 
   if (bleed) {
     return (
       <div style={accentStyle} className={className}>
         {content}
       </div>
-    );
+    )
   }
 
   return (
@@ -73,5 +75,5 @@ export function GameShell({
     >
       {content}
     </div>
-  );
+  )
 }

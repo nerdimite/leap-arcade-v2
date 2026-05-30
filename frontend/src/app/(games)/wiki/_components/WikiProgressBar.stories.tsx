@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import type { Meta, StoryObj } from "@storybook/nextjs-vite"
 
-import { WikiProgressBar } from "./WikiProgressBar";
+import { WikiProgressBar } from "./WikiProgressBar"
 
 const meta = {
   component: WikiProgressBar,
@@ -9,10 +9,10 @@ const meta = {
     puzzleIndex: 3,
     completedCount: 2,
   },
-} satisfies Meta<typeof WikiProgressBar>;
+} satisfies Meta<typeof WikiProgressBar>
 
-export default meta;
+export default meta
 
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof meta>
 
-export const Default: Story = {};
+export const Default: Story = {}

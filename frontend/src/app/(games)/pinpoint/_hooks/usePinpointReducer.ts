@@ -1,25 +1,31 @@
-"use client";
+"use client"
 
-import { useReducer } from "react";
+import { useReducer } from "react"
 
-import type { AbandonResponse, GuessResponse, PlayResponse, PuzzleState, Result } from "@/services/pinpoint/schema";
+import type {
+  AbandonResponse,
+  GuessResponse,
+  PlayResponse,
+  PuzzleState,
+  Result,
+} from "@/services/pinpoint/schema"
 
-export const PINPOINT_CLUE_COUNT = 5;
+export const PINPOINT_CLUE_COUNT = 5
 
-export type PinpointPhase = "playing" | "flashing" | "advancing" | "result";
+export type PinpointPhase = "playing" | "flashing" | "advancing" | "result"
 
 export type PinpointState = {
-  phase: PinpointPhase;
-  puzzle: PuzzleState | null;
-  result: Result | null;
-  sessionScore: number;
-  guess: string;
-  errorMessage: string | null;
-  shakeBadgeIndex: number | null;
-  flashKind: "solved" | "failed" | null;
-  flashBaseScore: number | null;
-  flashTimeBonus: number | null;
-};
+  phase: PinpointPhase
+  puzzle: PuzzleState | null
+  result: Result | null
+  sessionScore: number
+  guess: string
+  errorMessage: string | null
+  shakeBadgeIndex: number | null
+  flashKind: "solved" | "failed" | null
+  flashBaseScore: number | null
+  flashTimeBonus: number | null
+}
 
 export type PinpointAction =
   | { type: "SET_GUESS"; payload: { guess: string } }
@@ -29,7 +35,7 @@ export type PinpointAction =
   | { type: "FLASH_COMPLETE" }
   | { type: "ADVANCE_SUCCESS"; payload: PlayResponse }
   | { type: "ADVANCE_ERROR"; payload: { message: string } }
-  | { type: "ABANDON_SUCCESS"; payload: AbandonResponse };
+  | { type: "ABANDON_SUCCESS"; payload: AbandonResponse }
 
 export const pinpointInitialState: PinpointState = {
   phase: "playing",
@@ -42,16 +48,18 @@ export const pinpointInitialState: PinpointState = {
   flashKind: null,
   flashBaseScore: null,
   flashTimeBonus: null,
-};
+}
 
-export function initPinpointFromPlayResponse(play: PlayResponse): PinpointState {
+export function initPinpointFromPlayResponse(
+  play: PlayResponse
+): PinpointState {
   if (play.result) {
     return {
       ...pinpointInitialState,
       phase: "result",
       result: play.result,
       sessionScore: play.session_score,
-    };
+    }
   }
 
   return {
@@ -59,40 +67,42 @@ export function initPinpointFromPlayResponse(play: PlayResponse): PinpointState 
     phase: "playing",
     puzzle: play.puzzle,
     sessionScore: play.session_score,
-  };
+  }
 }
 
-function terminalFlashFromPuzzle(puzzle: PuzzleState): Pick<
-  PinpointState,
-  "flashKind" | "flashBaseScore" | "flashTimeBonus"
-> {
-  const total = puzzle.score ?? 0;
-  const timeBonus = puzzle.time_bonus ?? 0;
+function terminalFlashFromPuzzle(
+  puzzle: PuzzleState
+): Pick<PinpointState, "flashKind" | "flashBaseScore" | "flashTimeBonus"> {
+  const total = puzzle.score ?? 0
+  const timeBonus = puzzle.time_bonus ?? 0
   return {
     flashKind: puzzle.status === "solved" ? "solved" : "failed",
     flashBaseScore: puzzle.status === "solved" ? total - timeBonus : 0,
     flashTimeBonus: puzzle.status === "solved" ? timeBonus : 0,
-  };
+  }
 }
 
-export function pinpointReducer(state: PinpointState, action: PinpointAction): PinpointState {
+export function pinpointReducer(
+  state: PinpointState,
+  action: PinpointAction
+): PinpointState {
   switch (action.type) {
     case "SET_GUESS": {
       if (state.phase !== "playing") {
-        return state;
+        return state
       }
       return {
         ...state,
         guess: action.payload.guess,
         errorMessage: null,
-      };
+      }
     }
     case "GUESS_SUCCESS": {
       if (state.phase !== "playing") {
-        return state;
+        return state
       }
 
-      const { puzzle, session_score: sessionScore } = action.payload;
+      const { puzzle, session_score: sessionScore } = action.payload
 
       if (puzzle.status === "active") {
         return {
@@ -100,8 +110,10 @@ export function pinpointReducer(state: PinpointState, action: PinpointAction): P
           puzzle,
           sessionScore,
           guess: "",
-          shakeBadgeIndex: action.payload.correct ? null : puzzle.clues_revealed - 1,
-        };
+          shakeBadgeIndex: action.payload.correct
+            ? null
+            : puzzle.clues_revealed - 1,
+        }
       }
 
       return {
@@ -112,37 +124,37 @@ export function pinpointReducer(state: PinpointState, action: PinpointAction): P
         shakeBadgeIndex: null,
         phase: "flashing",
         ...terminalFlashFromPuzzle(puzzle),
-      };
+      }
     }
     case "GUESS_ERROR": {
       if (state.phase !== "playing") {
-        return state;
+        return state
       }
       return {
         ...state,
         errorMessage: action.payload.message,
-      };
+      }
     }
     case "CLEAR_SHAKE":
       return {
         ...state,
         shakeBadgeIndex: null,
-      };
+      }
     case "FLASH_COMPLETE": {
       if (state.phase !== "flashing") {
-        return state;
+        return state
       }
       return {
         ...state,
         phase: "advancing",
-      };
+      }
     }
     case "ADVANCE_SUCCESS": {
       if (state.phase !== "advancing") {
-        return state;
+        return state
       }
 
-      const play = action.payload;
+      const play = action.payload
 
       if (play.result) {
         return {
@@ -154,7 +166,7 @@ export function pinpointReducer(state: PinpointState, action: PinpointAction): P
           flashKind: null,
           flashBaseScore: null,
           flashTimeBonus: null,
-        };
+        }
       }
 
       return {
@@ -166,11 +178,11 @@ export function pinpointReducer(state: PinpointState, action: PinpointAction): P
         flashKind: null,
         flashBaseScore: null,
         flashTimeBonus: null,
-      };
+      }
     }
     case "ADVANCE_ERROR": {
       if (state.phase !== "advancing") {
-        return state;
+        return state
       }
       return {
         ...state,
@@ -179,10 +191,10 @@ export function pinpointReducer(state: PinpointState, action: PinpointAction): P
         flashKind: null,
         flashBaseScore: null,
         flashTimeBonus: null,
-      };
+      }
     }
     case "ABANDON_SUCCESS": {
-      const { result } = action.payload;
+      const { result } = action.payload
       return {
         ...state,
         phase: "result",
@@ -195,13 +207,13 @@ export function pinpointReducer(state: PinpointState, action: PinpointAction): P
         flashKind: null,
         flashBaseScore: null,
         flashTimeBonus: null,
-      };
+      }
     }
     default:
-      return state;
+      return state
   }
 }
 
 export function usePinpointReducer(initialPlay: PlayResponse) {
-  return useReducer(pinpointReducer, initialPlay, initPinpointFromPlayResponse);
+  return useReducer(pinpointReducer, initialPlay, initPinpointFromPlayResponse)
 }

@@ -1,12 +1,12 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import type { Meta, StoryObj } from "@storybook/nextjs-vite"
+import { fn } from "storybook/test"
 
-import { WikiArticlePane } from "./WikiArticlePane";
+import { WikiArticlePane } from "./WikiArticlePane"
 
 const sampleHtml = `
   <p>Wikipedia-style body with a navigable link:</p>
   <p><a data-wiki-title="Moon" href="#">Jump to Moon article</a></p>
-`;
+`
 
 const meta = {
   component: WikiArticlePane,
@@ -18,16 +18,16 @@ const meta = {
     onBack: fn(),
     onNavigate: fn(async () => Promise.resolve()),
   },
-} satisfies Meta<typeof WikiArticlePane>;
+} satisfies Meta<typeof WikiArticlePane>
 
-export default meta;
+export default meta
 
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof meta>
 
-export const Default: Story = {};
+export const Default: Story = {}
 
 export const NavPending: Story = {
   args: {
     navPending: true,
   },
-};
+}

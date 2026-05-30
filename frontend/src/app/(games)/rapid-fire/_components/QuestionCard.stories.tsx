@@ -1,18 +1,18 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import type { Meta, StoryObj } from "@storybook/nextjs-vite"
+import { fn } from "storybook/test"
 
-import type { Question as RapidFireQuestion } from "@/services/rapid_fire/schema";
+import type { Question as RapidFireQuestion } from "@/services/rapid_fire/schema"
 
-import { QuestionCard } from "./QuestionCard";
+import { QuestionCard } from "./QuestionCard"
 
 const sampleQuestion: RapidFireQuestion = {
   id: "story-q1",
   question: "Which port does HTTP typically use?",
   options: ["20", "80", "443", "8080"],
   time_limit_ms: 15_000,
-};
+}
 
-const timingRef = { current: Date.now() };
+const timingRef = { current: Date.now() }
 
 const meta = {
   component: QuestionCard,
@@ -22,11 +22,11 @@ const meta = {
     questionEnteredAtRef: timingRef,
     onSelectOption: fn(),
   },
-} satisfies Meta<typeof QuestionCard>;
+} satisfies Meta<typeof QuestionCard>
 
-export default meta;
+export default meta
 
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof meta>
 
 export const Question: Story = {
   args: {
@@ -36,7 +36,7 @@ export const Question: Story = {
     lastCorrect: null,
     locked: false,
   },
-};
+}
 
 export const FeedbackCorrect: Story = {
   args: {
@@ -46,7 +46,7 @@ export const FeedbackCorrect: Story = {
     lastCorrect: true,
     locked: false,
   },
-};
+}
 
 export const FeedbackWrong: Story = {
   args: {
@@ -56,6 +56,6 @@ export const FeedbackWrong: Story = {
     lastCorrect: false,
     locked: false,
   },
-};
+}
 
-export { Question as Default };
+export { Question as Default }

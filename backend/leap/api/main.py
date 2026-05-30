@@ -16,7 +16,15 @@ from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from leap.api.routes import admin, auth, health, leaderboard, lobby, players
-from leap.api.routes.games import crossword, four_pics, picture, pinpoint, rapid_fire, wiki, word_hunt
+from leap.api.routes.games import (
+    crossword,
+    four_pics,
+    picture,
+    pinpoint,
+    rapid_fire,
+    wiki,
+    word_hunt,
+)
 from leap.config.settings import get_settings
 from leap.core.cache_invalidation import CacheInvalidationListener
 from leap.core.common.logger import configure_json_logging, get_logger
@@ -149,7 +157,13 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 @app.exception_handler(Exception)
 async def unhandled_exception_handler(request: Request, exc: Exception):
     logger = get_logger(__name__)
-    logger.error("Unhandled exception", error=str(exc), path=request.url.path, method=request.method, exc_info=True)
+    logger.error(
+        "Unhandled exception",
+        error=str(exc),
+        path=request.url.path,
+        method=request.method,
+        exc_info=True,
+    )
     return JSONResponse(
         status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
         content={

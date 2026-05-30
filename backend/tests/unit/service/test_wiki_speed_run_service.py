@@ -23,9 +23,9 @@ from tests.fakes import (
     FakeContextManager,
     FakeGameSessionDAO,
     FakeWikiHtmlRewriter,
+    FakeWikipediaClient,
     FakeWikiPuzzleAttemptDAO,
     FakeWikiRoundDAO,
-    FakeWikipediaClient,
 )
 
 
@@ -76,7 +76,9 @@ def _build_svc(
     gdao = FakeGameSessionDAO()
     rdao = FakeWikiRoundDAO(rounds or [_sample_round()])
     adao = FakeWikiPuzzleAttemptDAO()
-    client = wikipedia or FakeWikipediaClient({"Alpha": "<section id=\"bodyContent\"><p>Body</p></section>"})
+    client = wikipedia or FakeWikipediaClient(
+        {"Alpha": '<section id="bodyContent"><p>Body</p></section>'}
+    )
     rew = FakeWikiHtmlRewriter()
     return WikiSpeedRunService(
         ctx,
@@ -103,7 +105,7 @@ async def test_play_creates_wiki_session_and_first_attempt() -> None:
     assert out.current.clue == "What comes after?"
     assert out.current.puzzle_index == 1
     assert out.current.puzzle_count == 1
-    assert out.current.article_html == "<section id=\"bodyContent\"><p>Body</p></section>"
+    assert out.current.article_html == '<section id="bodyContent"><p>Body</p></section>'
     assert out.current.time_remaining_ms == 120_000
     assert out.current.steps_taken == 0
     assert out.completed_attempts == []
@@ -197,7 +199,6 @@ async def test_puzzle_count_follows_round_list_length() -> None:
 @pytest.mark.asyncio
 async def test_navigate_increments_steps_and_appends_canonical_title() -> None:
     t0 = datetime(2026, 5, 17, 12, 0, 0, tzinfo=timezone.utc)
-    rnd = _sample_round()
     wiki = FakeWikipediaClient(
         {
             "Beta": "<section><p>p2</p></section>",
@@ -463,8 +464,8 @@ async def test_back_rejects_when_no_previous_page() -> None:
         async with svc.ctx.session() as session:
             await svc.initialize(session)
         await svc.play("p1")
-    with pytest.raises(WikiNoPreviousPageException):
-        await svc.back("p1")
+        with pytest.raises(WikiNoPreviousPageException):
+            await svc.back("p1")
 
 
 @pytest.mark.asyncio
@@ -482,9 +483,9 @@ async def test_back_counts_one_step_and_returns_previous_html() -> None:
             await svc.initialize(session)
         await svc.play("p1")
         nav_fwd = await svc.navigate("p1", "Beta")
-    assert isinstance(nav_fwd, WikiNavigateActiveDTO)
-    assert nav_fwd.current.steps_taken == 1
-    back_out = await svc.back("p1")
+        assert isinstance(nav_fwd, WikiNavigateActiveDTO)
+        assert nav_fwd.current.steps_taken == 1
+        back_out = await svc.back("p1")
     assert isinstance(back_out, WikiNavigateActiveDTO)
     assert back_out.current.steps_taken == 2
     assert back_out.current.click_path == ["Beta", "Alpha"]

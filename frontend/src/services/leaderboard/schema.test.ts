@@ -1,6 +1,6 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest"
 
-import { LeaderboardEntrySchema, LeaderboardResponseSchema } from "./schema";
+import { LeaderboardEntrySchema, LeaderboardResponseSchema } from "./schema"
 
 describe("LeaderboardEntrySchema", () => {
   it("parses a valid API entry into corp_id form", () => {
@@ -10,15 +10,15 @@ describe("LeaderboardEntrySchema", () => {
       display_name: "Alice",
       total_score: 100,
       games_completed: 2,
-    });
+    })
     expect(parsed).toEqual({
       rank: 1,
       corp_id: "alice",
       display_name: "Alice",
       total_score: 100,
       games_completed: 2,
-    });
-  });
+    })
+  })
 
   it("rejects entries missing total_score", () => {
     const result = LeaderboardEntrySchema.safeParse({
@@ -26,10 +26,10 @@ describe("LeaderboardEntrySchema", () => {
       player_id: "alice",
       display_name: "Alice",
       games_completed: 0,
-    });
-    expect(result.success).toBe(false);
-  });
-});
+    })
+    expect(result.success).toBe(false)
+  })
+})
 
 describe("LeaderboardResponseSchema", () => {
   it("parses leaderboard payload", () => {
@@ -44,8 +44,8 @@ describe("LeaderboardResponseSchema", () => {
         },
       ],
       total_players: 1,
-    });
-    expect(parsed.total_players).toBe(1);
-    expect(parsed.entries[0]?.corp_id).toBe("a");
-  });
-});
+    })
+    expect(parsed.total_players).toBe(1)
+    expect(parsed.entries[0]?.corp_id).toBe("a")
+  })
+})

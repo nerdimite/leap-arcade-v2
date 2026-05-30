@@ -1,6 +1,6 @@
 """Lobby response DTOs."""
 
-from typing import List, Optional
+from typing import List
 
 from pydantic import BaseModel
 

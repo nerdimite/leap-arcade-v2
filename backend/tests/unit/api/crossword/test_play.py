@@ -1,6 +1,7 @@
 """Crossword route tests."""
 
 from http import HTTPStatus
+
 from fastapi.testclient import TestClient
 
 
@@ -29,8 +30,7 @@ def test_check_route_correct_and_incorrect(crossword_client: TestClient) -> None
 
     # 1. Correct answer check
     resp = crossword_client.post(
-        "/games/crossword/check",
-        json={"entry_id": "e2", "letters": "mock"}
+        "/games/crossword/check", json={"entry_id": "e2", "letters": "mock"}
     )
     assert resp.status_code == HTTPStatus.OK
     data = resp.json()
@@ -41,8 +41,7 @@ def test_check_route_correct_and_incorrect(crossword_client: TestClient) -> None
 
     # 2. Incorrect answer check
     resp = crossword_client.post(
-        "/games/crossword/check",
-        json={"entry_id": "e2", "letters": "wrong"}
+        "/games/crossword/check", json={"entry_id": "e2", "letters": "wrong"}
     )
     assert resp.status_code == HTTPStatus.OK
     data = resp.json()
@@ -55,10 +54,7 @@ def test_submit_route(crossword_client: TestClient) -> None:
     crossword_client.post("/games/crossword/play")
 
     # Solve one word
-    crossword_client.post(
-        "/games/crossword/check",
-        json={"entry_id": "e2", "letters": "mock"}
-    )
+    crossword_client.post("/games/crossword/check", json={"entry_id": "e2", "letters": "mock"})
 
     # 3. POST /games/crossword/submit
     resp = crossword_client.post("/games/crossword/submit")

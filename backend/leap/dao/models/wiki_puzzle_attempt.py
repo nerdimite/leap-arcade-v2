@@ -1,6 +1,14 @@
 from datetime import datetime
 
-from sqlalchemy import CheckConstraint, DateTime, ForeignKey, Integer, String, UniqueConstraint, text
+from sqlalchemy import (
+    CheckConstraint,
+    DateTime,
+    ForeignKey,
+    Integer,
+    String,
+    UniqueConstraint,
+    text,
+)
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
@@ -32,7 +40,9 @@ class WikiPuzzleAttempt(Base):
     round_id: Mapped[str] = mapped_column(String, ForeignKey("wiki_rounds.id"), nullable=False)
     status: Mapped[str] = mapped_column(String, nullable=False, server_default=text("'active'"))
     current_title: Mapped[str] = mapped_column(String, nullable=False)
-    click_path: Mapped[list] = mapped_column(ARRAY(String), nullable=False, server_default=text("'{}'::text[]"))
+    click_path: Mapped[list] = mapped_column(
+        ARRAY(String), nullable=False, server_default=text("'{}'::text[]")
+    )
     steps_taken: Mapped[int] = mapped_column(Integer, nullable=False, server_default=text("0"))
     started_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False

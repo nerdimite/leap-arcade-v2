@@ -1,7 +1,7 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import type { Meta, StoryObj } from "@storybook/nextjs-vite"
+import { fn } from "storybook/test"
 
-import { LoginView } from "./LoginView";
+import { LoginView } from "./LoginView"
 
 const meta = {
   component: LoginView,
@@ -15,11 +15,11 @@ const meta = {
     onEventCodeChange: fn(),
     onSubmit: fn(),
   },
-} satisfies Meta<typeof LoginView>;
+} satisfies Meta<typeof LoginView>
 
-export default meta;
+export default meta
 
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof meta>
 
 export const Idle: Story = {
   args: {
@@ -28,7 +28,7 @@ export const Idle: Story = {
     isPending: false,
     showInvalidCreds: false,
   },
-};
+}
 
 export const Filled: Story = {
   args: {
@@ -37,7 +37,7 @@ export const Filled: Story = {
     isPending: false,
     showInvalidCreds: false,
   },
-};
+}
 
 export const Pending: Story = {
   args: {
@@ -46,7 +46,7 @@ export const Pending: Story = {
     isPending: true,
     showInvalidCreds: false,
   },
-};
+}
 
 export const InvalidCredentials: Story = {
   args: {
@@ -55,4 +55,4 @@ export const InvalidCredentials: Story = {
     isPending: false,
     showInvalidCreds: true,
   },
-};
+}

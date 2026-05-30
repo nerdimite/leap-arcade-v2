@@ -5,26 +5,28 @@
  */
 export function decodeJwtSub(token: string): string | null {
   try {
-    const parts = token.split(".");
+    const parts = token.split(".")
     if (parts.length !== 3) {
-      return null;
+      return null
     }
-    const payloadSegment = parts[1];
+    const payloadSegment = parts[1]
     if (!payloadSegment) {
-      return null;
+      return null
     }
-    const payloadJson = Buffer.from(payloadSegment, "base64url").toString("utf8");
-    const payload = JSON.parse(payloadJson) as { sub?: unknown };
-    return typeof payload.sub === "string" ? payload.sub : null;
+    const payloadJson = Buffer.from(payloadSegment, "base64url").toString(
+      "utf8"
+    )
+    const payload = JSON.parse(payloadJson) as { sub?: unknown }
+    return typeof payload.sub === "string" ? payload.sub : null
   } catch {
-    return null;
+    return null
   }
 }
 
 export type JwtPlayer = {
-  corpId: string | null;
-  displayName: string | null;
-};
+  corpId: string | null
+  displayName: string | null
+}
 
 /** Extract the player identity (`sub` + `display_name`) from an HS256 token.
  *
@@ -34,17 +36,23 @@ export type JwtPlayer = {
  */
 export function decodeJwtPlayer(token: string): JwtPlayer {
   try {
-    const payloadSegment = token.split(".")[1];
+    const payloadSegment = token.split(".")[1]
     if (!payloadSegment) {
-      return { corpId: null, displayName: null };
+      return { corpId: null, displayName: null }
     }
-    const payloadJson = Buffer.from(payloadSegment, "base64url").toString("utf8");
-    const payload = JSON.parse(payloadJson) as { sub?: unknown; display_name?: unknown };
+    const payloadJson = Buffer.from(payloadSegment, "base64url").toString(
+      "utf8"
+    )
+    const payload = JSON.parse(payloadJson) as {
+      sub?: unknown
+      display_name?: unknown
+    }
     return {
       corpId: typeof payload.sub === "string" ? payload.sub : null,
-      displayName: typeof payload.display_name === "string" ? payload.display_name : null,
-    };
+      displayName:
+        typeof payload.display_name === "string" ? payload.display_name : null,
+    }
   } catch {
-    return { corpId: null, displayName: null };
+    return { corpId: null, displayName: null }
   }
 }

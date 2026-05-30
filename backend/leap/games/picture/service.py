@@ -11,7 +11,12 @@ from leap.core.context_manager import ContextManager
 from leap.dao.game_session_dao import GameSessionDAO
 from leap.dao.picture_puzzle_attempt_dao import PicturePuzzleAttemptDAO
 from leap.dao.picture_puzzle_dao import PicturePuzzleDAO
-from leap.games.picture.scoring import compute_time_bonus, compute_total_score, normalize_answer, score_per_puzzle
+from leap.games.picture.scoring import (
+    compute_time_bonus,
+    compute_total_score,
+    normalize_answer,
+    score_per_puzzle,
+)
 from leap.service.exceptions import (
     AlreadyResolvedException,
     InvalidPuzzleIdException,
@@ -68,14 +73,18 @@ class PictureService:
                 return True
         return False
 
-    def _attempt_count_for_resolution(self, attempts: List[PicturePuzzleAttemptDTO], puzzle_id: str) -> int:
+    def _attempt_count_for_resolution(
+        self, attempts: List[PicturePuzzleAttemptDTO], puzzle_id: str
+    ) -> int:
         per_puzzle = [a for a in attempts if a.puzzle_id == puzzle_id]
         for i, attempt in enumerate(per_puzzle, start=1):
             if attempt.correct:
                 return i
         return len(per_puzzle)
 
-    def _score_for_puzzle_if_solved(self, attempts: List[PicturePuzzleAttemptDTO], puzzle_id: str) -> int:
+    def _score_for_puzzle_if_solved(
+        self, attempts: List[PicturePuzzleAttemptDTO], puzzle_id: str
+    ) -> int:
         per_puzzle = [a for a in attempts if a.puzzle_id == puzzle_id]
         for i, attempt in enumerate(per_puzzle, start=1):
             if attempt.correct:
@@ -100,7 +109,9 @@ class PictureService:
             return None
         return random.choice(remaining)
 
-    def _wrap_puzzle(self, puzzle: PicturePuzzleDTO, puzzles_answered: int) -> PictureDisplayedPuzzleDTO:
+    def _wrap_puzzle(
+        self, puzzle: PicturePuzzleDTO, puzzles_answered: int
+    ) -> PictureDisplayedPuzzleDTO:
         return PictureDisplayedPuzzleDTO(
             id=puzzle.id,
             image_filename=puzzle.image_filename,
@@ -163,7 +174,9 @@ class PictureService:
     async def play(self, player_id: str) -> PicturePlayPayload:
         pool = self._pool_size()
         async with self.ctx.session() as session:
-            game_session = await self.game_session_dao.get_by_player_and_game(session, player_id, "picture")
+            game_session = await self.game_session_dao.get_by_player_and_game(
+                session, player_id, "picture"
+            )
 
             if game_session is None:
                 if pool == 0:
@@ -227,7 +240,9 @@ class PictureService:
         self, player_id: str, puzzle_id: str, submitted_answer: Optional[str]
     ) -> PictureAnswerPayload:
         async with self.ctx.session() as session:
-            game_session = await self.game_session_dao.get_by_player_and_game(session, player_id, "picture")
+            game_session = await self.game_session_dao.get_by_player_and_game(
+                session, player_id, "picture"
+            )
             if game_session is None:
                 raise SessionNotFoundException(player_id, "picture")
             if game_session.status != GameSessionStatus.ACTIVE:
@@ -281,7 +296,9 @@ class PictureService:
                 )
                 earned = 0
                 if is_correct:
-                    earned = score_per_puzzle(self._attempt_count_for_resolution(attempts, puzzle_id))
+                    earned = score_per_puzzle(
+                        self._attempt_count_for_resolution(attempts, puzzle_id)
+                    )
                 return PictureAnswerPayload(
                     correct=is_correct,
                     score_earned=earned,
@@ -348,7 +365,9 @@ class PictureService:
 
     async def abandon(self, player_id: str) -> PictureResultDTO:
         async with self.ctx.session() as session:
-            game_session = await self.game_session_dao.get_by_player_and_game(session, player_id, "picture")
+            game_session = await self.game_session_dao.get_by_player_and_game(
+                session, player_id, "picture"
+            )
             if game_session is None:
                 raise SessionNotFoundException(player_id, "picture")
             if game_session.status != GameSessionStatus.ACTIVE:
@@ -357,7 +376,9 @@ class PictureService:
             attempts = await self.attempt_dao.get_all_for_session(session, game_session.id)
             accuracy = self._accuracy_total(attempts)
             now = utc_now()
-            time_remaining_seconds = compute_time_bonus(game_session.started_at, now, PICTURE_TIME_LIMIT_MS)
+            time_remaining_seconds = compute_time_bonus(
+                game_session.started_at, now, PICTURE_TIME_LIMIT_MS
+            )
             total = compute_total_score(accuracy, 0)
             await self.game_session_dao.update_status(
                 session,

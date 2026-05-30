@@ -1,68 +1,78 @@
 /** Diegetic browser window: window chrome + address bar over the light article. */
 
-import { ArrowLeft, Loader2, Lock, Minus, Square, X } from "lucide-react";
-import { memo, useEffect, useRef } from "react";
+import { ArrowLeft, Loader2, Lock, Minus, Square, X } from "lucide-react"
+import { memo, useEffect, useRef } from "react"
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils"
 
-import "./wiki-article.css";
+import "./wiki-article.css"
 
 export type WikiArticlePaneProps = {
-  currentTitle: string;
-  articleHtml: string;
-  navPending: boolean;
-  backEnabled: boolean;
-  onBack: () => void;
-  onNavigate: (title: string) => Promise<void>;
-};
+  currentTitle: string
+  articleHtml: string
+  navPending: boolean
+  backEnabled: boolean
+  onBack: () => void
+  onNavigate: (title: string) => Promise<void>
+}
 
 /** Wikipedia article path as it would appear in the address bar. */
 function toWikiUrl(title: string): string {
-  return `en.wikipedia.org/wiki/${title.trim().replace(/\s+/g, "_")}`;
+  return `en.wikipedia.org/wiki/${title.trim().replace(/\s+/g, "_")}`
 }
 
-export const WikiArticlePane = memo(function WikiArticlePane(props: WikiArticlePaneProps) {
-  const { currentTitle, articleHtml, navPending, backEnabled, onBack, onNavigate } = props;
-  const articleRef = useRef<HTMLElement | null>(null);
-  const viewportRef = useRef<HTMLDivElement | null>(null);
+export const WikiArticlePane = memo(function WikiArticlePane(
+  props: WikiArticlePaneProps
+) {
+  const {
+    currentTitle,
+    articleHtml,
+    navPending,
+    backEnabled,
+    onBack,
+    onNavigate,
+  } = props
+  const articleRef = useRef<HTMLElement | null>(null)
+  const viewportRef = useRef<HTMLDivElement | null>(null)
 
   // Each navigation lands at the top of the new article, like a real browser.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: deps are intentional re-run triggers (scroll to top on every navigation), not values read in the body
   useEffect(() => {
-    viewportRef.current?.scrollTo({ top: 0, left: 0 });
-  }, [currentTitle, articleHtml]);
+    viewportRef.current?.scrollTo({ top: 0, left: 0 })
+  }, [currentTitle, articleHtml])
 
   useEffect(() => {
-    const root = articleRef.current;
+    const root = articleRef.current
     if (!root) {
-      return undefined;
+      return undefined
     }
     const onClick = (e: MouseEvent) => {
-      const el = (e.target as HTMLElement | null)?.closest?.("a");
+      const el = (e.target as HTMLElement | null)?.closest?.("a")
       if (!el || !(el instanceof HTMLAnchorElement)) {
-        return;
+        return
       }
-      const href = el.getAttribute("href")?.trim() ?? "";
-      const title = el.getAttribute("data-wiki-title");
-      const isSamePageHash = href.startsWith("#") && href.length > 1;
+      const href = el.getAttribute("href")?.trim() ?? ""
+      const title = el.getAttribute("data-wiki-title")
+      const isSamePageHash = href.startsWith("#") && href.length > 1
       if (!title) {
         if (!isSamePageHash) {
-          e.preventDefault();
-          e.stopPropagation();
+          e.preventDefault()
+          e.stopPropagation()
         }
-        return;
+        return
       }
-      e.preventDefault();
-      e.stopPropagation();
+      e.preventDefault()
+      e.stopPropagation()
       if (navPending) {
-        return;
+        return
       }
-      void onNavigate(title);
-    };
-    root.addEventListener("click", onClick, true);
-    return () => root.removeEventListener("click", onClick, true);
-  }, [onNavigate, navPending]);
+      void onNavigate(title)
+    }
+    root.addEventListener("click", onClick, true)
+    return () => root.removeEventListener("click", onClick, true)
+  }, [onNavigate, navPending])
 
-  const backDisabled = !backEnabled || navPending;
+  const backDisabled = !backEnabled || navPending
 
   return (
     <section className="overflow-hidden rounded-[var(--radius)] border-2 border-[var(--accent)] bg-white shadow-[0_0_0_1px_oklch(0_0_0/0.4),0_0_40px_oklch(0.78_0.16_220/0.26),var(--shadow-cabinet)]">
@@ -73,7 +83,8 @@ export const WikiArticlePane = memo(function WikiArticlePane(props: WikiArticleP
             🌐
           </span>
           <span className="truncate">
-            <span className="text-ink">{currentTitle}</span> — Wikipedia · LEAP Browser
+            <span className="text-ink">{currentTitle}</span> — Wikipedia · LEAP
+            Browser
           </span>
         </div>
         <div aria-hidden className="flex gap-1.5 text-ink-dim">
@@ -100,8 +111,8 @@ export const WikiArticlePane = memo(function WikiArticlePane(props: WikiArticleP
           className={cn(
             "grid h-[26px] w-7 place-items-center rounded-[3px] border border-line bg-[oklch(0.20_0.04_283)] text-ink-dim transition-colors",
             "hover:enabled:border-[var(--accent)] hover:enabled:text-[var(--accent)]",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]",
-            "disabled:cursor-default disabled:opacity-30",
+            "focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:outline-none",
+            "disabled:cursor-default disabled:opacity-30"
           )}
         >
           <ArrowLeft className="h-[15px] w-[15px]" aria-hidden />
@@ -110,13 +121,18 @@ export const WikiArticlePane = memo(function WikiArticlePane(props: WikiArticleP
           <Lock className="h-3 w-3 text-[#1a9d4b]" aria-hidden />
           <span className="truncate text-[#555]">
             {toWikiUrl(currentTitle).split("/wiki/")[0]}/wiki/
-            <span className="text-[#111]">{toWikiUrl(currentTitle).split("/wiki/")[1]}</span>
+            <span className="text-[#111]">
+              {toWikiUrl(currentTitle).split("/wiki/")[1]}
+            </span>
           </span>
         </div>
       </div>
 
       {/* lit viewport: the article renders in light mode */}
-      <div ref={viewportRef} className="relative max-h-[min(70svh,640px)] overflow-y-auto bg-white">
+      <div
+        ref={viewportRef}
+        className="relative max-h-[min(70svh,640px)] overflow-y-auto bg-white"
+      >
         {navPending ? (
           <div
             className="absolute inset-0 z-10 flex items-center justify-center bg-white/40 backdrop-blur-[1px]"
@@ -124,18 +140,24 @@ export const WikiArticlePane = memo(function WikiArticlePane(props: WikiArticleP
             aria-live="polite"
           >
             <span className="sr-only">Loading article</span>
-            <Loader2 className="h-9 w-9 animate-spin text-[var(--wiki-link,#3366cc)]" aria-hidden />
+            <Loader2
+              className="h-9 w-9 animate-spin text-[var(--wiki-link,#3366cc)]"
+              aria-hidden
+            />
           </div>
         ) : null}
         <article
           ref={articleRef}
-          className={cn("leap-wiki-skin px-6 py-7 lg:px-11", navPending && "pointer-events-none")}
+          className={cn(
+            "leap-wiki-skin px-6 py-7 lg:px-11",
+            navPending && "pointer-events-none"
+          )}
         >
           <header className="mb-5 border-b border-black/10 pb-3">
-            <p className="m-0 text-[0.72rem] font-medium uppercase tracking-[0.18em] text-[color:var(--wiki-muted)]">
+            <p className="m-0 text-[0.72rem] font-medium tracking-[0.18em] text-[color:var(--wiki-muted)] uppercase">
               From Wikipedia, the free encyclopedia
             </p>
-            <h1 className="m-0 mt-1 text-3xl font-semibold leading-tight text-[color:var(--wiki-ink)]">
+            <h1 className="m-0 mt-1 text-3xl leading-tight font-semibold text-[color:var(--wiki-ink)]">
               {currentTitle}
             </h1>
           </header>
@@ -146,5 +168,5 @@ export const WikiArticlePane = memo(function WikiArticlePane(props: WikiArticleP
         </article>
       </div>
     </section>
-  );
-});
+  )
+})

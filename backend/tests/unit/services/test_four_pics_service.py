@@ -1,7 +1,7 @@
 """Four Pics service acceptance tests."""
 
 from datetime import datetime, timedelta, timezone
-from typing import Iterable, List
+from typing import List
 from unittest.mock import patch
 
 import pytest

@@ -7,7 +7,6 @@ from fastapi.testclient import TestClient
 
 from leap.api.routes.games import rapid_fire as rapid_fire_routes
 from leap.types.player import PlayerDTO
-
 from tests.fakes import make_fake_container
 from tests.unit.api.rapid_fire.conftest import (
     register_service_exception_handler,

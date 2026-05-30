@@ -1,6 +1,7 @@
 """DAO for the ``players`` table."""
 
 from typing import Optional
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from leap.dao.base_pg_dao import BaseReadPgDAO

@@ -44,7 +44,9 @@ export function GameNavigationGuardDialog() {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={leaveBusy}>Stay in game</AlertDialogCancel>
+          <AlertDialogCancel disabled={leaveBusy}>
+            Stay in game
+          </AlertDialogCancel>
           <Button
             type="button"
             variant="default"

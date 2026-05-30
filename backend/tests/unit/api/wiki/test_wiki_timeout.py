@@ -9,9 +9,7 @@ from tests.unit.api.wiki.conftest import sample_wiki_rounds
 
 
 class TestWikiTimeout:
-    def test_timeout_early_returns_active_with_server_remaining(
-        self, wiki_client
-    ) -> None:
+    def test_timeout_early_returns_active_with_server_remaining(self, wiki_client) -> None:
         t0 = datetime(2026, 5, 17, 12, 0, 0, tzinfo=timezone.utc)
         with patch("leap.core.common.time.utc_now", return_value=t0):
             r1 = wiki_client.post("/games/wiki/play")
@@ -28,9 +26,7 @@ class TestWikiTimeout:
         assert b2["current"]["attempt_id"] == aid
         assert b2["current"]["time_remaining_ms"] == 90_000 - 15_000
 
-    def test_timeout_when_server_says_expired_advances_puzzle(
-        self, wiki_client
-    ) -> None:
+    def test_timeout_when_server_says_expired_advances_puzzle(self, wiki_client) -> None:
         container = wiki_client.app.state.container
         t0 = datetime(2026, 5, 17, 12, 0, 0, tzinfo=timezone.utc)
         with patch("leap.core.common.time.utc_now", return_value=t0):

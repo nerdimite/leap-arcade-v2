@@ -247,7 +247,9 @@ async def test_accepted_variation_matching_all_seed_variants_for_nlp_puzzle(
         assert resp["correct"] is True
 
 
-async def test_normalisation_edge_cases_match_hugging_face_puzzle(client: httpx.AsyncClient) -> None:
+async def test_normalisation_edge_cases_match_hugging_face_puzzle(
+    client: httpx.AsyncClient,
+) -> None:
     """Hyphens, dots, casing, and whitespace collapse match Hugging Face puzzle."""
     variants = [
         "  Hugging-Face  ",
@@ -453,7 +455,9 @@ async def test_server_side_time_limit_enforces_completed_zero_time_bonus_on_subm
     assert int(result["accuracy_score"]) == score
 
 
-async def test_canonical_answers_never_leaked_in_picture_api_payloads(client: httpx.AsyncClient) -> None:
+async def test_canonical_answers_never_leaked_in_picture_api_payloads(
+    client: httpx.AsyncClient,
+) -> None:
     """Responses from play / answer / abandon never include canonical or accepted answer lists."""
     await _insert_player("e2e_pic_leak", "E2E Picture Leak Sweep")
     token = await _login(client, "e2e_pic_leak")

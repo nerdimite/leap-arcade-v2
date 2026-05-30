@@ -104,7 +104,6 @@ class WordHuntService:
         puzzle: WordHuntPuzzleDTO,
         finds: List[WordHuntFindDTO],
     ) -> List[WordHuntClueDTO]:
-        words_by_id = self._word_by_id(puzzle)
         find_by_word_id = {f.word_id: f for f in finds}
         clues: List[WordHuntClueDTO] = []
         for word in puzzle.words:

@@ -1,19 +1,20 @@
 // @vitest-environment happy-dom
 
-import { renderHook, waitFor } from "@testing-library/react";
-import { HttpResponse, http } from "msw";
-import { describe, expect, it } from "vitest";
+import { renderHook, waitFor } from "@testing-library/react"
+import { HttpResponse, http } from "msw"
+import { describe, expect, it } from "vitest"
 
-import { QueryClientProviderWrapper } from "@/components/query-client-provider";
-import { server } from "@/test/msw-server";
+import { QueryClientProviderWrapper } from "@/components/query-client-provider"
+import { server } from "@/test/msw-server"
 
-import { useLeaderboard } from "./hooks";
+import { useLeaderboard } from "./hooks"
 
 describe("useLeaderboard", () => {
   it("returns ranked entries from the API", async () => {
     server.use(
       http.get(
-        ({ request }) => new URL(request.url).pathname.endsWith("/api/leaderboard"),
+        ({ request }) =>
+          new URL(request.url).pathname.endsWith("/api/leaderboard"),
         () =>
           HttpResponse.json({
             entries: [
@@ -33,17 +34,17 @@ describe("useLeaderboard", () => {
               },
             ],
             total_players: 2,
-          }),
-      ),
-    );
+          })
+      )
+    )
 
     const { result } = renderHook(() => useLeaderboard(), {
       wrapper: QueryClientProviderWrapper,
-    });
+    })
 
     await waitFor(() => {
-      expect(result.current.isSuccess).toBe(true);
-    });
+      expect(result.current.isSuccess).toBe(true)
+    })
 
     expect(result.current.data?.entries).toEqual([
       {
@@ -60,6 +61,6 @@ describe("useLeaderboard", () => {
         total_score: 40,
         games_completed: 1,
       },
-    ]);
-  });
-});
+    ])
+  })
+})

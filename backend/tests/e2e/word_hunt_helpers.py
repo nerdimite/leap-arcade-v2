@@ -16,9 +16,7 @@ from leap.config.settings import get_settings
 from leap.games.word_hunt.scoring import compute_final_score, compute_time_bonus
 from tests.e2e.conftest import E2E_POSTGRES_URL
 
-_WORD_HUNT_JSON = (
-    Path(__file__).resolve().parents[2] / "leap" / "seeds" / "data" / "word_hunt.json"
-)
+_WORD_HUNT_JSON = Path(__file__).resolve().parents[2] / "leap" / "seeds" / "data" / "word_hunt.json"
 
 
 def auth_headers(token: str) -> Dict[str, str]:

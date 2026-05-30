@@ -59,7 +59,9 @@ class RapidFireService:
             return None
         return random.choice(remaining)
 
-    def _build_result(self, game_session: GameSessionDTO, answers: List[RapidFireAnswerDTO]) -> RapidFireResultDTO:
+    def _build_result(
+        self, game_session: GameSessionDTO, answers: List[RapidFireAnswerDTO]
+    ) -> RapidFireResultDTO:
         score = game_session.score if game_session.score is not None else 0
         correct_count = sum(1 for a in answers if a.correct)
         wrong_count = sum(1 for a in answers if not a.correct and not a.skipped)
@@ -102,11 +104,15 @@ class RapidFireService:
                 )
 
             if game_session.status != GameSessionStatus.ACTIVE:
-                answers = await self.rapid_fire_answer_dao.get_all_for_session(session, game_session.id)
+                answers = await self.rapid_fire_answer_dao.get_all_for_session(
+                    session, game_session.id
+                )
                 result = self._build_result(game_session, answers)
                 return RapidFirePlayPayload(status=game_session.status.value, result=result)
 
-            asked_ids = await self.rapid_fire_answer_dao.get_asked_question_ids(session, game_session.id)
+            asked_ids = await self.rapid_fire_answer_dao.get_asked_question_ids(
+                session, game_session.id
+            )
             question = self._pick_next_question(asked_ids)
             if question is None:
                 raise NoQuestionsAvailableException()
@@ -145,9 +151,7 @@ class RapidFireService:
 
             skipped = selected_option is None
             correct = bool(not skipped and selected_option == question.correct_option_index)
-            effective_time_ms = clamp_rapid_fire_time_ms(
-                time_ms, question.time_limit_ms
-            )
+            effective_time_ms = clamp_rapid_fire_time_ms(time_ms, question.time_limit_ms)
 
             await self.rapid_fire_answer_dao.create(
                 session,

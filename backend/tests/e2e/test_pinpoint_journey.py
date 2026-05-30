@@ -133,8 +133,12 @@ async def test_full_pool_mixed_outcomes_score_and_leaderboard(
         assert result["puzzles_not_reached"] == 0
         assert len(result["puzzles"]) == pool_size
 
-        for expected, actual in zip(result_rows, result["puzzles"], strict=True):
-            assert actual["puzzle_id"] == expected["puzzle_id"]
+        # Result ordering is not a contract (all attempts share the deterministic
+        # fixed clock, so started_at ties); compare per-puzzle outcomes by id.
+        actual_by_id = {row["puzzle_id"]: row for row in result["puzzles"]}
+        assert set(actual_by_id) == {row["puzzle_id"] for row in result_rows}
+        for expected in result_rows:
+            actual = actual_by_id[expected["puzzle_id"]]
             assert actual["status"] == expected["status"]
             assert actual["clues_used"] == expected["clues_used"]
             assert actual["score"] == expected["score"]

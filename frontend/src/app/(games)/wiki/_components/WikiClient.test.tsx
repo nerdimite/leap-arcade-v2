@@ -1,12 +1,18 @@
 // @vitest-environment happy-dom
 
-import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  cleanup,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react"
+import userEvent from "@testing-library/user-event"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
-import type { WikiPlayResponse } from "@/services/wiki/schema";
+import type { WikiPlayResponse } from "@/services/wiki/schema"
 
-import { WikiClient } from "./WikiClient";
+import { WikiClient } from "./WikiClient"
 
 const {
   postWikiAbandon,
@@ -20,14 +26,14 @@ const {
   postWikiNavigate: vi.fn(),
   postWikiPlay: vi.fn(),
   postWikiTimeout: vi.fn(),
-}));
+}))
 
 vi.mock("@/hooks/use-navigation-guard", () => ({
   useNavigationGuard: () => ({
     setIsDirty: vi.fn(),
     registerBeforeNavigateConfirm: () => () => {},
   }),
-}));
+}))
 
 vi.mock("@/lib/api/wiki", () => ({
   postWikiAbandon,
@@ -35,7 +41,7 @@ vi.mock("@/lib/api/wiki", () => ({
   postWikiNavigate,
   postWikiPlay,
   postWikiTimeout,
-}));
+}))
 
 function activePlay(articleHtml: string): WikiPlayResponse {
   return {
@@ -58,17 +64,17 @@ function activePlay(articleHtml: string): WikiPlayResponse {
       article_html: articleHtml,
       back_enabled: false,
     },
-  };
+  }
 }
 
 describe("WikiClient", () => {
   beforeEach(() => {
-    vi.clearAllMocks();
-  });
+    vi.clearAllMocks()
+  })
 
   afterEach(() => {
-    cleanup();
-  });
+    cleanup()
+  })
 
   it("posts wiki navigation when a rewritten article link is clicked", async () => {
     postWikiNavigate.mockResolvedValue({
@@ -88,44 +94,46 @@ describe("WikiClient", () => {
         article_html: "<p>done</p>",
         back_enabled: true,
       },
-    });
+    })
 
-    const user = userEvent.setup();
+    const user = userEvent.setup()
     render(
       <WikiClient
         initialPlay={activePlay(
-          '<p><a data-wiki-title="Next Page" href="#">Next</a></p>',
+          '<p><a data-wiki-title="Next Page" href="#">Next</a></p>'
         )}
-      />,
-    );
+      />
+    )
 
-    await user.click(screen.getByRole("link", { name: "Next" }));
+    await user.click(screen.getByRole("link", { name: "Next" }))
     await waitFor(() => {
-      expect(postWikiNavigate).toHaveBeenCalledWith("Next Page");
-    });
-  });
+      expect(postWikiNavigate).toHaveBeenCalledWith("Next Page")
+    })
+  })
 
   it("shows a loading overlay during navigation while the article remains in the DOM", async () => {
-    let resolveNav!: (v: unknown) => void;
+    let resolveNav!: (v: unknown) => void
     postWikiNavigate.mockImplementation(
       () =>
         new Promise((resolve) => {
-          resolveNav = resolve;
-        }),
-    );
+          resolveNav = resolve
+        })
+    )
 
-    const user = userEvent.setup();
+    const user = userEvent.setup()
     render(
       <WikiClient
-        initialPlay={activePlay('<p><a data-wiki-title="Target" href="#">go</a></p>')}
-      />,
-    );
+        initialPlay={activePlay(
+          '<p><a data-wiki-title="Target" href="#">go</a></p>'
+        )}
+      />
+    )
 
-    expect(screen.getByText("go")).toBeInTheDocument();
+    expect(screen.getByText("go")).toBeInTheDocument()
 
-    await user.click(screen.getByRole("link", { name: "go" }));
+    await user.click(screen.getByRole("link", { name: "go" }))
 
-    expect(await screen.findByText("Loading article")).toBeInTheDocument();
+    expect(await screen.findByText("Loading article")).toBeInTheDocument()
 
     resolveNav({
       state: "active",
@@ -144,31 +152,33 @@ describe("WikiClient", () => {
         article_html: "<p>arrived</p>",
         back_enabled: false,
       },
-    });
+    })
 
     await waitFor(() => {
-      expect(screen.queryByText("Loading article")).not.toBeInTheDocument();
-    });
-    expect(screen.getByText("arrived")).toBeInTheDocument();
-  });
+      expect(screen.queryByText("Loading article")).not.toBeInTheDocument()
+    })
+    expect(screen.getByText("arrived")).toBeInTheDocument()
+  })
 
   it("blocks non-game anchors from escaping the wiki pane", () => {
     render(
       <WikiClient
-        initialPlay={activePlay('<p><a href="https://en.wikipedia.org/wiki/Outside">Outside</a></p>')}
-      />,
-    );
+        initialPlay={activePlay(
+          '<p><a href="https://en.wikipedia.org/wiki/Outside">Outside</a></p>'
+        )}
+      />
+    )
 
-    const link = screen.getByRole("link", { name: "Outside" });
-    const evt = new MouseEvent("click", { bubbles: true, cancelable: true });
-    link.dispatchEvent(evt);
+    const link = screen.getByRole("link", { name: "Outside" })
+    const evt = new MouseEvent("click", { bubbles: true, cancelable: true })
+    link.dispatchEvent(evt)
 
-    expect(evt.defaultPrevented).toBe(true);
-    expect(postWikiNavigate).not.toHaveBeenCalled();
-  });
+    expect(evt.defaultPrevented).toBe(true)
+    expect(postWikiNavigate).not.toHaveBeenCalled()
+  })
 
   it("renders a scrollable path row for long breadcrumbs", () => {
-    const long = "Antidisestablishmentarianism";
+    const long = "Antidisestablishmentarianism"
     const play: WikiPlayResponse = {
       state: "active",
       total_score: 0,
@@ -189,14 +199,14 @@ describe("WikiClient", () => {
         article_html: "<p>x</p>",
         back_enabled: false,
       },
-    };
+    }
 
-    render(<WikiClient initialPlay={play} />);
+    render(<WikiClient initialPlay={play} />)
 
-    const root = screen.getByTestId("wiki-breadcrumb");
-    expect(within(root).getByText("Path")).toBeInTheDocument();
-    expect(root.querySelector(".overflow-x-auto")).toBeTruthy();
-  });
+    const root = screen.getByTestId("wiki-breadcrumb")
+    expect(within(root).getByText("Path")).toBeInTheDocument()
+    expect(root.querySelector(".overflow-x-auto")).toBeTruthy()
+  })
 
   it("transitions to the puzzle result view when navigation completes the puzzle", async () => {
     postWikiNavigate.mockResolvedValue({
@@ -214,22 +224,24 @@ describe("WikiClient", () => {
       },
       next_puzzle_available: true,
       total_score: 180,
-    });
+    })
 
-    const user = userEvent.setup();
+    const user = userEvent.setup()
     render(
       <WikiClient
         initialPlay={activePlay(
-          '<p><a data-wiki-title="Target" href="#">finish</a></p>',
+          '<p><a data-wiki-title="Target" href="#">finish</a></p>'
         )}
-      />,
-    );
+      />
+    )
 
-    await user.click(screen.getByRole("link", { name: "finish" }));
+    await user.click(screen.getByRole("link", { name: "finish" }))
 
-    expect(await screen.findByRole("heading", { name: "Puzzle complete" })).toBeInTheDocument();
-    expect(screen.getByText("Target revealed")).toBeInTheDocument();
-    const btn = screen.getByRole("button", { name: /continue to next puzzle/i });
-    expect(btn).toBeEnabled();
-  });
-});
+    expect(
+      await screen.findByRole("heading", { name: "Puzzle complete" })
+    ).toBeInTheDocument()
+    expect(screen.getByText("Target revealed")).toBeInTheDocument()
+    const btn = screen.getByRole("button", { name: /continue to next puzzle/i })
+    expect(btn).toBeEnabled()
+  })
+})

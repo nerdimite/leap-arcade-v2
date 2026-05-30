@@ -1,37 +1,38 @@
 /** Assembled dumb Rapid Fire screen: feeds status-keyed slots to the shared GameShell. */
 
-import type { MutableRefObject } from "react";
+import type { MutableRefObject } from "react"
 
-import { GameHeader } from "@/components/game/GameHeader";
-import { GameShell } from "@/components/game/GameShell";
-import { ScoreReadout } from "@/components/game/ScoreReadout";
-import { TimerBar } from "@/components/game/TimerBar";
+import { GameHeader } from "@/components/game/GameHeader"
+import { GameShell } from "@/components/game/GameShell"
+import { ScoreReadout } from "@/components/game/ScoreReadout"
+import { TimerBar } from "@/components/game/TimerBar"
 
-import { FeedbackBand } from "./FeedbackBand";
-import { QuestionCard } from "./QuestionCard";
-import { RapidFireErrorState } from "./RapidFireErrorState";
-import { ResultCard } from "./ResultCard";
-import type { RapidFireViewState } from "./rapid-fire-view-state";
+import { FeedbackBand } from "./FeedbackBand"
+import { QuestionCard } from "./QuestionCard"
+import { RapidFireErrorState } from "./RapidFireErrorState"
+import { ResultCard } from "./ResultCard"
+import type { RapidFireViewState } from "./rapid-fire-view-state"
 
 export type RapidFireViewProps = {
-  viewState: RapidFireViewState;
-  onSelectOption: (optionIndex1: number, timeMs: number) => void;
-  onBackToLobby: () => void;
+  viewState: RapidFireViewState
+  onSelectOption: (optionIndex1: number, timeMs: number) => void
+  onBackToLobby: () => void
   /** Must match the smart layer interval anchor for this question (answer timing). */
-  questionEnteredAtRef: MutableRefObject<number>;
-};
+  questionEnteredAtRef: MutableRefObject<number>
+}
 
 function progressLabelFor(viewState: RapidFireViewState): string | null {
   if (viewState.status === "question" || viewState.status === "feedback") {
     if (viewState.questionsTotal > 0) {
-      return `Question ${viewState.questionsAnswered + 1} of ${viewState.questionsTotal}`;
+      return `Question ${viewState.questionsAnswered + 1} of ${viewState.questionsTotal}`
     }
   }
-  return null;
+  return null
 }
 
 export function RapidFireView(props: RapidFireViewProps) {
-  const { viewState, onSelectOption, onBackToLobby, questionEnteredAtRef } = props;
+  const { viewState, onSelectOption, onBackToLobby, questionEnteredAtRef } =
+    props
 
   /** loading / question / feedback share the stage: header + (notice | card). */
   const stage = (
@@ -59,7 +60,11 @@ export function RapidFireView(props: RapidFireViewProps) {
           correctOption={viewState.lastCorrectOption}
           lastCorrect={viewState.lastCorrect}
           locked={viewState.locked}
-          timerBar={!viewState.locked ? <TimerBar percentage={viewState.timerBarPct} /> : undefined}
+          timerBar={
+            !viewState.locked ? (
+              <TimerBar percentage={viewState.timerBarPct} />
+            ) : undefined
+          }
           questionEnteredAtRef={questionEnteredAtRef}
           onSelectOption={onSelectOption}
         />
@@ -73,14 +78,17 @@ export function RapidFireView(props: RapidFireViewProps) {
           lastCorrect={viewState.lastCorrect}
           locked={false}
           feedbackOverlay={
-            <FeedbackBand lastCorrect={viewState.lastCorrect} scoreDelta={viewState.scoreDelta} />
+            <FeedbackBand
+              lastCorrect={viewState.lastCorrect}
+              scoreDelta={viewState.scoreDelta}
+            />
           }
           questionEnteredAtRef={questionEnteredAtRef}
           onSelectOption={onSelectOption}
         />
       ) : null}
     </div>
-  );
+  )
 
   return (
     <GameShell
@@ -108,10 +116,13 @@ export function RapidFireView(props: RapidFireViewProps) {
         error:
           viewState.status === "error" ? (
             <div className="mx-auto max-w-lg p-6">
-              <RapidFireErrorState message={viewState.message} onBackToLobby={onBackToLobby} />
+              <RapidFireErrorState
+                message={viewState.message}
+                onBackToLobby={onBackToLobby}
+              />
             </div>
           ) : null,
       }}
     />
-  );
+  )
 }
